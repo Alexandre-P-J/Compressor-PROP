@@ -82,7 +82,7 @@ public class LZ78 {
     }
     
     public void compress (InputStream is, OutputStream os) throws IOException {
-        //os = new BitOutputStream(os);
+        os = new BitOutputStream(os);
         int code;
         int next;
         while ((next = is.read()) >= 0){
