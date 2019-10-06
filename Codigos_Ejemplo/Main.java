@@ -1,8 +1,7 @@
 import java.io.* ;
 
 public class Main {
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         if (args.length < 4)
             System.out.println("Usage: java LZW/LZ78 compress/decompress FromFile ToFile");
             
