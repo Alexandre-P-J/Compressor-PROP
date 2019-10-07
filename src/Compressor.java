@@ -6,8 +6,8 @@ public class Compressor {
             System.out.println("Usage: java LZW/LZ78 compress/decompress FromFile ToFile");
             
         try {
-            InputStream is = new FileInputStream(args[2]);
-            OutputStream os = new FileOutputStream(args[3]);
+            InputStream is = new BufferedInputStream(new FileInputStream(args[2]));
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(args[3]));
            
             if (args[0].equals("LZW")) {
                 LZW fileW = new LZW();
