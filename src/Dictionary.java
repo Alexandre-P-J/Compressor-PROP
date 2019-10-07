@@ -20,7 +20,7 @@ public class Dictionary {
     // Afegeix un element al diccionari
     public void add (ArrayOfBytes s) {
         if (size() < maxSize) {
-            m.put(s, new Integer(l.size()));
+            m.put(s, Integer.valueOf(l.size()));
             l.add(s);
         }
     }

@@ -2,8 +2,10 @@ import java.io.* ;
 
 public class Compressor {
     public static void main(String[] args) {
-        if (args.length < 4)
-            System.out.println("Usage: java LZW/LZ78 compress/decompress FromFile ToFile");
+        if (args.length != 4) {
+            printUsage();
+            System.exit(1);
+        }
             
         try {
             InputStream is = new BufferedInputStream(new FileInputStream(args[2]));
@@ -13,11 +15,20 @@ public class Compressor {
                 LZW fileW = new LZW();
                 if (args[1].equals("compress")) fileW.compress(is,os);
                 else if (args[1].equals("decompress")) fileW.decompress(is,os);
+                else {
+                    printUsage();
+                }
             }
             else if (args[0].equals("LZ78")) {
                 LZ78 file78 = new LZ78();
                 if (args[1].equals("compress")) file78.compress(is,os);
-                else if (args[1].equals("decompress")) file78.decompress(is,os);    
+                else if (args[1].equals("decompress")) file78.decompress(is,os);
+                else {
+                    printUsage();
+                }
+            }
+            else {
+                printUsage();
             }
             is.close();
             os.close();
@@ -29,5 +40,9 @@ public class Compressor {
 			System.out.println("Error en leer el archivo " +args[2]+ " o en escribir el archivo " + args[3]);
             System.exit(1);
         }
-	}
+    }
+    
+    public static void printUsage() {
+        System.out.println("Arguments: LZW/LZ78 compress/decompress FromFile ToFile");
+    }
 }
