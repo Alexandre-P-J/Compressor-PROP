@@ -3,15 +3,16 @@ import java.io.*;
 public class LZW {
 
     Dictionary dict;
-    int nBits;
+    final int nBits;
 
     // L'anterior cadena de carácters que haurem de recordar
     // per tal d'inserir al diccionari 
     ArrayOfBytes emptyAB = new ArrayOfBytes();
     ArrayOfBytes ab = emptyAB;
 
-    public LZW () {
-        nBits = 12;
+    public LZW (int DictBitSize) {
+        if (DictBitSize > 31 && DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        nBits = DictBitSize;
         dict = new Dictionary(1<<nBits);
 
         // Afegeix tots els codis ascii al diccionari

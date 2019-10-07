@@ -2,6 +2,8 @@ import java.io.* ;
 
 public class Compressor {
     public static void main(String[] args) {
+        int DICT_BIT_SIZE = 10;
+
         if (args.length != 4) {
             printUsage();
             System.exit(1);
@@ -12,7 +14,7 @@ public class Compressor {
             OutputStream os = new BufferedOutputStream(new FileOutputStream(args[3]));
            
             if (args[0].equals("LZW")) {
-                LZW fileW = new LZW();
+                LZW fileW = new LZW(DICT_BIT_SIZE);
                 if (args[1].equals("compress")) fileW.compress(is,os);
                 else if (args[1].equals("decompress")) fileW.decompress(is,os);
                 else {
@@ -20,7 +22,7 @@ public class Compressor {
                 }
             }
             else if (args[0].equals("LZ78")) {
-                LZ78 file78 = new LZ78();
+                LZ78 file78 = new LZ78(DICT_BIT_SIZE);
                 if (args[1].equals("compress")) file78.compress(is,os);
                 else if (args[1].equals("decompress")) file78.decompress(is,os);
                 else {
