@@ -1,18 +1,18 @@
-public class ArrayOfBytes {
+public class ByteArray {
     final byte[] array;
 
     // Constructora per defecte, array de tamany 0
-    ArrayOfBytes () {
+    ByteArray () {
         array = new byte[0];
     }
 
     // Constructora amb un sol byte
-    ArrayOfBytes (byte b) {
+    ByteArray (byte b) {
         array = new byte[] {b};
     }
     
     // Constructora de clonació
-    ArrayOfBytes (byte[] ab) {
+    ByteArray (byte[] ab) {
         array = (byte[])ab.clone(); 
     }
 
@@ -22,7 +22,7 @@ public class ArrayOfBytes {
 	
 	// Necessari per a la taula hash
 	public boolean equals (Object o) { 
-		ArrayOfBytes ba = (ArrayOfBytes)o;
+		ByteArray ba = (ByteArray)o;
 		return java.util.Arrays.equals(array,ba.array); 
 	}
 
@@ -40,19 +40,19 @@ public class ArrayOfBytes {
     }
 
     // Concatena un altre array de bytes en aquesta, retorna un nou array concatenat
-    public ArrayOfBytes concatenate (ArrayOfBytes ab) {
+    public ByteArray concatenate (ByteArray ab) {
         int n = size() + ab.size();
         byte[] b = new byte[n];
         for (int i = 0; i < size(); ++i)
             b[i] = getBytePos(i);
         for (int i = 0; i < ab.size(); ++i)
             b[i+size()] = ab.getBytePos(i);
-        return new ArrayOfBytes(b);
+        return new ByteArray(b);
     }
 
     // Concatena un byte en aquest array de bytes
-    public ArrayOfBytes concatenate (byte b) {
-        return concatenate(new ArrayOfBytes(b));
+    public ByteArray concatenate (byte b) {
+        return concatenate(new ByteArray(b));
     }
 
 	public byte[] getBytes() { 
@@ -63,11 +63,11 @@ public class ArrayOfBytes {
         return array[size()-1];
     }
 
-    public ArrayOfBytes dropLast() {
+    public ByteArray dropLast() {
         byte[] arr = new byte[size()-1];
         for (int i = 0; i < arr.length; ++i) 
             arr[i] = array[i];
-        return new ArrayOfBytes(arr);
+        return new ByteArray(arr);
     }
 
     public boolean isEmpty() {

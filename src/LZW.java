@@ -7,24 +7,24 @@ public class LZW {
 
     // L'anterior cadena de carácters que haurem de recordar
     // per tal d'inserir al diccionari 
-    ArrayOfBytes emptyAB = new ArrayOfBytes();
-    ArrayOfBytes ab = emptyAB;
+    ByteArray emptyAB = new ByteArray();
+    ByteArray ab = emptyAB;
 
     public LZW (int DictBitSize) {
-        if (DictBitSize > 31 && DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
         nBits = DictBitSize;
         dict = new Dictionary(1<<nBits);
 
         // Afegeix tots els codis ascii al diccionari
         for (int i = 0; i < 256; ++i)
-            dict.add(new ArrayOfBytes((byte)i));   
+            dict.add(new ByteArray((byte)i));   
     }
 
     // Codifica el pròxim caràcter, 
     // si hi ha generat un codi el retorna, sino retorna -1
     int codifyChar (int n) {
         byte b = (byte)n;
-        ArrayOfBytes aux = ab.concatenate(b);
+        ByteArray aux = ab.concatenate(b);
         int code = dict.getNumStr(aux);
         if (code != -1) {
             ab = aux;
@@ -33,14 +33,14 @@ public class LZW {
         else {
             dict.add(aux);
             aux = ab;
-            ab = new ArrayOfBytes(b);
+            ab = new ByteArray(b);
             return dict.getNumStr(aux);
         }
     }
 
     // Si queda algo en ab, retorna el seu codi
     int codifyLastChar() {
-        ArrayOfBytes aux = ab;
+        ByteArray aux = ab;
         ab = emptyAB;
         return dict.getNumStr(aux);
     }
@@ -76,8 +76,8 @@ public class LZW {
         return n;
     }
 
-    ArrayOfBytes disarray (int code) {
-        ArrayOfBytes s = dict.getStrNum(code);
+    ByteArray disarray (int code) {
+        ByteArray s = dict.getStrNum(code);
         if (s == null) {
             s = ab.concatenate(ab.getBytePos(0));
             dict.add(s);
@@ -92,7 +92,7 @@ public class LZW {
 
     public void decompress (InputStream is, OutputStream os) throws IOException {
         is = new BitInputStream(is);
-        ArrayOfBytes s;
+        ByteArray s;
         int code;
         while ((code = readCode(is)) >= 0) {
             s = disarray(code);
