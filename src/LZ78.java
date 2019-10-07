@@ -10,15 +10,17 @@ public class LZ78 {
         }
     };
 
+    final int nBits;
     Dictionary dict;
 
     byte[] buff;
 
-    ArrayOfBytes emptyAB = new ArrayOfBytes();
-    ArrayOfBytes ab = emptyAB;
+    ByteArray emptyAB = new ByteArray();
+    ByteArray ab = emptyAB;
 
-    public LZ78 () {
-        int nBits = 12;
+    public LZ78 (int DictBitSize) {
+        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        nBits = DictBitSize;
         buff = new byte[nBits];
         dict = new Dictionary(1<<nBits);
 
@@ -29,7 +31,7 @@ public class LZ78 {
     // si hi ha generat un codi el retorna, sino retorna -1
     int codifyChar (int n) {
         byte b = (byte)n;
-        ArrayOfBytes aux = ab.concatenate(b);
+        ByteArray aux = ab.concatenate(b);
         int code = dict.getNumStr(aux);
         if (code != -1) {
             ab = aux;
@@ -53,7 +55,7 @@ public class LZ78 {
 
     void writeCode (OutputStream os, Code co) throws IOException {
 		writeCode(os,co.c,8);
-		writeCode(os,co.code,12);
+		writeCode(os,co.code,nBits);
     }
     
     void writeCode (OutputStream os, int n, int bits) throws IOException {
@@ -66,7 +68,7 @@ public class LZ78 {
     Code readCode (InputStream is) throws IOException { 
         int ch = readInt(is,8);
         if (ch < 0) return null;
-        int co = readInt(is,12);
+        int co = readInt(is,nBits);
         if (co < 0) return null;
         return new Code(co,ch); 
     }
@@ -94,15 +96,15 @@ public class LZ78 {
         os.flush();
     }
 
-    ArrayOfBytes disarray (Code co) {
-        ArrayOfBytes aux = dict.getStrNum(co.code);
+    ByteArray disarray (Code co) {
+        ByteArray aux = dict.getStrNum(co.code);
         dict.add(aux.concatenate((byte)co.c));
         return aux;
     }
 
     public void decompress (InputStream is, OutputStream os) throws IOException {
         is = new BitInputStream(is);
-        ArrayOfBytes s;
+        ByteArray s;
         Code co;
         while ((co = readCode(is)) != null) {
             s = disarray(co);
