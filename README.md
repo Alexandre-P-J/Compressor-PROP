@@ -2,15 +2,20 @@
 Descripción
 
 ## Features (Primera entrega)
-- [ ] LZ78
+- [x] LZ78
+- [x] Custom dictionary size for LZ78
 - [ ] LZSS
-- [ ] LZW
+- [ ] Custom dictionary size for LZSS
+- [x] LZW
+- [x] Custom dictionary size for LZW
 - [ ] JPEG
-- [ ] Diagramas
+- [ ] Diagrama de uso
+- [ ] Diagrama de clases
+- [ ] Documentación
 ...
 
 ## Setup
-WIP
+WIP - Documentación
 
 ## Normas de etiqueta
 - No se hacen commits en el Master excepto merges desde la rama Development.
