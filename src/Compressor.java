@@ -29,6 +29,14 @@ public class Compressor {
                     printUsage();
                 }
             }
+            else if (args[0].equals("JPEG")) {
+                JPEG filePPM = new JPEG();
+                if (args[1].equals("compress")) filePPM.compress(is,os);
+                //else if (args[1].equals("decompress")) file78.decompress(is,os);
+                else {
+                    printUsage();
+                }
+            }
             else {
                 printUsage();
             }
