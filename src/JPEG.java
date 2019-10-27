@@ -1,30 +1,20 @@
 import java.io.*;
-import java.util.Vector;
-
-import javax.naming.Reference;
 
 public class JPEG {
 
-    private float CompressionFactor = 1; // 0 means minimal compression, 1 means maximum, >1 experimental
+    private float QuantizationFactor = 1.f; // 0 => no quantization, (0, 1) => reduced quantization, 1 => no factor, (1, +inf) => increases quantization
+    private final int[][] QuantizationTable = QuantizationTables.Luminance05;
+
     private int[][][][] M0; // 2D matrix of 8x8 Matrices for channel 0
     private int[][][][] M1; // 2D matrix of 8x8 Matrices for channel 1
     private int[][][][] M2; // 2D matrix of 8x8 Matrices for channel 2
-    private int width = -1;
-    private int height = -1;
-    private int m_width = -1;
-    private int m_height = -1;
-    private byte[] ppmMode;
-    private int ppmMaxValue = 255;
-    private final int[][] LuninanceQuantization = { { 16, 11, 10, 16, 24, 40, 51, 61    },
-                                                    { 12, 12, 14, 19, 26, 58, 60, 55    },
-                                                    { 14, 13, 16, 24, 40, 57, 69, 56    },
-                                                    { 14, 17, 22, 29, 51, 87, 80, 62    },
-                                                    { 18, 22, 37, 56, 68, 109, 103, 77  },
-                                                    { 24, 35, 55, 64, 81, 104, 113, 92  },
-                                                    { 49, 64, 78, 87, 103, 121, 120, 101},
-                                                    { 72, 92, 95, 98, 112, 100, 103, 99 }
-                                                  };
-
+    private int width = -1; // image width
+    private int height = -1; // image height
+    private int m_width = -1; // number of horizontal 8x8 matrices
+    private int m_height = -1; // number of vertical 8x8 matrices
+    private byte[] ppmMode; // P3 or P6
+    private int ppmMaxValue = 255; // R/G/B between [0, ppmMaxValue]
+    
 
     private Color read_next_pixel (InputStream is) throws IOException {
         int r,g,b;
@@ -73,23 +63,24 @@ public class JPEG {
     }
     
 
-    private void Quantization(float[][] input, int[][] output, int[][] QuantizationMatrix, float factor) { // factor between 0 and +infinity
+    private void Quantization(float[][] input, int[][] output) { // factor between 0 and +infinity
         for (int i = 0; i < 8; ++i)
             for  (int j = 0; j < 8; ++j) {
-                output[i][j] = (int)(input[i][j] / Math.max(QuantizationMatrix[i][j]*factor, 1.0));
+                output[i][j] = (int)(input[i][j] / Math.max(QuantizationTable[i][j]*QuantizationFactor, 1.0));
             }
     }
 
-    private void Dequantization(int[][] input, float[][] output, int[][] QuantizationMatrix, float factor) { // factor between 0 and +infinity
+    private void Dequantization(int[][] input, float[][] output) { // factor between 0 and +infinity
         for (int i = 0; i < 8; ++i)
             for  (int j = 0; j < 8; ++j) {
-                output[i][j] = (float)(input[i][j] * Math.max(QuantizationMatrix[i][j]*factor, 1.0));
+                output[i][j] = (float)(input[i][j] * Math.max(QuantizationTable[i][j]*QuantizationFactor, 1.0));
             }
     }
 
     
 
     public void compress (InputStream is, OutputStream os) throws IOException {
+        // Uncompressed header decodification
         int next;
         ppmMode = new byte[2];
         if ((next = is.read()) < 0) throw new IOException("Wrong ppm codification! - Empty file"); // 'P'
@@ -103,8 +94,9 @@ public class JPEG {
 
         if ((width = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading width");
         if ((height = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading height");
-        if ((ppmMaxValue = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading max value");
+        if ((ppmMaxValue = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading max value"); // R/G/B between [0, ppmMaxValue]
         
+        // 8x8 Matrix subdivision (uses margin at the image right and down borders if height or width arent multiple of 8)
         m_width = width/8;
         if (width%8 != 0) m_width = m_width + 1;
         m_height = height/8;
@@ -144,41 +136,12 @@ public class JPEG {
         for (i = 0; i < m_height; ++i)
             for (j = 0; j < m_width; ++j) {
                 float[][] dct0 = DCT(M0[i][j]);
-                Quantization(dct0, M0[i][j], LuninanceQuantization, CompressionFactor);
+                Quantization(dct0, M0[i][j]);
                 float[][] dct1 = DCT(M1[i][j]);
-                Quantization(dct1, M1[i][j], LuninanceQuantization, CompressionFactor);
+                Quantization(dct1, M1[i][j]);
                 float[][] dct2 = DCT(M2[i][j]);
-                Quantization(dct2, M2[i][j], LuninanceQuantization, CompressionFactor);
+                Quantization(dct2, M2[i][j]);
             }
-
-        /*for (i = 0; i < 8; i++) { 
-			for (j = 0; j < 8; j++) 
-				System.out.printf("%d\t", M0[4][5][i][j]);
-			System.out.println();
-        }*/
-
-        
-        /*int matrix[][] = {{-122, 49, 66, 41, 41, 43, 40, 38},
-                     {-121, 49, 31, 45, 35, 50, 41, 24},
-                     {-122, 40, 45, 105, 31, -66, 18, 87},
-                     {-94, 52, 42, 47, -122, -122, 8, 51},
-                     {-119, -23, 53, 51, 45, 70, 61, 42},
-                     {-64, -122, -25, -26, 33, 15, 6, 12},
-                     {-76, -80, -64, -122, 53, 64, 38, -122},
-                     {-78, -074, -84, -122, 57, 43, 41, -53}};
-        */
-           
-        
-        /*float[][] dct = DCT(matrix);
-        float[][] idct = IDCT(dct);
-        
-        for (int i = 0; i < 8; i++) { 
-			for (int j = 0; j < 8; j++) 
-				System.out.printf("%f\t", idct[i][j]);
-			System.out.println(); 
-        }*/
-
-        
 
         decompress(is, os);
         os.flush();
@@ -194,13 +157,13 @@ public class JPEG {
         for (int i = 0; i < m_height; ++i)
             for (int j = 0; j < m_width; ++j) {
                 float[][] m0 = new float[8][8];
-                Dequantization(M0[i][j], m0, LuninanceQuantization, CompressionFactor);
+                Dequantization(M0[i][j], m0);
                 M0[i][j] = IDCT(m0);
                 float[][] m1 = new float[8][8];
-                Dequantization(M1[i][j], m1, LuninanceQuantization, CompressionFactor);
+                Dequantization(M1[i][j], m1);
                 M1[i][j] = IDCT(m1);
                 float[][] m2 = new float[8][8];
-                Dequantization(M2[i][j], m2, LuninanceQuantization, CompressionFactor);
+                Dequantization(M2[i][j], m2);
                 M2[i][j] = IDCT(m2);
             }
         int m_x = 8;
