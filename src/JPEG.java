@@ -1,10 +1,8 @@
 import java.io.*;
 
 public class JPEG {
-
-    private float QuantizationFactor = 1.f; // 0 => no quantization, (0, 1) => reduced quantization, 1 => no factor, (1, +inf) => increases quantization
-    private final int[][] QuantizationTable = QuantizationTables.Luminance05;
-
+    private final int[][] LuminanceQuantizationTable; // Table related to the amount of compression and quality on light intensity
+    private final int[][] ChrominanceQuantizationTable; // Table related to the amount of compression and quality on color
     private int[][][][] M0; // 2D matrix of 8x8 Matrices for channel 0
     private int[][][][] M1; // 2D matrix of 8x8 Matrices for channel 1
     private int[][][][] M2; // 2D matrix of 8x8 Matrices for channel 2
@@ -15,6 +13,131 @@ public class JPEG {
     private byte[] ppmMode; // P3 or P6
     private int ppmMaxValue = 255; // R/G/B between [0, ppmMaxValue]
     
+
+    JPEG(JPEG_Quality quality) {
+        LuminanceQuantizationTable = quality.getLuminanceTable();
+        ChrominanceQuantizationTable = quality.getChrominanceTable();
+    }
+
+
+    public void compress (InputStream is, OutputStream os) throws IOException {
+        // Uncompressed header decodification
+        int next;
+        ppmMode = new byte[2];
+        if ((next = is.read()) < 0) throw new IOException("Wrong ppm codification! - Empty file"); // 'P'
+        ppmMode[0] = (byte)next;
+        if ((next = is.read()) < 0) throw new IOException("Wrong ppm codification! - File too short"); // '3' or '6'
+        ppmMode[1] = (byte)next;
+        char c = (char)next;
+        if (c == '3') {} // nice! ascii ppm
+        else if (c == '6') throw new IOException("Binary ppm currently not supported!");
+        else throw new IOException("Wrong ppm codification! - Failed reading ascii/binary");
+
+        if ((width = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading width");
+        if ((height = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading height");
+        if ((ppmMaxValue = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading max value"); // R/G/B between [0, ppmMaxValue]
+        
+        // 8x8 Matrix subdivision (uses margin at the image right and down borders if height or width arent multiple of 8)
+        m_width = width/8;
+        if (width%8 != 0) m_width = m_width + 1;
+        m_height = height/8;
+        if (height%8 != 0) m_height = m_height + 1;
+
+        M0 = new int[m_height][m_width][8][8];
+        M1 = new int[m_height][m_width][8][8];
+        M2 = new int[m_height][m_width][8][8];
+        
+        Color color = new Color();
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int l = 0;
+        while ((color = read_next_pixel(is)) != null) {
+            M0[i][j][k][l] = color.Y - 128;
+            M1[i][j][k][l] = color.Cb - 128;
+            M2[i][j][k][l] = color.Cr - 128;
+            l = l+1;
+            if (l >= 8) {
+                l = 0;
+                k = k+1;
+                if (k >= 8) {
+                    k = 0;
+                    j = j+1;
+                    if (j >= m_width) {
+                        j = 0;
+                        i = i + 1;
+                        if (i >= m_height) break;
+                    }
+                }
+            }
+        }
+
+        
+
+        for (i = 0; i < m_height; ++i)
+            for (j = 0; j < m_width; ++j) {
+                float[][] dct0 = DCT(M0[i][j]);
+                Quantization(dct0, M0[i][j], LuminanceQuantizationTable);
+                float[][] dct1 = DCT(M1[i][j]);
+                Quantization(dct1, M1[i][j], ChrominanceQuantizationTable);
+                float[][] dct2 = DCT(M2[i][j]);
+                Quantization(dct2, M2[i][j], ChrominanceQuantizationTable);
+            }
+        
+        for (i = 0; i < 8; ++i) {
+            for (j = 0; j < 8; ++j)
+                System.out.printf("%d, ", M0[4][5][i][j]);
+            System.out.println();
+        }
+        
+        decompress(is, os);
+        os.flush();
+    }
+
+    public void decompress (InputStream is, OutputStream os) throws IOException {
+        // write ppm header
+        os.write(ppmMode);
+        String str = '\n' + String.valueOf(width) + ' ' + String.valueOf(height) + '\n' + String.valueOf(255) + '\n';
+        byte[] b = str.getBytes();
+        os.write(b);
+
+        for (int i = 0; i < m_height; ++i)
+            for (int j = 0; j < m_width; ++j) {
+                float[][] m0 = new float[8][8];
+                Dequantization(M0[i][j], m0, LuminanceQuantizationTable);
+                M0[i][j] = IDCT(m0);
+                float[][] m1 = new float[8][8];
+                Dequantization(M1[i][j], m1, ChrominanceQuantizationTable);
+                M1[i][j] = IDCT(m1);
+                float[][] m2 = new float[8][8];
+                Dequantization(M2[i][j], m2, ChrominanceQuantizationTable);
+                M2[i][j] = IDCT(m2);
+            }
+        int m_x = 8;
+        int m_y = 8;
+        Color color = new Color();
+        for (int i = 0; i < m_height; ++i) {
+            m_x = 8;
+            if ((i+1)*8 > height) m_y = m_height*8 - height;
+            for (int j = 0; j < m_width; ++j) {
+                if ((j+1)*8 > width) m_x = m_width*8 - width;
+                for (int k = 0; k < m_y; ++k) {
+                    for (int l = 0; l < m_x; ++l) {
+                        int Y = M0[i][j][k][l] + 128;
+                        int Cb = M1[i][j][k][l] + 128;
+                        int Cr = M2[i][j][k][l] + 128;
+                        color.YCbCr(Y, Cb, Cr);
+                        write_next_number(os, Math.max(Math.min(255, color.r), 0));
+                        write_next_number(os, Math.max(Math.min(255, color.g), 0));
+                        write_next_number(os, Math.max(Math.min(255, color.b), 0));
+                    }
+                }
+            }
+        }
+    
+
+    }
+
 
     private Color read_next_pixel (InputStream is) throws IOException {
         int r,g,b;
@@ -63,132 +186,18 @@ public class JPEG {
     }
     
 
-    private void Quantization(float[][] input, int[][] output) { // factor between 0 and +infinity
+    private void Quantization(float[][] input, int[][] output, int[][] QuantizationTable) { // factor between 0 and +infinity
         for (int i = 0; i < 8; ++i)
             for  (int j = 0; j < 8; ++j) {
-                output[i][j] = (int)(input[i][j] / Math.max(QuantizationTable[i][j]*QuantizationFactor, 1.0));
+                output[i][j] = (int)(input[i][j] / QuantizationTable[i][j]);
             }
     }
 
-    private void Dequantization(int[][] input, float[][] output) { // factor between 0 and +infinity
+    private void Dequantization(int[][] input, float[][] output, int[][] QuantizationTable) { // factor between 0 and +infinity
         for (int i = 0; i < 8; ++i)
             for  (int j = 0; j < 8; ++j) {
-                output[i][j] = (float)(input[i][j] * Math.max(QuantizationTable[i][j]*QuantizationFactor, 1.0));
+                output[i][j] = (float)(input[i][j] * QuantizationTable[i][j]);
             }
-    }
-
-    
-
-    public void compress (InputStream is, OutputStream os) throws IOException {
-        // Uncompressed header decodification
-        int next;
-        ppmMode = new byte[2];
-        if ((next = is.read()) < 0) throw new IOException("Wrong ppm codification! - Empty file"); // 'P'
-        ppmMode[0] = (byte)next;
-        if ((next = is.read()) < 0) throw new IOException("Wrong ppm codification! - File too short"); // '3' or '6'
-        ppmMode[1] = (byte)next;
-        char c = (char)next;
-        if (c == '3') {} // nice! ascii ppm
-        else if (c == '6') throw new IOException("Binary ppm currently not supported!");
-        else throw new IOException("Wrong ppm codification! - Failed reading ascii/binary");
-
-        if ((width = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading width");
-        if ((height = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading height");
-        if ((ppmMaxValue = read_next_number(is)) < 0) throw new IOException("Wrong ppm codification! - Failed reading max value"); // R/G/B between [0, ppmMaxValue]
-        
-        // 8x8 Matrix subdivision (uses margin at the image right and down borders if height or width arent multiple of 8)
-        m_width = width/8;
-        if (width%8 != 0) m_width = m_width + 1;
-        m_height = height/8;
-        if (height%8 != 0) m_height = m_height + 1;
-
-        M0 = new int[m_height][m_width][8][8];
-        M1 = new int[m_height][m_width][8][8];
-        M2 = new int[m_height][m_width][8][8];
-        
-        Color color = new Color();
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int l = 0;
-        while ((color = read_next_pixel(is)) != null) {
-            M0[i][j][k][l] = color.Y - 127;
-            M1[i][j][k][l] = color.Cb - 127;
-            M2[i][j][k][l] = color.Cr - 127;
-            l = l+1;
-            if (l >= 8) {
-                l = 0;
-                k = k+1;
-                if (k >= 8) {
-                    k = 0;
-                    j = j+1;
-                    if (j >= m_width) {
-                        j = 0;
-                        i = i + 1;
-                        if (i >= m_height) break;
-                    }
-                }
-            }
-        }
-
-        
-
-        for (i = 0; i < m_height; ++i)
-            for (j = 0; j < m_width; ++j) {
-                float[][] dct0 = DCT(M0[i][j]);
-                Quantization(dct0, M0[i][j]);
-                float[][] dct1 = DCT(M1[i][j]);
-                Quantization(dct1, M1[i][j]);
-                float[][] dct2 = DCT(M2[i][j]);
-                Quantization(dct2, M2[i][j]);
-            }
-
-        decompress(is, os);
-        os.flush();
-    }
-
-    public void decompress (InputStream is, OutputStream os) throws IOException {
-        // write ppm header
-        os.write(ppmMode);
-        String str = '\n' + String.valueOf(width) + ' ' + String.valueOf(height) + '\n' + String.valueOf(255) + '\n';
-        byte[] b = str.getBytes();
-        os.write(b);
-
-        for (int i = 0; i < m_height; ++i)
-            for (int j = 0; j < m_width; ++j) {
-                float[][] m0 = new float[8][8];
-                Dequantization(M0[i][j], m0);
-                M0[i][j] = IDCT(m0);
-                float[][] m1 = new float[8][8];
-                Dequantization(M1[i][j], m1);
-                M1[i][j] = IDCT(m1);
-                float[][] m2 = new float[8][8];
-                Dequantization(M2[i][j], m2);
-                M2[i][j] = IDCT(m2);
-            }
-        int m_x = 8;
-        int m_y = 8;
-        Color color = new Color();
-        for (int i = 0; i < m_height; ++i) {
-            m_x = 8;
-            if ((i+1)*8 > height) m_y = m_height*8 - height;
-            for (int j = 0; j < m_width; ++j) {
-                if ((j+1)*8 > width) m_x = m_width*8 - width;
-                for (int k = 0; k < m_y; ++k) {
-                    for (int l = 0; l < m_x; ++l) {
-                        int Y = M0[i][j][k][l] + 127;
-                        int Cb = M1[i][j][k][l] + 127;
-                        int Cr = M2[i][j][k][l] + 127;
-                        color.YCbCr(Y, Cb, Cr);
-                        write_next_number(os, Math.max(Math.min(255, color.r), 0));
-                        write_next_number(os, Math.max(Math.min(255, color.g), 0));
-                        write_next_number(os, Math.max(Math.min(255, color.b), 0));
-                    }
-                }
-            }
-        }
-    
-
     }
 
 
@@ -271,6 +280,7 @@ public class JPEG {
         }
         return output;
     }
+    
 }
 
 class Color {
@@ -294,3 +304,4 @@ class Color {
         b = (int)(float)(Y + 1.772 * (Cb - 128.0));
     }
 }
+

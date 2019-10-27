@@ -1,3 +1,4 @@
+
 public class QuantizationTables {
   public static final int[][] Luminance00 = { { 32, 33, 51, 81, 66, 39, 34, 17 },
                                               { 33, 36, 48, 47, 28, 23, 12, 12 },
@@ -258,13 +259,109 @@ public class QuantizationTables {
                                                 { 3, 3, 3, 3, 3, 3, 3, 3 }
                                               };
 
-  public static final int[][] Testing = { { 16, 11, 10, 16, 24,  40,  51,  61  },
-                                          { 12, 12, 14, 19, 26,  58,  60,  55  },
-                                          { 14, 13, 16, 24, 40,  57,  69,  56  },
-                                          { 14, 17, 22, 29, 51,  87,  80,  62  },
-                                          { 18, 22, 37, 56, 68,  109, 103, 77  },
-                                          { 24, 35, 55, 64, 81,  104, 113, 92  },
-                                          { 49, 64, 78, 87, 103, 121, 120, 101 },
-                                          { 72, 92, 95, 98, 112, 100, 103, 99  }
-                                        };
+  public static final int[][] JPEGLuminanceStandard = { { 16, 11, 10, 16, 24,  40,  51,  61  },
+                                                        { 12, 12, 14, 19, 26,  58,  60,  55  },
+                                                        { 14, 13, 16, 24, 40,  57,  69,  56  },
+                                                        { 14, 17, 22, 29, 51,  87,  80,  62  },
+                                                        { 18, 22, 37, 56, 68,  109, 103, 77  },
+                                                        { 24, 35, 55, 64, 81,  104, 113, 92  },
+                                                        { 49, 64, 78, 87, 103, 121, 120, 101 },
+                                                        { 72, 92, 95, 98, 112, 100, 103, 99  }
+                                                      };
+
+public static final int[][] JPEGChrominanceStandard = { { 17, 18, 24, 47, 99, 99, 99, 99 },
+                                                        { 18, 21, 26, 66, 99, 99, 99, 99 },
+                                                        { 24, 26, 56, 99, 99, 99, 99, 99 },
+                                                        { 47, 66, 99, 99, 99, 99, 99, 99 },
+                                                        { 99, 99, 99, 99, 99, 99, 99, 99 },
+                                                        { 99, 99, 99, 99, 99, 99, 99, 99 },
+                                                        { 99, 99, 99, 99, 99, 99, 99, 99 },
+                                                        { 99, 99, 99, 99, 99, 99, 99, 99 }
+                                                      };
+}
+
+enum JPEG_Quality {
+  Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10, Q11, Q12, MAX, MIN, DEFAULT, JPEGStandard;
+
+  final int[][] getLuminanceTable() {
+    switch (this) {
+    case Q0:
+      return QuantizationTables.Luminance00;
+    case Q1:
+      return QuantizationTables.Luminance01;
+    case Q2:
+      return QuantizationTables.Luminance02;
+    case Q3:
+      return QuantizationTables.Luminance03;
+    case Q4:
+      return QuantizationTables.Luminance04;
+    case Q5:
+      return QuantizationTables.Luminance05;
+    case Q6:
+      return QuantizationTables.Luminance06;
+    case Q7:
+      return QuantizationTables.Luminance07;
+    case Q8:
+      return QuantizationTables.Luminance08;
+    case Q9:
+      return QuantizationTables.Luminance09;
+    case Q10:
+      return QuantizationTables.Luminance10;
+    case Q11:
+      return QuantizationTables.Luminance11;
+    case Q12:
+      return QuantizationTables.Luminance12;
+    case MAX:
+      return QuantizationTables.Luminance12;
+    case MIN:
+      return QuantizationTables.Luminance00;
+    case DEFAULT:
+      return QuantizationTables.Luminance07;
+    case JPEGStandard:
+      return QuantizationTables.JPEGLuminanceStandard;
+    default:
+      return QuantizationTables.Luminance07;
+    }
+  }
+
+  final int[][] getChrominanceTable() {
+    switch (this) {
+    case Q0:
+      return QuantizationTables.Chrominance00;
+    case Q1:
+      return QuantizationTables.Chrominance01;
+    case Q2:
+      return QuantizationTables.Chrominance02;
+    case Q3:
+      return QuantizationTables.Chrominance03;
+    case Q4:
+      return QuantizationTables.Chrominance04;
+    case Q5:
+      return QuantizationTables.Chrominance05;
+    case Q6:
+      return QuantizationTables.Chrominance06;
+    case Q7:
+      return QuantizationTables.Chrominance07;
+    case Q8:
+      return QuantizationTables.Chrominance08;
+    case Q9:
+      return QuantizationTables.Chrominance09;
+    case Q10:
+      return QuantizationTables.Chrominance10;
+    case Q11:
+      return QuantizationTables.Chrominance11;
+    case Q12:
+      return QuantizationTables.Chrominance12;
+    case MAX:
+      return QuantizationTables.Chrominance12;
+    case MIN:
+      return QuantizationTables.Chrominance00;
+    case DEFAULT:
+      return QuantizationTables.Chrominance07;
+    case JPEGStandard:
+      return QuantizationTables.JPEGChrominanceStandard;
+    default:
+      return QuantizationTables.Chrominance07;
+    }
+  }
 }
