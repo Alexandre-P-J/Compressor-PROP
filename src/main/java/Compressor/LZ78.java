@@ -1,7 +1,12 @@
+package Compressor;
+
+import Container.ByteArray;
+import Container.Dictionary;
+import IO.BitInputStream;
+import IO.BitOutputStream;
 import java.io.*;
 
 public class LZ78 {
-
     class Code {
         int c;          // El próxim char
         int code;       // El codi

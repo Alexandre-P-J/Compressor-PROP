@@ -1,3 +1,5 @@
+package Container;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +13,7 @@ public class Dictionary {
     List <ByteArray> l; 
 
     // Constructora diccionari de tamany limitat
-    Dictionary (int maxSize) {
+    public Dictionary (int maxSize) {
         this.maxSize = maxSize;
         m = new HashMap<>();
         l = new ArrayList<>();

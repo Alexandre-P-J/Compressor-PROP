@@ -1,4 +1,5 @@
 import java.io.* ;
+import Compressor.*;
 
 public class Compressor {
     public static void main(String[] args) {

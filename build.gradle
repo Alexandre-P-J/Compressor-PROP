@@ -1,0 +1,21 @@
+plugins {
+    id "application"
+}
+
+apply plugin: 'java'
+
+ext {
+   javaMainClass = "Compressor"
+}
+ 
+application {
+    mainClassName = javaMainClass
+}
+
+dependencies {
+  testCompile 'junit:junit:4.12'
+}
+
+repositories {
+    jcenter()
+}
