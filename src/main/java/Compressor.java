@@ -1,5 +1,6 @@
 import java.io.* ;
 import Compressor.*;
+import Constants.JPEG_Quality;
 
 public class Compressor {
     public static void main(String[] args) {
