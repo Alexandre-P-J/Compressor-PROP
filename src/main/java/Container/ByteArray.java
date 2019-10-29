@@ -1,18 +1,20 @@
+package Container;
+
 public class ByteArray {
     final byte[] array;
 
     // Constructora per defecte, array de tamany 0
-    ByteArray () {
+    public ByteArray () {
         array = new byte[0];
     }
 
     // Constructora amb un sol byte
-    ByteArray (byte b) {
+    public ByteArray (byte b) {
         array = new byte[] {b};
     }
     
     // Constructora de clonació
-    ByteArray (byte[] ab) {
+    public ByteArray (byte[] ab) {
         array = (byte[])ab.clone(); 
     }
 
@@ -35,7 +37,7 @@ public class ByteArray {
 	}
 
     // Retorna el byte que es troba en la posició p
-    byte getBytePos (int p) {
+    public byte getBytePos (int p) {
         return array[p];
     }
 

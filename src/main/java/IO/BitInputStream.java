@@ -1,3 +1,5 @@
+package IO;
+
 import java.io.* ;
 
 public class BitInputStream extends FilterInputStream {

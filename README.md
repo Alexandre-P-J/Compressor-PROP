@@ -14,8 +14,41 @@ Descripción
 - [ ] Documentación
 ...
 
-## Setup
-WIP - Documentación
+## How to: Compile/Run/Test/Clean
+This will assume you dont have gradle, if you have gradle installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
+
+### Compile
+This will get all needed dependencies from the internet and build.
+#### On Linux:
+`> ./gradlew build`
+#### On Windows:
+`> gradlew.bat build`
+
+### Run
+This will get all needed dependencies from the internet , build if needed and run the application.
+#### On Linux:
+`> ./gradlew run --args='ARGUMENTS HERE'`
+For example you could run:
+`> ./gradlew run --args='LZSS compress README.md OUT'`
+#### On Windows:
+`> gradlew.bat run --args='ARGUMENTS HERE'`
+For example you could run:
+`> gradlew.bat run --args='LZSS compress README.md OUT'`
+
+### Running Tests:
+This will get all needed dependencies from the internet , build if needed and run the tests.
+#### On Linux:
+`> ./gradlew test`
+#### On Windows:
+`> gradlew.bat test`
+
+### Clean
+Its not really needed but its useful to know.
+#### On Linux:
+`> ./gradlew clean`
+#### On Windows:
+`> gradlew.bat clean`
+
 
 ## Normas de etiqueta
 - No se hacen commits en el Master excepto merges desde la rama Development.
