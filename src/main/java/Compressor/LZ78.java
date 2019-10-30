@@ -58,30 +58,30 @@ public class LZ78 {
         return new Code(dict.getNumStr(ab), (int)b);
     }
 
-    void writeCode (OutputStream os, Code co) throws IOException {
-		writeCode(os,co.c,8);
-		writeCode(os,co.code,nBits);
+    void writeCode (BitOutputStream bos, Code co) throws IOException {
+		writeCode(bos,co.c,8);
+		writeCode(bos,co.code,nBits);
     }
     
-    void writeCode (OutputStream os, int n, int bits) throws IOException {
+    void writeCode (BitOutputStream bos, int n, int bits) throws IOException {
 		for (int i = 0; i < bits; ++i) {
-			os.write(n&1);
+			bos.write1Bit(n&1);
 			n = n / 2;
 		}
     }
     
-    Code readCode (InputStream is) throws IOException { 
-        int ch = readInt(is,8);
+    Code readCode (BitInputStream bis) throws IOException { 
+        int ch = readInt(bis,8);
         if (ch < 0) return null;
-        int co = readInt(is,nBits);
+        int co = readInt(bis,nBits);
         if (co < 0) return null;
         return new Code(co,ch); 
     }
 
-    int readInt (InputStream is, int bits) throws IOException {
+    int readInt (BitInputStream bis, int bits) throws IOException {
 		int n = 0;
 		for (int i=0;i < bits; ++i) {
-			int next = is.read();
+			int next = bis.read1Bit();
 			if (next < 0) return -1;
 			n += next<<i;
 		}
@@ -89,16 +89,16 @@ public class LZ78 {
     }
     
     public void compress (InputStream is, OutputStream os) throws IOException {
-        os = new BitOutputStream(os);
+        BitOutputStream bos = new BitOutputStream(os);
         int code;
         int next;
         while ((next = is.read()) >= 0){
             code = codifyChar(next);
-            if (code >= 0) writeCode(os, new Code(code,next));
+            if (code >= 0) writeCode(bos, new Code(code,next));
         }
         Code co = codifyLast();
-        if (co != null) writeCode(os, co);
-        os.flush();
+        if (co != null) writeCode(bos, co);
+        bos.flush();
     }
 
     ByteArray disarray (Code co) {
@@ -108,10 +108,10 @@ public class LZ78 {
     }
 
     public void decompress (InputStream is, OutputStream os) throws IOException {
-        is = new BitInputStream(is);
+        BitInputStream bis = new BitInputStream(is);
         ByteArray s;
         Code co;
-        while ((co = readCode(is)) != null) {
+        while ((co = readCode(bis)) != null) {
             s = disarray(co);
             os.write(s.getBytes());
             os.write(co.c);
