@@ -65,14 +65,18 @@ public class BitInputStream extends FilterInputStream {
 		return val;
 	}
 
-	public int read () throws IOException {
+	public int read1Bit() throws IOException {
 		if (bitManager.atTheEnd()) return -1;
 		if (bitManager.noMoreBuffer()) {
 			int i = readNextByte();
 			if (i < 0) bitManager.setTheEnd();
 			else bitManager.setNext(i);
-			return read();
+			return read1Bit(); // CHECK THIS 
 		}
 		return bitManager.getNext();
+	}
+
+	public int read () throws Error {
+		throw new Error("REPLACE THIS FUNCTION IN CODEBASE! USE read1Bit() INSTEAD.");
 	}
 }
