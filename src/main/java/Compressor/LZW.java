@@ -51,31 +51,31 @@ public class LZW {
         return dict.getNumStr(aux);
     }
 
-    void writeCode (OutputStream os, int code) throws IOException {
+    void writeCode (BitOutputStream bos, int code) throws IOException {
         for (int i = 0; i < nBits; ++i) {
-            os.write(code&1);
+            bos.write1Bit(code&1);
             code /= 2;  
         }
     }
 
     // Funció principal de compressió
     public void compress (InputStream is, OutputStream os) throws IOException {
-        os = new BitOutputStream(os);
+        BitOutputStream bos = new BitOutputStream(os);
         int code;
         int next;
         while ((next = is.read()) >= 0){
             code = codifyChar(next);
-            if (code >= 0) writeCode(os, code);
+            if (code >= 0) writeCode(bos, code);
         }
         code = codifyLastChar();
-        if (code >= 0) writeCode(os, code);
-        os.flush();
+        if (code >= 0) writeCode(bos, code);
+        bos.flush();
     }
 
-    int readCode (InputStream is) throws IOException {
+    int readCode (BitInputStream bis) throws IOException {
         int n = 0;
         for (int i = 0; i < nBits; ++i) {
-            int next = is.read();
+            int next = bis.read1Bit();
             if (next < 0) return -1;
             n += next << i;
         }
@@ -97,10 +97,10 @@ public class LZW {
     }
 
     public void decompress (InputStream is, OutputStream os) throws IOException {
-        is = new BitInputStream(is);
+        BitInputStream bis = new BitInputStream(is);
         ByteArray s;
         int code;
-        while ((code = readCode(is)) >= 0) {
+        while ((code = readCode(bis)) >= 0) {
             s = disarray(code);
             os.write(s.getBytes());
         }
