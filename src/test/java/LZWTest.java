@@ -1,11 +1,11 @@
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import Compressor.LZ78;
+import Compressor.LZW;
 import IO.*;
 import java.io.*;
 import java.util.Random;
 
-public class LZ78Test {
+public class LZWTest {
 
     @Test
     public void CompressDecompressTest() {
@@ -26,14 +26,14 @@ public class LZ78Test {
             new Random().nextBytes(IN);
             InputStream is0 = new ByteArrayInputStream(IN);
             ByteArrayOutputStream os0 = new ByteArrayOutputStream();
-            LZ78 alg_0 = new LZ78(DictSize);
+            LZW alg_0 = new LZW(DictSize);
             alg_0.compress(is0, os0);
             os0.close();
             byte[] Compressed = os0.toByteArray();
 
             InputStream is1 = new ByteArrayInputStream(Compressed);
             ByteArrayOutputStream os1 = new ByteArrayOutputStream();
-            LZ78 alg_1 = new LZ78(DictSize);
+            LZW alg_1 = new LZW(DictSize);
             alg_1.decompress(is1, os1);
             os1.close();
             byte[] Decompressed = os1.toByteArray();
