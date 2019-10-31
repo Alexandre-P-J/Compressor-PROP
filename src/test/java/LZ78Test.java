@@ -39,9 +39,12 @@ public class LZ78Test {
             byte[] Decompressed = os1.toByteArray();
             
             int size = IN.length;
-            assertEquals(size, IN.length);
+            String output = String.format("\n[!!!] ORIGINAL IS: %dbytes AND DECOMPRESSED LENGTH IS: %dbytes\n", size, Decompressed.length);
+            assertEquals(output, size, Decompressed.length);
             for (int i = 0; i < size; ++i) {
-                assertEquals(IN[i], Decompressed[i]);
+                output = String.format("\n[!!!] DIFFERENCE IN BYTE NUMBER %d. ORIGINAL HAS %dbytes DECOMPRESSED HAS %dbytes\n"
+                +"DICTIONARY SIZE WAS %d (2^%d)\n", i, size, Decompressed.length, DictSize, DictSize);
+                assertEquals(output, IN[i], Decompressed[i]);
             }
         
         } catch (Exception e) {}
