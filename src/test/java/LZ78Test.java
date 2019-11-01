@@ -1,7 +1,6 @@
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import Compressor.LZ78;
-import IO.*;
 import java.io.*;
 import java.util.Random;
 

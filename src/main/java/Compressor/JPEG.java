@@ -15,10 +15,35 @@ public class JPEG {
     private int height = -1; // image height
     private int m_width = -1; // number of horizontal 8x8 matrices
     private int m_height = -1; // number of vertical 8x8 matrices
+    // used to check if c and cT are initialized because matrix initialization order must be enforced (c before cT)
+    private static boolean initDCTMatrices = false; 
+    private static final double c[][] = new double[8][8]; // cosine matrix
+    private static final double cT[][] = new double[8][8]; // transformed cosine matrix
 
     public JPEG(JPEG_Quality quality) {
         LuminanceQuantizationTable = quality.getLuminanceTable();
         ChrominanceQuantizationTable = quality.getChrominanceTable();
+        if (!initDCTMatrices) initDCTMatrices();
+        initDCTMatrices = true;
+    }
+
+    
+    private static void initDCTMatrices() {
+        int i;
+        int j;
+        for (j = 0; j < 8; j++) {
+            double nn = (double)(8);
+            c[0][j]  = 1.0 / Math.sqrt(nn);
+            cT[j][0] = c[0][j];
+        }
+        for (i = 1; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                double jj = (double)j;
+                double ii = (double)i;
+                c[i][j]  = Math.sqrt(2.0/8.0) * Math.cos(((2.0 * jj + 1.0) * ii * Math.PI) / (2.0 * 8.0));
+                cT[j][i] = c[i][j];
+            }
+        }
     }
 
     public void compress(InputStream is, OutputStream os) throws IOException {
@@ -35,49 +60,40 @@ public class JPEG {
         if (height % 8 != 0)
             m_height = m_height + 1;
 
+        // Fills the 3 YCbCr components (one component to each matrix) from the input image
         M0 = new int[m_height][m_width][8][8];
         M1 = new int[m_height][m_width][8][8];
         M2 = new int[m_height][m_width][8][8];
-
         Color color = new Color();
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int l = 0;
-        while ((color = ppmfile.getNextColor()) != null) {
-            M0[i][j][k][l] = color.Y - 128;
-            M1[i][j][k][l] = color.Cb - 128;
-            M2[i][j][k][l] = color.Cr - 128;
-            l = l + 1;
-            if (l >= 8) {
-                l = 0;
-                k = k + 1;
-                if (k >= 8) {
-                    k = 0;
-                    j = j + 1;
-                    if (j >= m_width) {
-                        j = 0;
-                        i = i + 1;
-                        if (i >= m_height)
-                            break;
+        for (int i = 0; i < m_height; ++i) {
+            int vMax = 8;
+            if (i+1 == m_height) vMax = 8 - (m_height*8 - height);
+            for (int j = 0; j < m_width; ++j) {
+                int hMax = 8;
+                if (j+1 == m_width) hMax = 8 - (m_width*8 - width);
+                for (int k = 0; k < vMax; ++k)
+                    for (int l = 0; l < hMax; ++l) {
+                        if ((color = ppmfile.getNextColor()) == null) throw new IOException();
+                        M0[i][j][k][l] = color.Y;
+                        M1[i][j][k][l] = color.Cb;
+                        M2[i][j][k][l] = color.Cr;
                     }
-                }
             }
         }
-
-        for (i = 0; i < m_height; ++i)
-            for (j = 0; j < m_width; ++j) {
-                float[][] dct0 = DCT(M0[i][j]);
-                Quantization(dct0, M0[i][j], LuminanceQuantizationTable);
-                float[][] dct1 = DCT(M1[i][j]);
-                Quantization(dct1, M1[i][j], ChrominanceQuantizationTable);
-                float[][] dct2 = DCT(M2[i][j]);
-                Quantization(dct2, M2[i][j], ChrominanceQuantizationTable);
+        // Lossy part of the algorithm, DCT and Quantization for each component matrix
+        for (int i = 0; i < m_height; ++i)
+            for (int j = 0; j < m_width; ++j) {
+                DCT(M0[i][j]);
+                Quantization(M0[i][j], M0[i][j], LuminanceQuantizationTable);
+                DCT(M1[i][j]);
+                Quantization(M1[i][j], M1[i][j], ChrominanceQuantizationTable);
+                DCT(M2[i][j]);
+                Quantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
             }
 
         // WRITE 8x8 MATRIX TO OUTPUT COMPRESSING EACH WITH HUFFMAN
         // WIP
-
+        
         os.flush();
     }
 
@@ -87,138 +103,119 @@ public class JPEG {
         // using huffman
         // WIP
         // Create decompressed image using the internal state:
-        PPMTranslator ppmFile = new PPMTranslator(os, width, height);
-        ppmFile.writeHeader();
-
+        
+        // Dequantizes and applies the DCT inverse for each component matrix
         for (int i = 0; i < m_height; ++i)
             for (int j = 0; j < m_width; ++j) {
-                float[][] m0 = new float[8][8];
-                Dequantization(M0[i][j], m0, LuminanceQuantizationTable);
-                M0[i][j] = IDCT(m0);
-                float[][] m1 = new float[8][8];
-                Dequantization(M1[i][j], m1, ChrominanceQuantizationTable);
-                M1[i][j] = IDCT(m1);
-                float[][] m2 = new float[8][8];
-                Dequantization(M2[i][j], m2, ChrominanceQuantizationTable);
-                M2[i][j] = IDCT(m2);
+                Dequantization(M0[i][j], M0[i][j], LuminanceQuantizationTable);
+                inverseDCT(M0[i][j]);
+                Dequantization(M1[i][j], M1[i][j], ChrominanceQuantizationTable);
+                inverseDCT(M1[i][j]);
+                Dequantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
+                inverseDCT(M2[i][j]);
             }
-        int m_x = 8;
-        int m_y = 8;
+        
+        // writes the ppm file converting the component matrices into RGB output
+        PPMTranslator ppmFile = new PPMTranslator(os, width, height);
+        ppmFile.writeHeader();
         Color color = new Color();
         for (int i = 0; i < m_height; ++i) {
-            m_x = 8;
-            if ((i + 1) * 8 > height)
-                m_y = m_height * 8 - height;
+            int vMax = 8;
+            if (i+1 == m_height) vMax = 8 - (m_height*8 - height);
             for (int j = 0; j < m_width; ++j) {
-                if ((j + 1) * 8 > width)
-                    m_x = m_width * 8 - width;
-                for (int k = 0; k < m_y; ++k) {
-                    for (int l = 0; l < m_x; ++l) {
-                        int Y = M0[i][j][k][l] + 128;
-                        int Cb = M1[i][j][k][l] + 128;
-                        int Cr = M2[i][j][k][l] + 128;
+                int hMax = 8;
+                if (j+1 == m_width) hMax = 8 - (m_width*8 - width);
+                for (int k = 0; k < vMax; ++k)
+                    for (int l = 0; l < hMax; ++l) {
+                        int Y = M0[i][j][k][l];
+                        int Cb = M1[i][j][k][l];
+                        int Cr = M2[i][j][k][l];
                         color.YCbCr(Y, Cb, Cr);
                         ppmFile.setNextComponent(Math.max(Math.min(255, color.r), 0));
                         ppmFile.setNextComponent(Math.max(Math.min(255, color.g), 0));
                         ppmFile.setNextComponent(Math.max(Math.min(255, color.b), 0));
                     }
-                }
             }
         }
         
         os.flush();
     }
 
-    private void Quantization(float[][] input, int[][] output, int[][] QuantizationTable) { // factor between 0 and +infinity
+    private void Quantization(int[][] input, int[][] output, int[][] QuantizationTable) {
         for (int i = 0; i < 8; ++i)
             for (int j = 0; j < 8; ++j) {
-                output[i][j] = (int) (input[i][j] / QuantizationTable[i][j]);
+                output[i][j] = input[i][j] / QuantizationTable[i][j];
             }
     }
 
-    private void Dequantization(int[][] input, float[][] output, int[][] QuantizationTable) { // factor between 0 and +infinity
+    private void Dequantization(int[][] input, int[][] output, int[][] QuantizationTable) {
         for (int i = 0; i < 8; ++i)
             for (int j = 0; j < 8; ++j) {
-                output[i][j] = (float) (input[i][j] * QuantizationTable[i][j]);
+                output[i][j] = input[i][j] * QuantizationTable[i][j];
             }
     }
 
-    private float[][] initDCTCoefficients(float[][] c) {
-        final int N = c.length;
-        final float value = (float) (1 / Math.sqrt(2.0));
-
-        for (int i = 1; i < N; i++) {
-            for (int j = 1; j < N; j++) {
-                c[i][j] = 1;
-            }
-        }
-
-        for (int i = 0; i < N; i++) {
-            c[i][0] = value;
-            c[0][i] = value;
-        }
-        c[0][0] = 0.5f;
-        return c;
-    }
-
-    private float[][] DCT(int[][] input) {
-        final int N = input.length;
-        final float mathPI = (float) (Math.PI);
-        final int halfN = N / 2;
-        final float doubN = 2.f * N;
-
-        float[][] c = new float[N][N];
-        c = initDCTCoefficients(c);
-
-        float[][] output = new float[N][N];
-
-        for (int u = 0; u < N; u++) {
-            float temp_u = u * mathPI;
-            for (int v = 0; v < N; v++) {
-                float temp_v = v * mathPI;
-                float sum = 0.f;
-                for (int x = 0; x < N; x++) {
-                    int temp_x = 2 * x + 1;
-                    for (int y = 0; y < N; y++) {
-                        sum += input[x][y] * Math.cos((temp_x / doubN) * temp_u)
-                                * Math.cos(((2 * y + 1) / doubN) * temp_v);
-                    }
+    // Applies the DCT-II transformation to M matrix where M = input[y][x] - 128 (centers values around 0)
+    private void DCT(int input[][]) {
+        double temp[][] = new double[8][8];
+        double temp1;
+        int i;
+        int j;
+        int k;
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                temp[i][j] = 0.0;
+                for (k = 0; k < 8; k++) {
+                    temp[i][j] += ((input[i][k] - 128) * cT[k][j]);
                 }
-                sum *= c[u][v] / halfN;
-                output[u][v] = sum;
             }
         }
-        return output;
-    }
-
-    private int[][] IDCT(float[][] input) {
-        final int N = input.length;
-        final float mathPI = (float) (Math.PI);
-        final int halfN = N / 2;
-        final float doubN = 2.f * N;
-
-        float[][] c = new float[N][N];
-        c = initDCTCoefficients(c);
-
-        int[][] output = new int[N][N];
-
-        for (int x = 0; x < N; x++) {
-            int temp_x = 2 * x + 1;
-            for (int y = 0; y < N; y++) {
-                int temp_y = 2 * y + 1;
-                float sum = 0.f;
-                for (int u = 0; u < N; u++) {
-                    float temp_u = u * mathPI;
-                    for (int v = 0; v < N; v++) {
-                        sum += c[u][v] * input[u][v] * Math.cos((temp_x / doubN) * temp_u)
-                                * Math.cos((temp_y / doubN) * v * mathPI);
-                    }
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                temp1 = 0.0;
+                for (k = 0; k < 8; k++) {
+                    temp1 += (c[i][k] * temp[k][j]);
                 }
-                sum /= halfN;
-                output[x][y] = (int) sum;
+            input[i][j] = (int)Math.round(temp1);
             }
         }
-        return output;
     }
+
+    // Applies the DCT-III transformation to input matrix and adds 128 to each element
+    // to undo the 128 that was substracted in DCT-II
+    private void inverseDCT(int input[][]) {
+        double temp[][] = new double[8][8];
+        double temp1;
+        int i;
+        int j;
+        int k;
+        for (i=0; i<8; i++) {
+            for (j=0; j<8; j++) {
+                temp[i][j] = 0.0;
+                for (k=0; k<8; k++) {
+                    temp[i][j] += input[i][k] * c[k][j];
+                }
+            }
+        }
+        for (i=0; i<8; i++) {
+            for (j=0; j<8; j++) {
+                temp1 = 0.0;
+                for (k=0; k<8; k++) {
+                    temp1 += cT[i][k] * temp[k][j];
+                }
+                temp1 += 128.0;
+                if (temp1 < 0) {
+                    input[i][j] = 0;
+                }
+                else if (temp1 > 255) {
+                    input[i][j] = 255;
+                }
+                else {
+                    input[i][j] = (int)Math.round(temp1);
+                }
+            }
+        }
+    }
+
 
 }
