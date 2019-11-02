@@ -1,3 +1,9 @@
+package Compressor;
+
+import Container.ByteArray;
+import Container.Listionary;
+import IO.BitInputStream;
+import IO.BitOutputStream;
 import java.io.*;
 
 public class LZSS {
