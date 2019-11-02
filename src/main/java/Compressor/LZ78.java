@@ -55,7 +55,8 @@ public class LZ78 {
         if (ab.size() == 0) return null;
         byte b = ab.getLastByte();
         ab = ab.dropLast();
-        return new Code(dict.getNumStr(ab), (int)b);
+        int next = b & 0xFF;
+        return new Code(dict.getNumStr(ab), next);
     }
 
     void writeCode (BitOutputStream bos, Code co) throws IOException {
@@ -116,5 +117,6 @@ public class LZ78 {
             os.write(s.getBytes());
             os.write(co.c);
         }
+        os.flush();
     }
 }

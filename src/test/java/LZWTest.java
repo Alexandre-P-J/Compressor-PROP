@@ -47,6 +47,9 @@ public class LZWTest {
                 assertEquals(output, IN[i], Decompressed[i]);
             }
         
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            String output = String.format("\n[!!!] EXCEPTION REACHED: %s\n", e.toString());
+            assertEquals(output, "no exception", "exception");
+        }
     }
 }

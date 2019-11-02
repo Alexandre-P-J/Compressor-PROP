@@ -24,6 +24,12 @@ public class LZ78Test {
         try {
             byte[] IN = new byte[Fsize];
             new Random().nextBytes(IN);
+            
+            /*OutputStream FOS = new BufferedOutputStream(new FileOutputStream("DEBUG"));
+            FOS.write(IN);
+            FOS.flush();
+            FOS.close();*/
+
             InputStream is0 = new ByteArrayInputStream(IN);
             ByteArrayOutputStream os0 = new ByteArrayOutputStream();
             LZ78 alg_0 = new LZ78(DictSize);
@@ -47,6 +53,9 @@ public class LZ78Test {
                 assertEquals(output, IN[i], Decompressed[i]);
             }
         
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            String output = String.format("\n[!!!] EXCEPTION REACHED: %s\n", e.toString());
+            assertEquals(output, "no exception", "exception");
+        }
     }
 }
