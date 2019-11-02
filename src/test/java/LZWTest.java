@@ -10,7 +10,7 @@ public class LZWTest {
     @Test
     public void CompressDecompressTest() {
         for (int Fsize = 1024; Fsize <= 1030; ++Fsize)
-            for (int Ds = 1; Ds < 31; ++Ds)
+            for (int Ds = 8; Ds < 31; ++Ds)
                 for (int attempt = 1; attempt <= 500; ++attempt)
                     CompressDecompress(Ds, Fsize);
         

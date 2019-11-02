@@ -17,7 +17,7 @@ public class LZW {
     ByteArray ab = emptyAB;
 
     public LZW (int DictBitSize) {
-        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        if (DictBitSize > 31 || DictBitSize < 8) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
         nBits = DictBitSize;
         dict = new Dictionary(1<<nBits);
 
@@ -88,11 +88,10 @@ public class LZW {
             s = ab.concatenate(ab.getBytePos(0));
             dict.add(s);
         }
-        else {
+        else 
             if (!ab.isEmpty()) 
                 dict.add(ab.concatenate(s.getBytePos(0)));
             ab = s;
-        }
         return ab;
     }
 
