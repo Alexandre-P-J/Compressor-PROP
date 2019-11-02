@@ -15,22 +15,14 @@ public class LZ78 {
         }
     };
 
-    final int nBits;
+    int nBits;
     Dictionary dict;
 
     byte[] buff;
 
     ByteArray emptyAB = new ByteArray();
     ByteArray ab = emptyAB;
-
-    public LZ78 (int DictBitSize) {
-        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
-        nBits = DictBitSize;
-        buff = new byte[nBits];
-        dict = new Dictionary(1<<nBits);
-
-        dict.add(emptyAB);
-    }
+    
 
     // Codifica el pròxim caràcter, 
     // si hi ha generat un codi el retorna, sino retorna -1
@@ -89,8 +81,16 @@ public class LZ78 {
 		return n;
     }
     
-    public void compress (InputStream is, OutputStream os) throws IOException {
+    public void compress (InputStream is, OutputStream os, int DictBitSize) throws Exception {
+        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        nBits = DictBitSize;
+        buff = new byte[nBits];
+        dict = new Dictionary(1<<nBits);
+        dict.add(emptyAB);
+        os.write(nBits); // Write DictBitSize to the compressed stream
+
         BitOutputStream bos = new BitOutputStream(os);
+
         int code;
         int next;
         while ((next = is.read()) >= 0){
@@ -108,7 +108,13 @@ public class LZ78 {
         return aux;
     }
 
-    public void decompress (InputStream is, OutputStream os) throws IOException {
+    public void decompress (InputStream is, OutputStream os) throws Exception {
+        nBits = is.read();
+        if (nBits > 31 || nBits < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        buff = new byte[nBits];
+        dict = new Dictionary(1<<nBits);
+        dict.add(emptyAB);
+
         BitInputStream bis = new BitInputStream(is);
         ByteArray s;
         Code co;
