@@ -1,6 +1,9 @@
 package Compressor;
 
 import Constants.JPEG_Quality;
+import IO.BitInputStream;
+import IO.BitOutputStream;
+
 import java.io.*;
 import Utils.Color;
 import Utils.PPMTranslator;
@@ -94,6 +97,28 @@ public class JPEG {
         // WRITE 8x8 MATRIX TO OUTPUT COMPRESSING EACH WITH HUFFMAN
         // WIP
         
+        for (int i = 0; i < 8; ++i) {
+            for (int j = 0; j < 8; ++j)
+                System.out.printf("\t%d,", M1[45][75][i][j]);
+            System.out.println();
+        }
+        System.out.println();
+
+        int[] A = ZigZag(M1[45][75]);
+        System.out.println(A.length);
+        /*for (int j = 0; j < A.length; ++j)
+            System.out.printf("%d, ", A[j]);
+        
+        System.out.println();
+        System.out.println();*/
+
+        int[][] out = inverseZigZag(A);
+        for (int i = 0; i < 8; ++i) {
+            for (int j = 0; j < 8; ++j)
+                System.out.printf("\t%d,", out[i][j]);
+            System.out.println();
+        }
+
         os.flush();
     }
 
@@ -217,5 +242,110 @@ public class JPEG {
         }
     }
 
+    private int[] ZigZag(int[][] in) {
+        int[] data = null;
+        int data_end = 0;
+        int i = 8;
+        int j = 8;
+        int d = 0;
+        int count = 64;
+        for (int element = 0; element < 64; element++) {
+            if (data == null) {
+                if (in[i-1][j-1] != 0) {
+                    data = new int[count];
+                    data_end = count-1;
+                    data[data_end] = in[i-1][j-1];
+                    ++d;
+                    //data = new byte[count*2];
+                    //data_end = count*2 - 1;
+                }
+            }
+            else {
+                data[data_end - d] = in[i-1][j-1];
+                ++d;
+                //data[data_end - d] = (byte)(in[i-1][j-1] & 0x00FF);
+                //++d;
+                //data[data_end - d] = (byte)((in[i-1][j-1] >>> 8) & 0x00FF);
+                //++d;
+            }
+            --count;
+            if ((i + j) % 2 == 0) {
+                // Even stripes
+                if (j > 1)
+                    j--;
+                else
+                    i -= 2;
+                if (i < 8)
+                    i++;
+            } else {
+                // Odd stripes
+                if (i > 1)
+                    i--;
+                else
+                    j -= 2;
+                if (j < 8)
+                    j++;
+            }
+        }
+        if (data == null) data = new int[0];
+        return data;
+    }
+
+    private int[][] inverseZigZag(int[] in) {
+        int[][] data = new int[8][8];
+        int i = 1;
+        int j = 1;
+        int count = 0;
+        for (int element = 0; element < 64; element++) {
+            if (count < in.length) {
+                data[i-1][j-1] = in[count];
+                ++count;
+                //int value = 0;
+                //value |= (in[count] << 8) & 0x0000FF00;
+                //++count;
+                //value |= in[count] & 0x00FF;
+                //++count;
+                //data[i-1][j-1] = value;
+            }
+            else data[i-1][j-1] = 0;
+            if ((i + j) % 2 == 0) {
+                // Even stripes
+                if (j < 8)
+                    j++;
+                else
+                    i += 2;
+                if (i > 1)
+                    i--;
+            } else {
+                // Odd stripes
+                if (i < 8)
+                    i++;
+                else
+                    j += 2;
+                if (j > 1)
+                    j--;
+            }
+        }
+        return data;
+    }
+
+
+
+    
+
+/*
+    private void LosslessEncode(BitOutputStream bos) {
+        for (int i = 0; i < m_height; ++i) 
+            for (int j = 0; j < m_width; ++j) {
+                int[] zz0 = ZigZag(M0[i][j]);
+                int[] zz1 = ZigZag(M1[i][j]);
+                int[] zz2 = ZigZag(M2[i][j]);
+            }
+    }
+
+    private void LosslessDecode(BitInputStream bis) {
+
+    }
+*/
 
 }
