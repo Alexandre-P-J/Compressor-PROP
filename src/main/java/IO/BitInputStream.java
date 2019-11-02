@@ -76,6 +76,17 @@ public class BitInputStream extends FilterInputStream {
 		return bitManager.getNext();
 	}
 
+	// losing data on incomplete input returning -1 is expected
+	public int read8Bit() throws IOException {
+		int next;
+		int result = 0;
+		for (int i = 7; i >= 0; --i) {
+			if ((next = read1Bit()) < 0) return -1;
+			result |= next << i; 
+		}
+		return result & 0xFF;
+	}
+
 	public int read () throws Error {
 		throw new Error("REPLACE THIS FUNCTION IN CODEBASE! USE read1Bit() INSTEAD.");
 	}

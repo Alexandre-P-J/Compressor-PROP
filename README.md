@@ -9,6 +9,7 @@ Descripción
 - [x] LZW
 - [x] Custom dictionary size for LZW
 - [ ] JPEG
+- [ ] JPEG using Huffman
 - [ ] Diagrama de uso
 - [ ] Diagrama de clases
 - [ ] Documentación
@@ -27,13 +28,13 @@ This will get all needed dependencies from the internet and build.
 ### Run
 This will get all needed dependencies from the internet , build if needed and run the application.
 #### On Linux:
-`> ./gradlew run --args='ARGUMENTS HERE'`
+`> ./gradlew run --args="ARGUMENTS HERE"`
 For example you could run:
-`> ./gradlew run --args='LZSS compress README.md OUT'`
+`> ./gradlew run --args="LZSS compress README.md OUT"`
 #### On Windows:
-`> gradlew.bat run --args='ARGUMENTS HERE'`
+`> gradlew.bat run --args="ARGUMENTS HERE"`
 For example you could run:
-`> gradlew.bat run --args='LZSS compress README.md OUT'`
+`> gradlew.bat run --args="LZSS compress README.md OUT"`
 
 ### Running Tests:
 This will get all needed dependencies from the internet , build if needed and run the tests.
