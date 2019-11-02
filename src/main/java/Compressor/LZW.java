@@ -9,22 +9,13 @@ import java.io.*;
 public class LZW {
 
     Dictionary dict;
-    final int nBits;
+    int nBits;
 
     // L'anterior cadena de carácters que haurem de recordar
     // per tal d'inserir al diccionari 
     ByteArray emptyAB = new ByteArray();
     ByteArray ab = emptyAB;
 
-    public LZW (int DictBitSize) {
-        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
-        nBits = DictBitSize;
-        dict = new Dictionary(1<<nBits);
-
-        // Afegeix tots els codis ascii al diccionari
-        for (int i = 0; i < 256; ++i)
-            dict.add(new ByteArray((byte)i));   
-    }
 
     // Codifica el pròxim caràcter, 
     // si hi ha generat un codi el retorna, sino retorna -1
@@ -59,7 +50,15 @@ public class LZW {
     }
 
     // Funció principal de compressió
-    public void compress (InputStream is, OutputStream os) throws IOException {
+    public void compress (InputStream is, OutputStream os, int DictBitSize) throws Exception {
+        if (DictBitSize > 31 || DictBitSize < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");
+        nBits = DictBitSize;
+        dict = new Dictionary(1<<nBits);
+        // Afegeix tots els codis ascii al diccionari
+        for (int i = 0; i < 256; ++i)
+            dict.add(new ByteArray((byte)i));
+        os.write(nBits); // Write DictBitSize to the compressed stream
+
         BitOutputStream bos = new BitOutputStream(os);
         int code;
         int next;
@@ -88,15 +87,21 @@ public class LZW {
             s = ab.concatenate(ab.getBytePos(0));
             dict.add(s);
         }
-        else {
+        else 
             if (!ab.isEmpty()) 
                 dict.add(ab.concatenate(s.getBytePos(0)));
             ab = s;
-        }
         return ab;
     }
 
-    public void decompress (InputStream is, OutputStream os) throws IOException {
+    public void decompress (InputStream is, OutputStream os) throws Exception {
+        nBits = is.read();
+        if (nBits > 31 || nBits < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");
+        dict = new Dictionary(1<<nBits);
+        // Afegeix tots els codis ascii al diccionari
+        for (int i = 0; i < 256; ++i)
+            dict.add(new ByteArray((byte)i));
+
         BitInputStream bis = new BitInputStream(is);
         ByteArray s;
         int code;
