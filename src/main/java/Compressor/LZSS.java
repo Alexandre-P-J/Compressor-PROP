@@ -2,6 +2,8 @@ package Compressor;
 
 import Container.ByteArray;
 import Container.Listionary;
+import java.util.LinkedList;
+import java.util.Iterator;
 import IO.BitInputStream;
 import IO.BitOutputStream;
 import java.io.*;
@@ -11,15 +13,11 @@ public class LZSS {
     int windowSize = 4096;
 
     Listionary t;
-    final int nBits;
+    int nBits;
+    ByteArray emptyAB = new ByteArray();
 
-    public LZSS (int ListionaryBitSize) {
-        if (ListionaryBitSize > 31 || ListionaryBitSize < 0) throw new IllegalArgumentException("Listionary size must be between 2^0 and 2^31 !");
-        nBits = ListionaryBitSize;
-        t = new Listionary(1<<nBits);
-    }
 
-    void writeCode (OutputStream os, int n, int bits) throws IOException {
+    void writeCode (BitOutputStream bos, int n, int bits) throws IOException {
         for (int i = 0; i < bits; ++i) {
             bos.write1Bit(n&1);
             n = n / 2;
@@ -36,12 +34,17 @@ public class LZSS {
         return n;
     }
 
-    public void compress(InputStream is, OutputStream os) throws IOException {
+    public void compress(InputStream is, OutputStream os, int ListionaryBitSize) throws IOException {
+        if (ListionaryBitSize > 31 || ListionaryBitSize < 0) throw new IllegalArgumentException("Listionary size must be between 2^0 and 2^31 !");
+        nBits = ListionaryBitSize;
+        t = new Listionary(1<<nBits);
+        LinkedList<Integer> emptyL = new LinkedList();
+        t.add(emptyAB,emptyL);
         BitOutputStream bos = new BitOutputStream(os);
         int next;
         ByteArray buffer = new ByteArray();
         int bytesInBuffer = 0;
-        while ((next = is.readNextByte()) >= 0) {
+        while ((next = is.read()) >= 0) {
             buffer = buffer.concatenate((byte)next);
             ++bytesInBuffer;
         }
@@ -72,14 +75,17 @@ public class LZSS {
                     LinkedList<Integer> p = t.getList(buffer.getBytePos(j*8));
                     if(p == null){
                         p = new LinkedList<Integer>();
-                        t.put(buffer.getBytePos(j*8), p);
+                        target = buffer.getBytePos(j*8);
+                        ByteArray targetBA = new ByteArray(target);
+                        t.add(targetBA, p);
                     }
                     p.add(j);
                 }
             } else{
                 l = new LinkedList<Integer>();
                 l.add(i);
-                t.put(target, l);
+                ByteArray targetBA = new ByteArray(target);
+                t.add(targetBA, l);
             }
             if(found && matchLen > 1){
                 bos.write1Bit(1); //Añadimos un 1 al output para indicar que se trata de una codificación
@@ -104,10 +110,10 @@ public class LZSS {
 
     public void decompress (InputStream is, OutputStream os) throws IOException {
         int start, matchLen;
-        byte next;
+        int next;
         BitInputStream bis = new BitInputStream(is);
         ByteArray decodeBuffer = new ByteArray();
-        while ((next = is.read1Bit()) >= 0) {
+        while ((next = bis.read1Bit()) >= 0) {
             if (next == 1) {
                 // Se tratará de una dupla de posición de la coincidencia (12bits) y tamaño de esta (4bits)
                 start = readCode(bis,12);
@@ -115,14 +121,14 @@ public class LZSS {
                 int s = decodeBuffer.size() - start;
                 int e = s + matchLen;
                 for (; s < e; s++) {
-                    next = bis.readNextByte();
-                    decodeBuffer.concatenate(next);
+                    next = bis.read();
+                    decodeBuffer.concatenate((byte)next);
                     os.write(next);
                 }
             }
             else {
-                next = bis.readNextByte();
-                decodeBuffer.concatenate(next);
+                next = bis.read();
+                decodeBuffer.concatenate((byte)next);
                 os.write(next);
             }
         }
