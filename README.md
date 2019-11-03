@@ -8,8 +8,9 @@ Descripción
 - [ ] Custom dictionary size for LZSS
 - [x] LZW
 - [x] Custom dictionary size for LZW
-- [ ] JPEG
-- [ ] JPEG using Huffman
+- [x] JPEG
+- [x] JPEG using Huffman
+- [ ] Unit tests
 - [ ] Diagrama de uso
 - [ ] Diagrama de clases
 - [ ] Documentación
