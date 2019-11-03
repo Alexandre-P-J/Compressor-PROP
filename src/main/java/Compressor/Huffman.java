@@ -29,7 +29,7 @@ public class Huffman {
         }
 
         // compare, based on frequency
-        public int compareTo(Node that) {
+        public int compareTo(Node that) { // needed to use with the priority queue
             return this.freq - that.freq;
         }
     }
@@ -97,6 +97,54 @@ public class Huffman {
         bos.flush();
     }
 
+    
+    public void decompress(InputStream is, OutputStream os) throws IOException {
+        decompress(is, os, 0x7FFFFFFF);
+    }
+
+    /**
+     * Reads a sequence of bits that represents a Huffman-compressed message from
+     * standard input; expands them; and writes the results to standard output.
+     * If maxSizeInBytes was specified at compression then the same value must be specified now.
+     */
+    public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
+        int nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
+        if ((nBits < 0) || (nBits > 32)) throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
+        
+        BitInputStream bis = new BitInputStream(is);
+
+        int length = 0;
+        for (int i = 0; i < nBits; ++i) {
+            int next;
+            if ((next = bis.read1Bit()) < 0) throw new IOException();
+            length |= (next << i);
+        }
+        
+        if (length < 1) return; // return if decompressed is an empty stream
+
+        // read in Huffman trie from input stream
+        Node root = readTrie(bis);
+
+        // decode using the Huffman trie
+        for (int i = 0; i < length; i++) {
+            Node x = root;
+            while (!x.isLeaf()) {
+                int next;
+                if ((next = bis.read1Bit()) < 0)
+                    throw new IOException();
+                boolean bit = (next != 0);
+                if (bit)
+                    x = x.right;
+                else
+                    x = x.left;
+            }
+            int out = ((int) (x.ch) & 0xFF);
+            os.write(out);
+        }
+        os.flush();
+    }
+
+
     // build the Huffman trie given frequencies
     private Node buildTrie(int[] freq) {
 
@@ -146,53 +194,6 @@ public class Huffman {
         } else {
             st[x.ch & 0xFF] = s;
         }
-    }
-
-
-    public void decompress(InputStream is, OutputStream os) throws IOException {
-        decompress(is, os, 0x7FFFFFFF);
-    }
-
-    /**
-     * Reads a sequence of bits that represents a Huffman-compressed message from
-     * standard input; expands them; and writes the results to standard output.
-     * If maxSizeInBytes was specified at compression then the same value must be specified now.
-     */
-    public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
-        int nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
-        if ((nBits < 0) || (nBits > 32)) throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
-        
-        BitInputStream bis = new BitInputStream(is);
-
-        int length = 0;
-        for (int i = 0; i < nBits; ++i) {
-            int next;
-            if ((next = bis.read1Bit()) < 0) throw new IOException();
-            length |= (next << i);
-        }
-        
-        if (length < 1) return; // return if decompressed is an empty stream
-
-        // read in Huffman trie from input stream
-        Node root = readTrie(bis);
-
-        // decode using the Huffman trie
-        for (int i = 0; i < length; i++) {
-            Node x = root;
-            while (!x.isLeaf()) {
-                int next;
-                if ((next = bis.read1Bit()) < 0)
-                    throw new IOException();
-                boolean bit = (next != 0);
-                if (bit)
-                    x = x.right;
-                else
-                    x = x.left;
-            }
-            int out = ((int) (x.ch) & 0xFF);
-            os.write(out);
-        }
-        os.flush();
     }
 
     private Node readTrie(BitInputStream bis) throws IOException {

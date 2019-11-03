@@ -7,9 +7,9 @@ import Utils.Color;
 import Utils.PPMTranslator;
 
 public class JPEG {
-    private final int[][] LuminanceQuantizationTable; // Table related to the amount of compression and quality on light
+    private int[][] LuminanceQuantizationTable; // Table related to the amount of compression and quality on light
                                                       // intensity
-    private final int[][] ChrominanceQuantizationTable; // Table related to the amount of compression and quality on
+    private int[][] ChrominanceQuantizationTable; // Table related to the amount of compression and quality on
                                                         // color
     private int[][][][] M0; // 2D matrix of 8x8 Matrices for channel 0
     private int[][][][] M1; // 2D matrix of 8x8 Matrices for channel 1
@@ -24,9 +24,7 @@ public class JPEG {
     private static final double c[][] = new double[8][8]; // cosine matrix
     private static final double cT[][] = new double[8][8]; // transformed cosine matrix
 
-    public JPEG(JPEG_Quality quality) {
-        LuminanceQuantizationTable = quality.getLuminanceTable();
-        ChrominanceQuantizationTable = quality.getChrominanceTable();
+    public JPEG() {
         if (!initDCTMatrices)
             initDCTMatrices();
         initDCTMatrices = true;
@@ -50,7 +48,10 @@ public class JPEG {
         }
     }
 
-    public void compress(InputStream is, OutputStream os) throws IOException {
+    public void compress(InputStream is, OutputStream os, JPEG_Quality quality) throws IOException {
+        LuminanceQuantizationTable = quality.getLuminanceTable();
+        ChrominanceQuantizationTable = quality.getChrominanceTable();
+
         PPMTranslator ppmfile = new PPMTranslator(is);
         width = ppmfile.getWidth();
         height = ppmfile.getHeight();
@@ -99,25 +100,62 @@ public class JPEG {
                 Quantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
             }
 
-        // WRITE 8x8 MATRIX TO OUTPUT COMPRESSING EACH WITH HUFFMAN
+        
+        // Write image dimensions
+        os.write((byte) ((width & 0xFF000000) >> 24));
+        os.write((byte) ((width & 0x00FF0000) >> 16));
+        os.write((byte) ((width & 0x0000FF00) >> 8));
+        os.write((byte) (width & 0x000000FF));
+        os.write((byte) ((height & 0xFF000000) >> 24));
+        os.write((byte) ((height & 0x00FF0000) >> 16));
+        os.write((byte) ((height & 0x0000FF00) >> 8));
+        os.write((byte) (height & 0x000000FF));
+        
+        // Write Quantification setting
+        // JPEG_Quality class ensures that ordinal will be valid between different
+        // versions of the compressor.
+        byte quality_setting = (byte)quality.ordinal();
+        os.write(quality_setting);
 
+        // Compress internal state with huffman
         LosslessEncode(os);
 
         os.flush();
     }
 
     public void decompress(InputStream is, OutputStream os) throws IOException {
-        // read internal state from input stream and decompress each matrix using
-        // huffman
-        m_height = 116;
-        m_width = 175;
-        height = 921;
-        width = 1400;
+        // Read Image Size
+        byte[] integer = new byte[9];
+        if (is.read(integer) < 0) throw new IOException();
+        width = 0;
+        width |= ((int)integer[0]) << 24;
+        width |= ((int)(integer[1]) << 16) & 0x00FF0000;
+        width |= ((int)(integer[2]) << 8) & 0x0000FF00;
+        width |= ((int)(integer[3])) & 0x000000FF;
+        height = 0;
+        height |= ((int)integer[4]) << 24;
+        height |= ((int)(integer[5]) << 16) & 0x00FF0000;
+        height |= ((int)(integer[6]) << 8) & 0x0000FF00;
+        height |= ((int)(integer[7])) & 0x000000FF;
+
+        // Read quality and initialize quantization tables
+        JPEG_Quality quality = JPEG_Quality.values()[integer[8]];
+        LuminanceQuantizationTable = quality.getLuminanceTable();
+        ChrominanceQuantizationTable = quality.getChrominanceTable();
+        
+        // Initialize Matrices
+        m_width = width / 8;
+        if (width % 8 != 0)
+            m_width = m_width + 1;
+        m_height = height / 8;
+        if (height % 8 != 0)
+            m_height = m_height + 1;
 
         M0 = new int[m_height][m_width][8][8];
         M1 = new int[m_height][m_width][8][8];
         M2 = new int[m_height][m_width][8][8];
 
+        // Decompress file into internal state
         LosslessDecode(is);
 
         // Dequantizes and applies the DCT inverse for each component matrix
@@ -235,6 +273,9 @@ public class JPEG {
         }
     }
 
+    // reads from bottom to top doing the ZigZag pattern and stores values from
+    // the first non 0 value to the top.
+    // The values are stored in a byte[] using 2 bytes per value
     private byte[] ZigZag(int[][] in) {
         byte[] data = null;
         int data_index = 0;
@@ -281,6 +322,9 @@ public class JPEG {
         return data;
     }
 
+    // reads from top to top doing the ZigZag pattern and stores values
+    // encoded with 2 bytes to the result 8x8 matrix, after all values
+    // from "in" are stored, fills the rest with 0s
     private int[][] inverseZigZag(byte[] in) {
         int[][] data = new int[8][8];
         int i = 1;
