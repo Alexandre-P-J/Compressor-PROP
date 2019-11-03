@@ -1,5 +1,6 @@
 import java.io.* ;
 import Compressor.*;
+import Constants.JPEG_Quality;
 
 public class Compressor {
     public static void main(String[] args) {
@@ -15,17 +16,25 @@ public class Compressor {
             OutputStream os = new BufferedOutputStream(new FileOutputStream(args[3]));
            
             if (args[0].equals("LZW")) {
-                LZW fileW = new LZW(DICT_BIT_SIZE);
-                if (args[1].equals("compress")) fileW.compress(is,os);
+                LZW fileW = new LZW();
+                if (args[1].equals("compress")) fileW.compress(is,os,DICT_BIT_SIZE);
                 else if (args[1].equals("decompress")) fileW.decompress(is,os);
                 else {
                     printUsage();
                 }
             }
             else if (args[0].equals("LZ78")) {
-                LZ78 file78 = new LZ78(DICT_BIT_SIZE);
-                if (args[1].equals("compress")) file78.compress(is,os);
+                LZ78 file78 = new LZ78();
+                if (args[1].equals("compress")) file78.compress(is,os,DICT_BIT_SIZE);
                 else if (args[1].equals("decompress")) file78.decompress(is,os);
+                else {
+                    printUsage();
+                }
+            }
+            else if (args[0].equals("JPEG")) {
+                JPEG filePPM = new JPEG();
+                if (args[1].equals("compress")) filePPM.compress(is,os,JPEG_Quality.DEFAULT);
+                else if (args[1].equals("decompress")) filePPM.decompress(is,os);
                 else {
                     printUsage();
                 }
@@ -37,10 +46,13 @@ public class Compressor {
             os.close();
 
         } catch (FileNotFoundException fnfe) {
-            System.out.println("El archivo " + args[4] + " no se puede abrir");
+            System.out.println(args[4] + " Not Found");
 			System.exit(1);
         } catch (IOException ioe) {
-			System.out.println("Error en leer el archivo " +args[2]+ " o en escribir el archivo " + args[3]);
+			System.out.println("IO Error: " + ioe.getMessage());
+            System.exit(1);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             System.exit(1);
         }
     }
