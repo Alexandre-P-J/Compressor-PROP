@@ -121,13 +121,13 @@ public class LZSS {
                 int s = decodeBuffer.size() - start;
                 int e = s + matchLen;
                 for (; s < e; s++) {
-                    next = bis.read();
+                    next = bis.read8Bit();
                     decodeBuffer.concatenate((byte)next);
                     os.write(next);
                 }
             }
             else {
-                next = bis.read();
+                next = bis.read8Bit();
                 decodeBuffer.concatenate((byte)next);
                 os.write(next);
             }
