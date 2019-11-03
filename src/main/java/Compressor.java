@@ -1,5 +1,6 @@
 import java.io.* ;
 import Compressor.*;
+import Constants.JPEG_Quality;
 
 public class Compressor {
     public static void main(String[] args) {
@@ -26,6 +27,14 @@ public class Compressor {
                 LZ78 file78 = new LZ78();
                 if (args[1].equals("compress")) file78.compress(is,os,DICT_BIT_SIZE);
                 else if (args[1].equals("decompress")) file78.decompress(is,os);
+                else {
+                    printUsage();
+                }
+            }
+            else if (args[0].equals("JPEG")) {
+                JPEG filePPM = new JPEG();
+                if (args[1].equals("compress")) filePPM.compress(is,os,JPEG_Quality.DEFAULT);
+                else if (args[1].equals("decompress")) filePPM.decompress(is,os);
                 else {
                     printUsage();
                 }

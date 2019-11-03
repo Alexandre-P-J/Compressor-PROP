@@ -43,3 +43,6 @@ hs_err_pid*
 # bin
 bin/*
 
+# Mac
+.DS_Store
+
