@@ -36,7 +36,7 @@ public enum JPEG_Quality {
       case MIN:
         return QuantizationTables.Luminance00;
       case DEFAULT:
-        return QuantizationTables.Luminance07;
+        return QuantizationTables.Luminance09;
       case JPEGStandard:
         return QuantizationTables.JPEGLuminanceStandard;
       default:
@@ -77,7 +77,7 @@ public enum JPEG_Quality {
       case MIN:
         return QuantizationTables.Chrominance00;
       case DEFAULT:
-        return QuantizationTables.Chrominance07;
+        return QuantizationTables.Chrominance06;
       case JPEGStandard:
         return QuantizationTables.JPEGChrominanceStandard;
       default:

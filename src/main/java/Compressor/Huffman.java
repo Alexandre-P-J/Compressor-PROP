@@ -45,7 +45,7 @@ public class Huffman {
      * output.  If maxSizeInBytes is specified then the same value must be specified
      * at decompression.
      */
-    public void compress(InputStream is, OutputStream os, int maxSizeInBytes) throws Exception {
+    public void compress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
         int nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
         if ((nBits < 0) || (nBits > 32)) throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
         
@@ -149,7 +149,7 @@ public class Huffman {
     }
 
 
-    public void decompress(InputStream is, OutputStream os) throws Exception {
+    public void decompress(InputStream is, OutputStream os) throws IOException {
         decompress(is, os, 0x7FFFFFFF);
     }
 
@@ -158,7 +158,7 @@ public class Huffman {
      * standard input; expands them; and writes the results to standard output.
      * If maxSizeInBytes was specified at compression then the same value must be specified now.
      */
-    public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws Exception {
+    public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
         int nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
         if ((nBits < 0) || (nBits > 32)) throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
         

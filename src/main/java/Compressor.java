@@ -32,9 +32,9 @@ public class Compressor {
                 }
             }
             else if (args[0].equals("JPEG")) {
-                JPEG filePPM = new JPEG(JPEG_Quality.Q11);
+                JPEG filePPM = new JPEG(JPEG_Quality.DEFAULT);
                 if (args[1].equals("compress")) filePPM.compress(is,os);
-                //else if (args[1].equals("decompress")) file78.decompress(is,os);
+                else if (args[1].equals("decompress")) filePPM.decompress(is,os);
                 else {
                     printUsage();
                 }
