@@ -46,3 +46,6 @@ bin/*
 # Mac
 .DS_Store
 
+#IntellijIDEA
+.idea
+
