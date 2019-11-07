@@ -46,3 +46,5 @@ bin/*
 # Mac
 .DS_Store
 
+# Documentation
+Documentation

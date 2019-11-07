@@ -8,7 +8,6 @@ import java.io.*;
 
 /**
  * @author Albert Ibars
- * @course Projectes de Programació
  */
 
 public class LZW {

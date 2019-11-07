@@ -8,7 +8,6 @@ import java.io.*;
 
 /**
  * @author Daniel Clemente
- * @course Projectes de Programació
  */
 
 public class LZ78 {

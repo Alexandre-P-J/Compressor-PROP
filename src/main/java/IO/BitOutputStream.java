@@ -65,7 +65,7 @@ public class BitOutputStream extends FilterOutputStream {
 
 	/**
 	 * Writes a single bit into the included stream.
-	 * @param i is a boolean to express a single bit, true -> 1, false -> 0
+	 * @param i is a boolean to express a single bit, true: 1, false: 0
 	 * @throws IOException If there is a problem.
 	 */
 	public void write1Bit (boolean i) throws IOException { 
