@@ -38,7 +38,7 @@ This will get all needed dependencies from the internet , build if needed and ru
 `> gradlew.bat test`
 
 ### Generating Documentation:
-This will generate a 'Documentation' folder containing with a HTML5 version of Javadoc
+This will generate a 'Documentation' folder with a HTML5 version of Javadoc
 #### On Linux:
 `> ./gradlew javadoc`
 #### On Windows:
