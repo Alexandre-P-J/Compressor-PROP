@@ -24,6 +24,7 @@ public class JPEG {
     private static final double c[][] = new double[8][8]; // cosine matrix
     private static final double cT[][] = new double[8][8]; // transformed cosine matrix
 
+
     public JPEG() {
         if (!initDCTMatrices)
             initDCTMatrices();
