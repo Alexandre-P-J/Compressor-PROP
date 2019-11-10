@@ -1,135 +1,154 @@
+
 package Compressor;
 
-import Container.ByteArray;
-import Container.Listionary;
-import java.util.LinkedList;
-import java.util.Iterator;
+import java.nio.charset.StandardCharsets;
 import IO.BitInputStream;
 import IO.BitOutputStream;
 import java.io.*;
 
+
 public class LZSS {
 
-    int windowSize = 4096;
+    // 12 bits to store maximum offset distance.
+    public static final int MAX_WINDOW_SIZE = (1 << 12) - 1;
+    // 4 bits to store length of the match.
+    private static final int MAX_LENGTH = (1 << 4) - 1;
+    private static final int MIN_LENGTH = 2;
 
-    Listionary t;
-    int nBits;
-    ByteArray emptyAB = new ByteArray();
+    // sliding window size
+    private int windowSize = LZSS.MAX_WINDOW_SIZE;
+    //private int bufferSizeBytes = 4;
+    private int maxLength = LZSS.MAX_LENGTH;
+    private int minLength = LZSS.MIN_LENGTH;
+
+    private int m = 12;
+    private int n = 4;
+    private int k = 2;
 
 
-    void writeCode (BitOutputStream bos, int n, int bits) throws IOException {
+     void writeCode (BitOutputStream bos, int n, int bits) throws IOException {
         for (int i = 0; i < bits; ++i) {
             bos.write1Bit(n&1);
             n = n / 2;
         }
-    }
+      }
 
     int readCode (BitInputStream bis, int bits) throws IOException {
-        int n = 0;
-        for (int i=0;i < bits; ++i) {
-            int next = bis.read1Bit();
-            if (next < 0) return -1;
-            n += next<<i;
+      int n = 0;
+      for (int i=0;i < bits; ++i) {
+          int next = bis.read1Bit();
+          if (next < 0) return -1;
+          n += next<<i;
         }
         return n;
-    }
+      }
 
-    public void compress(InputStream is, OutputStream os, int ListionaryBitSize) throws IOException {
-        if (ListionaryBitSize > 31 || ListionaryBitSize < 0) throw new IllegalArgumentException("Listionary size must be between 2^0 and 2^31 !");
-        nBits = ListionaryBitSize;
-        t = new Listionary(1<<nBits);
-        LinkedList<Integer> emptyL = new LinkedList();
-        t.add(emptyAB,emptyL);
+
+    public void compress(InputStream is, OutputStream os, int DictBitSize) throws IOException {
+        StringBuffer buffer = new StringBuffer(windowSize);
         BitOutputStream bos = new BitOutputStream(os);
-        int next;
-        ByteArray buffer = new ByteArray();
-        int bytesInBuffer = 0;
-        while ((next = is.read()) >= 0) {
-            buffer = buffer.concatenate((byte)next);
-            ++bytesInBuffer;
-        }
-        for(int i = 0; i < bytesInBuffer; i++) {
-            boolean found = false;
-            int start = 0;
-            int matchLen = 0;
-            byte target = buffer.getBytePos(i*8);
-            LinkedList<Integer> l = t.getList(target);
-            if(l != null) {
-                Iterator<Integer> it = l.iterator();
-                while(it.hasNext()) {
-                    int s = it.next();
-                    if((i - s) > windowSize){
-                        it.remove();
-                        continue;
-                    }
-                    int len = getMatchedLen(buffer, s + 1, i + 1, bytesInBuffer) + 1;
-                    if(len > matchLen) {
-                        start = i - s;
-                        matchLen = len;
-                    }
-                    found = true;
+
+        bos.write8Bit(m);
+        bos.write8Bit(n);
+        bos.write8Bit(k);
+
+            String currentMatch = "";
+            int matchIndex = 0;
+            int tempIndex = 0;
+            int next;
+
+            while ((next = is.read()) >= 0) {
+                tempIndex = buffer.indexOf(currentMatch + (char) next);
+                if (tempIndex != -1 && currentMatch.length() < maxLength) {
+                    currentMatch += (char) next;
+                    matchIndex = tempIndex;
                 }
-                l.add(i);
-                int jn = Math.min(i + matchLen, bytesInBuffer);
-                for(int j = i + 1; j < jn; j++){
-                    LinkedList<Integer> p = t.getList(buffer.getBytePos(j*8));
-                    if(p == null){
-                        p = new LinkedList<Integer>();
-                        target = buffer.getBytePos(j*8);
-                        ByteArray targetBA = new ByteArray(target);
-                        t.add(targetBA, p);
+                else {
+                    if (currentMatch.length() >= minLength) {
+                        bos.write1Bit(0);
+                        writeCode(bos,matchIndex,m);
+                        writeCode(bos,currentMatch.length(),n);
+                        buffer.append(currentMatch); // append to the search buffer
+                        currentMatch = "" + (char) next;
+                        matchIndex = 0;
+
                     }
-                    p.add(j);
+                    else {
+                        currentMatch += (char) next;
+                        matchIndex = -1;
+                        while (currentMatch.length() > -1 && matchIndex == -1) {
+                            bos.write1Bit(1);
+                            bos.write8Bit((byte) currentMatch.charAt(0));
+                            buffer.append(currentMatch.charAt(0));
+                            currentMatch = currentMatch.substring(1, currentMatch.length());
+                            matchIndex = buffer.indexOf(currentMatch);
+                        }
+                    }
+                    if (buffer.length() > windowSize) {
+                        buffer = buffer.delete(0, buffer.length() - windowSize);
+                    }
                 }
-            } else{
-                l = new LinkedList<Integer>();
-                l.add(i);
-                ByteArray targetBA = new ByteArray(target);
-                t.add(targetBA, l);
             }
-            if(found && matchLen > 1){
-                bos.write1Bit(1); //Añadimos un 1 al output para indicar que se trata de una codificación
-                writeCode(bos,start,12);
-                writeCode(bos,matchLen,4);
-                i += matchLen - 1;
-            } else{
-                bos.write1Bit(0); //Añadimos un 0 al output para indicar que se trata de un literal
-                writeCode(bos,target,8);
+            //Check what left
+            while (currentMatch.length() > 0) {
+                if (currentMatch.length() >= minLength) {
+                    bos.write1Bit(0);
+                    writeCode(bos,matchIndex,m);
+                    writeCode(bos,currentMatch.length(),n);
+                    buffer.append(currentMatch); // append to the search buffer
+                    currentMatch = "";
+                    matchIndex = 0;
+
+                }
+                else {
+                    matchIndex = -1;
+                    while (currentMatch.length() > 0 && matchIndex == -1) {
+                        bos.write1Bit(1);
+                        bos.write8Bit((byte) currentMatch.charAt(0));
+                        buffer.append(currentMatch.charAt(0));
+                        currentMatch = currentMatch.substring(1, currentMatch.length());
+                        matchIndex = buffer.indexOf(currentMatch);
+                    }
+                }
+                if (buffer.length() > windowSize) {
+                    buffer = buffer.delete(0, buffer.length() - windowSize);
+                }
             }
-        }
         bos.flush();
     }
 
-    private static int getMatchedLen(ByteArray buffer, int i1, int i2, int end) {
-        int n = Math.min(i2 - i1, end - i2);
-        for(int i = 0; i < n; i++){
-            if(buffer.getBytePos((i1++)*8) != buffer.getBytePos((i2++)*8)) return i;
-        }
-        return 0;
-    }
 
-    public void decompress (InputStream is, OutputStream os) throws IOException {
-        int start, matchLen;
-        int next;
+    public void decompress(InputStream is, OutputStream os) throws IOException {
         BitInputStream bis = new BitInputStream(is);
-        ByteArray decodeBuffer = new ByteArray();
-        while ((next = bis.read1Bit()) >= 0) {
-            if (next == 1) {
-                // Se tratará de una dupla de posición de la coincidencia (12bits) y tamaño de esta (4bits)
-                start = readCode(bis,12);
-                matchLen = readCode(bis,4);
-                int s = decodeBuffer.size() - start;
-                int e = s + matchLen;
-                for (; s < e; s++) {
-                    next = bis.read8Bit();
-                    decodeBuffer.concatenate((byte)next);
-                    os.write(next);
-                }
+        int m = bis.read8Bit();
+        int windowSize = (1 << m) - 1;
+        int n = bis.read8Bit();
+        int minK = bis.read8Bit();
+        StringBuffer buffer = new StringBuffer(windowSize);
+        int flag;
+        while ((flag = bis.read1Bit()) >= 0) {
+            if (flag == 1) {
+                int s = bis.read8Bit();
+                buffer.append((char) s);
+                os.write(s);
             }
             else {
-                next = bis.read8Bit();
-                decodeBuffer.concatenate((byte)next);
-                os.write(next);
+
+                int offsetValue = readCode(bis,m);
+                int lengthValue = readCode(bis,n);;
+
+                if(offsetValue < 0 || lengthValue < 0) break;
+
+                int start = offsetValue;
+                int end = start + lengthValue;
+
+                String temp = buffer.substring(start, end);
+                os.write(temp.getBytes(StandardCharsets.ISO_8859_1));
+                buffer.append(temp);
+            }
+
+            if (buffer.length() > windowSize) {
+                buffer = buffer.delete(0, buffer.length() - windowSize);
             }
         }
     }
