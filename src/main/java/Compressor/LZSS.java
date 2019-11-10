@@ -1,7 +1,7 @@
 
 package Compressor;
 
-import java.nio.charset.StandardCharsets;
+import Container.ByteArray;
 import IO.BitInputStream;
 import IO.BitOutputStream;
 import java.io.*;
@@ -45,75 +45,73 @@ public class LZSS {
 
 
     public void compress(InputStream is, OutputStream os, int DictBitSize) throws IOException {
-        StringBuffer buffer = new StringBuffer(windowSize);
+        ByteArray buffer = new ByteArray(windowSize);
         BitOutputStream bos = new BitOutputStream(os);
 
         bos.write8Bit(m);
         bos.write8Bit(n);
         bos.write8Bit(k);
 
-            String currentMatch = "";
-            int matchIndex = 0;
-            int tempIndex = 0;
-            int next;
+        ByteArray currentMatch = new ByteArray();
+        int matchIndex = 0;
+        int tempIndex = 0;
+        int next;
 
-            while ((next = is.read()) >= 0) {
-                tempIndex = buffer.indexOf(currentMatch + (char) next);
-                if (tempIndex != -1 && currentMatch.length() < maxLength) {
-                    currentMatch += (char) next;
-                    matchIndex = tempIndex;
-                }
-                else {
-                    if (currentMatch.length() >= minLength) {
-                        bos.write1Bit(0);
-                        writeCode(bos,matchIndex,m);
-                        writeCode(bos,currentMatch.length(),n);
-                        buffer.append(currentMatch); // append to the search buffer
-                        currentMatch = "" + (char) next;
-                        matchIndex = 0;
-
-                    }
-                    else {
-                        currentMatch += (char) next;
-                        matchIndex = -1;
-                        while (currentMatch.length() > -1 && matchIndex == -1) {
-                            bos.write1Bit(1);
-                            bos.write8Bit((byte) currentMatch.charAt(0));
-                            buffer.append(currentMatch.charAt(0));
-                            currentMatch = currentMatch.substring(1, currentMatch.length());
-                            matchIndex = buffer.indexOf(currentMatch);
-                        }
-                    }
-                    if (buffer.length() > windowSize) {
-                        buffer = buffer.delete(0, buffer.length() - windowSize);
-                    }
-                }
+        while ((next = is.read()) >= 0) {
+            tempIndex = buffer.indexOf(currentMatch.concatenate((byte) next));
+            if (tempIndex != -1 && currentMatch.size() < maxLength) {
+                currentMatch.concatenate((byte) next);
+                matchIndex = tempIndex;
             }
-            //Check what left
-            while (currentMatch.length() > 0) {
-                if (currentMatch.length() >= minLength) {
+            else {
+                if (currentMatch.size() >= minLength) {
                     bos.write1Bit(0);
                     writeCode(bos,matchIndex,m);
-                    writeCode(bos,currentMatch.length(),n);
-                    buffer.append(currentMatch); // append to the search buffer
-                    currentMatch = "";
+                    writeCode(bos,currentMatch.size(),n);
+                    buffer.concatenate(currentMatch);
+                    currentMatch = new ByteArray();
+                    currentMatch.concatenate((byte) next);
                     matchIndex = 0;
-
                 }
                 else {
+                    currentMatch.concatenate((byte) next);
                     matchIndex = -1;
-                    while (currentMatch.length() > 0 && matchIndex == -1) {
+                    while (currentMatch.size() > -1 && matchIndex == -1) {
                         bos.write1Bit(1);
-                        bos.write8Bit((byte) currentMatch.charAt(0));
-                        buffer.append(currentMatch.charAt(0));
-                        currentMatch = currentMatch.substring(1, currentMatch.length());
+                        bos.write8Bit((byte) currentMatch.getBytePos(0));
+                        buffer.concatenate(currentMatch.getBytePos(0));
+                        currentMatch = currentMatch.substring(1, currentMatch.size());
                         matchIndex = buffer.indexOf(currentMatch);
                     }
                 }
-                if (buffer.length() > windowSize) {
-                    buffer = buffer.delete(0, buffer.length() - windowSize);
+                if (buffer.size() > windowSize) {
+                    buffer = buffer.substring(buffer.size() - windowSize, buffer.size());
                 }
             }
+        }
+        while (currentMatch.size() > 0) {
+            if (currentMatch.size() >= minLength) {
+                bos.write1Bit(0);
+                writeCode(bos,matchIndex,m);
+                writeCode(bos,currentMatch.size(),n);
+                buffer.concatenate(currentMatch);
+                currentMatch = new ByteArray();
+                matchIndex = 0;
+            }
+            else {
+                matchIndex = -1;
+                while (currentMatch.size() > 0 && matchIndex == -1) {
+                    bos.write1Bit(1);
+                    bos.write8Bit((byte) currentMatch.getBytePos(0));
+                    buffer.concatenate(currentMatch.getBytePos(0));
+                    currentMatch = currentMatch.substring(1, currentMatch.size());
+                    matchIndex = buffer.indexOf(currentMatch);
+                }
+            }
+            if (buffer.size() > windowSize) {
+                buffer = buffer.substring(buffer.size() - windowSize, buffer.size());
+            }
+        }
         bos.flush();
     }
 
@@ -124,12 +122,12 @@ public class LZSS {
         int windowSize = (1 << m) - 1;
         int n = bis.read8Bit();
         int minK = bis.read8Bit();
-        StringBuffer buffer = new StringBuffer(windowSize);
+        ByteArray buffer = new ByteArray(windowSize);
         int flag;
         while ((flag = bis.read1Bit()) >= 0) {
             if (flag == 1) {
                 int s = bis.read8Bit();
-                buffer.append((char) s);
+                buffer.concatenate((byte) s);
                 os.write(s);
             }
             else {
@@ -142,13 +140,16 @@ public class LZSS {
                 int start = offsetValue;
                 int end = start + lengthValue;
 
-                String temp = buffer.substring(start, end);
-                os.write(temp.getBytes(StandardCharsets.ISO_8859_1));
-                buffer.append(temp);
+                ByteArray temp = buffer.substring(start, end);
+                for (int i = 0; i < temp.size(); ++i) {
+                  byte b = temp.getBytePos(i);
+                  os.write(b);
+                }
+                buffer.concatenate(temp);
             }
 
-            if (buffer.length() > windowSize) {
-                buffer = buffer.delete(0, buffer.length() - windowSize);
+            if (buffer.size() > windowSize) {
+                buffer = buffer.substring(buffer.size() - windowSize, buffer.size());
             }
         }
     }
