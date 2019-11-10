@@ -41,7 +41,7 @@ hs_err_pid*
 .project
 
 # bin
-bin/*
+/bin
 
 # Mac
 .DS_Store
