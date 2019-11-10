@@ -8,9 +8,9 @@ import Utils.PPMTranslator;
 
 public class JPEG {
     private int[][] LuminanceQuantizationTable; // Table related to the amount of compression and quality on light
-                                                      // intensity
+                                                // intensity
     private int[][] ChrominanceQuantizationTable; // Table related to the amount of compression and quality on
-                                                        // color
+                                                  // color
     private int[][][][] M0; // 2D matrix of 8x8 Matrices for channel 0
     private int[][][][] M1; // 2D matrix of 8x8 Matrices for channel 1
     private int[][][][] M2; // 2D matrix of 8x8 Matrices for channel 2
@@ -89,18 +89,7 @@ public class JPEG {
                     }
             }
         }
-        // Lossy part of the algorithm, DCT and Quantization for each component matrix
-        for (int i = 0; i < m_height; ++i)
-            for (int j = 0; j < m_width; ++j) {
-                DCT(M0[i][j]);
-                Quantization(M0[i][j], M0[i][j], LuminanceQuantizationTable);
-                DCT(M1[i][j]);
-                Quantization(M1[i][j], M1[i][j], ChrominanceQuantizationTable);
-                DCT(M2[i][j]);
-                Quantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
-            }
 
-        
         // Write image dimensions
         os.write((byte) ((width & 0xFF000000) >> 24));
         os.write((byte) ((width & 0x00FF0000) >> 16));
@@ -110,15 +99,27 @@ public class JPEG {
         os.write((byte) ((height & 0x00FF0000) >> 16));
         os.write((byte) ((height & 0x0000FF00) >> 8));
         os.write((byte) (height & 0x000000FF));
-        
+
         // Write Quantification setting
         // JPEG_Quality class ensures that ordinal will be valid between different
         // versions of the compressor.
-        byte quality_setting = (byte)quality.ordinal();
+        byte quality_setting = (byte) quality.ordinal();
         os.write(quality_setting);
 
-        // Compress internal state with huffman
-        LosslessEncode(os);
+        // DCT and Quantization for each component matrix, then compress matrices with
+        // huffman
+        for (int i = 0; i < m_height; ++i)
+            for (int j = 0; j < m_width; ++j) {
+                DCT(M0[i][j]);
+                Quantization(M0[i][j], M0[i][j], LuminanceQuantizationTable);
+                LosslessEncode(M0[i][j], os);
+                DCT(M1[i][j]);
+                Quantization(M1[i][j], M1[i][j], ChrominanceQuantizationTable);
+                LosslessEncode(M1[i][j], os);
+                DCT(M2[i][j]);
+                Quantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
+                LosslessEncode(M2[i][j], os);
+            }
 
         os.flush();
     }
@@ -126,23 +127,24 @@ public class JPEG {
     public void decompress(InputStream is, OutputStream os) throws IOException {
         // Read Image Size
         byte[] integer = new byte[9];
-        if (is.read(integer) < 0) throw new IOException();
+        if (is.read(integer) < 0)
+            throw new IOException();
         width = 0;
-        width |= ((int)integer[0]) << 24;
-        width |= ((int)(integer[1]) << 16) & 0x00FF0000;
-        width |= ((int)(integer[2]) << 8) & 0x0000FF00;
-        width |= ((int)(integer[3])) & 0x000000FF;
+        width |= ((int) integer[0]) << 24;
+        width |= ((int) (integer[1]) << 16) & 0x00FF0000;
+        width |= ((int) (integer[2]) << 8) & 0x0000FF00;
+        width |= ((int) (integer[3])) & 0x000000FF;
         height = 0;
-        height |= ((int)integer[4]) << 24;
-        height |= ((int)(integer[5]) << 16) & 0x00FF0000;
-        height |= ((int)(integer[6]) << 8) & 0x0000FF00;
-        height |= ((int)(integer[7])) & 0x000000FF;
+        height |= ((int) integer[4]) << 24;
+        height |= ((int) (integer[5]) << 16) & 0x00FF0000;
+        height |= ((int) (integer[6]) << 8) & 0x0000FF00;
+        height |= ((int) (integer[7])) & 0x000000FF;
 
         // Read quality and initialize quantization tables
         JPEG_Quality quality = JPEG_Quality.values()[integer[8]];
         LuminanceQuantizationTable = quality.getLuminanceTable();
         ChrominanceQuantizationTable = quality.getChrominanceTable();
-        
+
         // Initialize Matrices
         m_width = width / 8;
         if (width % 8 != 0)
@@ -155,16 +157,17 @@ public class JPEG {
         M1 = new int[m_height][m_width][8][8];
         M2 = new int[m_height][m_width][8][8];
 
-        // Decompress file into internal state
-        LosslessDecode(is);
-
-        // Dequantizes and applies the DCT inverse for each component matrix
+        // Decompress file, then Dequantizes and applies the DCT inverse for each
+        // component matrix
         for (int i = 0; i < m_height; ++i)
             for (int j = 0; j < m_width; ++j) {
+                M0[i][j] = LosslessDecode(is);
                 Dequantization(M0[i][j], M0[i][j], LuminanceQuantizationTable);
                 inverseDCT(M0[i][j]);
+                M1[i][j] = LosslessDecode(is);
                 Dequantization(M1[i][j], M1[i][j], ChrominanceQuantizationTable);
                 inverseDCT(M1[i][j]);
+                M2[i][j] = LosslessDecode(is);
                 Dequantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
                 inverseDCT(M2[i][j]);
             }
@@ -361,57 +364,21 @@ public class JPEG {
         return data;
     }
 
-    private void LosslessEncode(OutputStream os) throws IOException {
-        for (int i = 0; i < m_height; ++i)
-            for (int j = 0; j < m_width; ++j) {
-                byte[] zz0 = ZigZag(M0[i][j]);
-                ByteArrayInputStream bai0 = new ByteArrayInputStream(zz0);
-                Huffman huff0 = new Huffman();
-                huff0.compress(bai0, os, 128);
-
-                byte[] zz1 = ZigZag(M1[i][j]);
-                ByteArrayInputStream bai1 = new ByteArrayInputStream(zz1);
-                Huffman huff1 = new Huffman();
-                huff1.compress(bai1, os, 128);
-
-                byte[] zz2 = ZigZag(M2[i][j]);
-                ByteArrayInputStream bai2 = new ByteArrayInputStream(zz2);
-                Huffman huff2 = new Huffman();
-                huff2.compress(bai2, os, 128);
-            }
+    private void LosslessEncode(int[][] mat, OutputStream os) throws IOException {
+        byte[] zz0 = ZigZag(mat);
+        ByteArrayInputStream bai0 = new ByteArrayInputStream(zz0);
+        Huffman huff0 = new Huffman();
+        huff0.compress(bai0, os, 128);
     }
 
-    private void LosslessDecode(InputStream is) throws IOException {
-        for (int i = 0; i < m_height; ++i)
-            for (int j = 0; j < m_width; ++j) {
-                ByteArrayOutputStream bao0 = new ByteArrayOutputStream();
-                Huffman huff0 = new Huffman();
-                huff0.decompress(is, bao0, 128);
-                bao0.flush();
-                byte[] zz0 = bao0.toByteArray();
-                bao0.close();
-                M0[i][j] = inverseZigZag(zz0);
-
-                ByteArrayOutputStream bao1 = new ByteArrayOutputStream();
-                Huffman huff1 = new Huffman();
-                huff1.decompress(is, bao1, 128);
-                bao1.flush();
-                byte[] zz1 = bao1.toByteArray();
-                bao1.close();
-                M1[i][j] = inverseZigZag(zz1);
-
-                ByteArrayOutputStream bao2 = new ByteArrayOutputStream();
-                Huffman huff2 = new Huffman();
-                huff2.decompress(is, bao2, 128);
-                bao2.flush();
-                byte[] zz2 = bao2.toByteArray();
-                if (zz2.length % 2 != 0)
-                    System.out.printf("%d, %d", i, j);
-                bao2.close();
-                M2[i][j] = inverseZigZag(zz2);
-                if (zz2.length % 2 != 0)
-                    System.out.printf("%d, %d", i, j);
-            }
+    private int[][] LosslessDecode(InputStream is) throws IOException {
+        ByteArrayOutputStream bao0 = new ByteArrayOutputStream();
+        Huffman huff0 = new Huffman();
+        huff0.decompress(is, bao0, 128);
+        bao0.flush();
+        byte[] zz0 = bao0.toByteArray();
+        bao0.close();
+        return inverseZigZag(zz0);
     }
 
 }

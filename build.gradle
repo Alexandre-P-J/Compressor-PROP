@@ -5,6 +5,20 @@ plugins {
 apply plugin: 'java'
 apply plugin : 'eclipse'
 
+sourceSets{
+    main{
+        java {
+            srcDirs=['FONTS']
+            exclude 'Testing'
+        }
+    }
+    test{
+        java{
+            srcDirs=['FONTS/Testing']
+        }
+    }
+}
+
 ext {
    javaMainClass = "Compressor"
 }

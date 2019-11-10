@@ -1,19 +1,29 @@
-# Compressor-PROP
-Descripción
+# Group Description
+Ibars Cubel, Albert
+Muñoz Busto, Isaac
+Clemente Marín, Daniel
+Pérez Josende, Alexandre
 
-## Features (Primera entrega)
-- [x] LZ78
-- [x] Custom dictionary size for LZ78
-- [ ] LZSS
-- [ ] Custom dictionary size for LZSS
-- [x] LZW
-- [x] Custom dictionary size for LZW
-- [x] JPEG
-- [x] JPEG using Huffman
-- [ ] Unit tests
-- [ ] Diagrama de uso
-- [ ] Diagrama de clases
-- [ ] Documentación
+albert.ibars.cubel@est.fib.upc.edu
+isaac.munoz.busto@est.fib.upc.edu
+daniel.clemente.marin@est.fib.edu
+alexandre.perez.josende@est.fib.upc.edu
+
+## Road to first assignment
+- [x] EXTRA: Custom dictionary size for LZ78
+- [ ] EXTRA: Custom window size for LZSS
+- [x] EXTRA: Custom dictionary size for LZW
+- [x] JPEG using Huffman and not LZW/LZ78/LZSS
+- [ ] EXTRA: Gradle, "Tota millora que, sense contravenir aquestes condicions, faciliti la lectura i comprensió del contingut del lliurament repercutirà positivament a la nota"
+- [ ] "Diagrama de casos d’ús i breu descripció de cada cas d’ús (fet amb processador de textos)"
+- [ ] "Diagrama estàtic complet del model conceptual de dades en versió disseny i breu descripció de cada classe (fet amb processador de textos)"
+- [ ] "Relació de les classes implementades per cada membre del grup"
+- [ ] "Breu descripció de les estructures de dades i algorismes utilitzats per a implementar les funcionalitats principals"
+- [ ] "Codi de totes les classes del model"
+- [ ] "Codi de les classes de domini associades a les funcionalitats principals de l’aplicació. Aquestes funcionalitat principals es detallaran a l’enunciat"
+- [ ] "Executables que permetin provar totes les classes implementades, mitjançant stubs i drivers"
+- [ ] "Tests que el grup ha fet servir per provar el seu projecte (a afegir als drivers i stubs: una cosa no exclou l’altre)"
+- [ ] Documentation
 ...
 
 ## How to: Compile/Run/Test/Clean
@@ -50,13 +60,3 @@ Its not really needed but its useful to know.
 `> ./gradlew clean`
 #### On Windows:
 `> gradlew.bat clean`
-
-
-## Normas de etiqueta
-- No se hacen commits en el Master excepto merges desde la rama Development.
-- No se hacen commits en el Development excepto merges desde las ramas Feature/*
-- Las ramas donde se hacen commits deben llamarse Feature/NOMBRE y se especializan lo maximo posible, en el caso de que dos miembros o mas trabajen sobre una rama Feature se deben crear subramas para cada miembro.
-- Para añadir una nueva funcionalidad se hara Merge desde una rama Feature a la rama Development, a ser posible esto debe realizarse avisando al resto de miembros y revisando que no rompe nada, precaución.
-- Para actualizar el Master se hará merge desde la rama Development y se hará solo con previo aviso de todos los miembros y despues de verificar exhaustivamente.
-- Se hace un commit extra por cada merge (git merge --no-ff NOMBRERAMA) y recordad eliminar las ramas despues del merge.
-- No se ejecutaran operaciones destructivas que atenten contra cualquiera de las reglas anteriores directa o indirectamente.

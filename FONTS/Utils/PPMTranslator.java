@@ -55,12 +55,11 @@ public class PPMTranslator {
         if ((b = getNextComponent()) < 0)
             throw new IOException("Wrong ppm codification! - Incomplete RGB color");
         float pixelDepthFactor = (float) (255.0 / (float) maxValue);
-        float r_f, g_f, b_f;
-        r_f = Math.min(r * pixelDepthFactor, 255);
-        g_f = Math.min(g * pixelDepthFactor, 255);
-        b_f = Math.min(b * pixelDepthFactor, 255);
+        r = (int)Math.min(r * pixelDepthFactor, 255);
+        g = (int)Math.min(g * pixelDepthFactor, 255);
+        b = (int)Math.min(b * pixelDepthFactor, 255);
         Color c = new Color();
-        c.RGB(r_f, g_f, b_f);
+        c.RGB(r, g, b);
         return c;
     }
 

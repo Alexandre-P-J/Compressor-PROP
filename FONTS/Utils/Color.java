@@ -4,10 +4,10 @@ public class Color {
     public int r, g, b; // yes, this can get messy, but its to avoid getters
     public int Y, Cb, Cr;
 
-    public void RGB(float r, float g, float b) { // uses float instead of int to reduce aproximation imprecision
-        this.r = (int) r;
-        this.g = (int) g;
-        this.b = (int) b;
+    public void RGB(int r, int g, int b) { // uses float instead of int to reduce aproximation imprecision
+        this.r = r;
+        this.g = g;
+        this.b = b;
         Y = (int) (float) ((0.299 * r) + (0.587 * g) + (0.114 * b));
         Cb = (int) (float) (128.0 - (0.168736 * r) - (0.331264 * g) + (0.5 * b));
         Cr = (int) (float) (128.0 + (0.5 * r) - (0.418688 * g) - (0.081312 * b));
