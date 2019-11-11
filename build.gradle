@@ -43,6 +43,7 @@ repositories {
 }
 
 javadoc {
+    dependsOn clean
     source = sourceSets.main.allJava
     options.addBooleanOption('html5', true)
     doLast {
