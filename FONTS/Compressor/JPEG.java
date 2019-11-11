@@ -2,34 +2,90 @@ package Compressor;
 
 import Constants.JPEG_Quality;
 import Compressor.Huffman;
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import Utils.Color;
 import Utils.PPMTranslator;
 
-public class JPEG {
-    private int[][] LuminanceQuantizationTable; // Table related to the amount of compression and quality on light
-                                                // intensity
-    private int[][] ChrominanceQuantizationTable; // Table related to the amount of compression and quality on
-                                                  // color
-    private int[][][][] M0; // 2D matrix of 8x8 Matrices for channel 0
-    private int[][][][] M1; // 2D matrix of 8x8 Matrices for channel 1
-    private int[][][][] M2; // 2D matrix of 8x8 Matrices for channel 2
-    private int width = -1; // image width
-    private int height = -1; // image height
-    private int m_width = -1; // number of horizontal 8x8 matrices
-    private int m_height = -1; // number of vertical 8x8 matrices
-    // used to check if c and cT are initialized because matrix initialization order
-    // must be enforced (c before cT)
-    private static boolean initDCTMatrices = false;
-    private static final double c[][] = new double[8][8]; // cosine matrix
-    private static final double cT[][] = new double[8][8]; // transformed cosine matrix
+/**
+ * @author Alexandre Perez
+ */
 
+/**
+ * JPEG algorithm, compress from a valid ppm ASCII/BIN image in the form of an
+ * InputStream to an OutputStream and decompress a valid compressed
+ * image in the form of an InputStream to a valid binary ppm image in the form of an
+ * OutputStream.
+ */
+public class JPEG {
+    /**
+     * Table related to the amount of compression and quality on light intensity
+     */
+    private int[][] LuminanceQuantizationTable;
+    /**
+     * Table related to the amount of compression and quality on color
+     */
+    private int[][] ChrominanceQuantizationTable;
+    /**
+     * 2D matrix of 8x8 Matrices for channel 0
+     */
+    private int[][][][] M0;
+    /**
+     * 2D matrix of 8x8 Matrices for channel 0
+     */
+    private int[][][][] M1;
+    /**
+     * 2D matrix of 8x8 Matrices for channel 0
+     */
+    private int[][][][] M2;
+    /**
+     * image width
+     */
+    private int width = -1;
+    /**
+     * image height
+     */
+    private int height = -1;
+    /**
+     * number of horizontal 8x8 matrices
+     */
+    private int m_width = -1;
+    /**
+     * number of vertical 8x8 matrices
+     */
+    private int m_height = -1;
+    /**
+     * used to check if c and cT are initialized because matrix initialization order
+     * must be enforced (c before cT)
+     */
+    private static boolean initDCTMatrices = false;
+    /**
+     * cosine matrix
+     */
+    private static final double c[][] = new double[8][8];
+    /**
+     * transformed cosine matrix
+     */
+    private static final double cT[][] = new double[8][8];
+
+
+    /**
+     * Default constructor
+     * initializes c and cT matrices if they arent initialized yet in any instance
+     */
     public JPEG() {
         if (!initDCTMatrices)
             initDCTMatrices();
         initDCTMatrices = true;
     }
 
+    /**
+     * Initializes c and cT matrices with the cosine matrix and the transformed
+     * cosine matrix. Must be executed before any call to DCT and inverseDCT
+     */
     private static void initDCTMatrices() {
         int i;
         int j;
@@ -48,6 +104,13 @@ public class JPEG {
         }
     }
 
+    /**
+     * Compress a valid ppm image from an InputStream to an OutputStream given a compression quality
+     * @param is InputStream that contains a stream of bytes with a valid ppm image codification
+     * @param os OutputStream where the compressed image will be stored
+     * @param quality Enumerator that defines the quality of compression used
+     * @throws IOException if reading or writting to a stream fails
+     */
     public void compress(InputStream is, OutputStream os, JPEG_Quality quality) throws IOException {
         LuminanceQuantizationTable = quality.getLuminanceTable();
         ChrominanceQuantizationTable = quality.getChrominanceTable();
@@ -124,6 +187,13 @@ public class JPEG {
         os.flush();
     }
 
+
+    /**
+     * Decompress an image compressed with compress from an InputStream to an OutputStream
+     * @param is InputStream an stream consisting in a image compressed with the compress method
+     * @param os OutputStream where the compressed image will be stored with a valid ppm image codification
+     * @throws IOException if reading or writting to a stream fails
+     */
     public void decompress(InputStream is, OutputStream os) throws IOException {
         // Read Image Size
         byte[] integer = new byte[9];
@@ -200,6 +270,12 @@ public class JPEG {
         os.flush();
     }
 
+    /**
+     * Quantificates a matrix dividing it by a QuantificationTable and storing the integer part
+     * @param input 8x8 matrix to be quantified
+     * @param output quantified 8x8 matrix of input
+     * @param QuantizationTable copy of the 8x8 quantization table used by the compression
+     */
     private void Quantization(int[][] input, int[][] output, int[][] QuantizationTable) {
         for (int i = 0; i < 8; ++i)
             for (int j = 0; j < 8; ++j) {
@@ -207,6 +283,12 @@ public class JPEG {
             }
     }
 
+    /**
+     * Dequantificates a matrix multiplying it by a QuantificationTable and storing the integer part
+     * @param input 8x8 matrix to be dequantized
+     * @param output dequantified 8x8 matrix of input
+     * @param QuantizationTable copy of the 8x8 quantization table used by the decompression
+     */
     private void Dequantization(int[][] input, int[][] output, int[][] QuantizationTable) {
         for (int i = 0; i < 8; ++i)
             for (int j = 0; j < 8; ++j) {
@@ -214,8 +296,10 @@ public class JPEG {
             }
     }
 
-    // Applies the DCT-II transformation to M matrix where M = input[y][x] - 128
-    // (centers values around 0)
+    /**
+     * Applies the DCT-II transformation to M matrix where M = input[y][x] - 128 (centers values around 0)
+     * @param input 8x8 matrix to be transformed to the DCT-II transformation and stored in place
+     */
     private void DCT(int input[][]) {
         double temp[][] = new double[8][8];
         double temp1;
@@ -241,9 +325,11 @@ public class JPEG {
         }
     }
 
-    // Applies the DCT-III transformation to input matrix and adds 128 to each
-    // element
-    // to undo the 128 that was substracted in DCT-II
+    /**
+     * Applies the DCT-III transformation to input matrix and adds 128 to each
+     * to undo the 128 that was substracted in DCT-II
+     * @param input 8x8 matrix to be transformed to the DCT-III transformation and stored in place
+     */
     private void inverseDCT(int input[][]) {
         double temp[][] = new double[8][8];
         double temp1;
@@ -276,9 +362,13 @@ public class JPEG {
         }
     }
 
-    // reads from bottom to top doing the ZigZag pattern and stores values from
-    // the first non 0 value to the top.
-    // The values are stored in a byte[] using 2 bytes per value
+    /**
+     * Reads from bottom to top doing the ZigZag pattern and stores values from
+     * the first non 0 value to the top. The values are stored in a byte[] using 2 bytes per value
+     * @param in 8x8 Matrix to be traversed
+     * @return array with length from 0 to 128 elements with the 2 elements per value from
+     * the in matrix traversed in zigzag from the first non 0 value.
+     */
     private byte[] ZigZag(int[][] in) {
         byte[] data = null;
         int data_index = 0;
@@ -325,9 +415,13 @@ public class JPEG {
         return data;
     }
 
-    // reads from top to top doing the ZigZag pattern and stores values
-    // encoded with 2 bytes to the result 8x8 matrix, after all values
-    // from "in" are stored, fills the rest with 0s
+    /**
+     * Reads from top to top doing the inverse ZigZag pattern and stores values encoded
+     * with 2 bytes to the result 8x8 matrix, after all values from "in" are stored, fills the rest with 0s
+     * @param in array with 0 to 128 elements representing 2 elements per value
+     * @return 8x8 Matrix obtained from in doing the inverse zigzag and filling the elements after the last
+     * value from with 0s.
+     */
     private int[][] inverseZigZag(byte[] in) {
         int[][] data = new int[8][8];
         int i = 1;
@@ -364,6 +458,13 @@ public class JPEG {
         return data;
     }
 
+    /**
+     * Encodes the given matrix using zigzag and huffman and outputs the result to
+     * the output stream
+     * @param mat 8x8 matrix that will be encoded
+     * @param os OutputStream where the encoded 8x8 mat matrix will be encoded
+     * @throws IOException if fails to write to the OutputStream
+     */
     private void LosslessEncode(int[][] mat, OutputStream os) throws IOException {
         byte[] zz0 = ZigZag(mat);
         ByteArrayInputStream bai0 = new ByteArrayInputStream(zz0);
@@ -371,6 +472,13 @@ public class JPEG {
         huff0.compress(bai0, os, 128);
     }
 
+    /**
+     * Decodes the given InputStream using huffman and inverse zigzag and returns the result
+     * a the 8x8 matrix
+     * @param is Encoded InputStream representing a 8x8 matrix encoded with zigzag and huffman
+     * @return 8x8 Matrix decoded from the encoded InputStream
+     * @throws IOException if fails to read to the InputStream
+     */
     private int[][] LosslessDecode(InputStream is) throws IOException {
         ByteArrayOutputStream bao0 = new ByteArrayOutputStream();
         Huffman huff0 = new Huffman();
