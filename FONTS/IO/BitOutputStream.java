@@ -7,7 +7,12 @@ public class BitOutputStream extends FilterOutputStream {
 	class ControlBit {
 		int  buff = 0;
 		int  count = 0;
-		// Retorna -1 si encara no hi ha res ecrit 
+
+		/**
+		 * 
+		 * @param next
+		 * @return
+		 */
 		int  writeOne (int next) {
 			int res = -1;
 			buff = buff*2 + next;
@@ -21,6 +26,10 @@ public class BitOutputStream extends FilterOutputStream {
 			return res; 
 		}
 
+		/**
+		 * 
+		 * @return
+		 */
 		int  writeLast () { 
 			int x = 0;
 			for (int i = 0; i < 7-count; ++i)
@@ -36,23 +45,39 @@ public class BitOutputStream extends FilterOutputStream {
 
 	ControlBit controlBit = new ControlBit();
 
-	// Constructora que crea una nova instància de BitOutputStream
+	/**
+	 * Constructor creates a new instance of BitOuputStream.
+	 * @param os the OutputSream.
+	 */
 	public BitOutputStream (OutputStream os) { 
 		super(os); 
 	}
 
-	// Escriu un bit al flux inclòs. Tot i que l'entrada és un sol bit,
-	// es dona com a int. Si no és zero, es tracta com a 1.
+	/**
+	 * Writes a single bit into the included stream.
+	 * @param i is a single bit given as an int.
+	 * @throws IOException If there is a problem.
+	 */
 	public void write1Bit (int i) throws IOException { 
 		int x = controlBit.writeOne(i >= 1 ? 1:0);
 		if (x >= 0) out.write(x); 
 	}
 
+	/**
+	 * Writes a single bit into the included stream.
+	 * @param i is a boolean to express a single bit, true: 1, false: 0
+	 * @throws IOException If there is a problem.
+	 */
 	public void write1Bit (boolean i) throws IOException { 
 		int x = controlBit.writeOne(i ? 1:0);
 		if (x >= 0) out.write(x); 
 	}
 
+	/**
+	 * 
+	 * @param i
+	 * @throws IOException
+	 */
 	public void write8Bit (int i) throws IOException {
 		write1Bit((i >>> 7) & 0x00000001);
 		write1Bit((i >>> 6) & 0x00000001);
@@ -64,6 +89,11 @@ public class BitOutputStream extends FilterOutputStream {
 		write1Bit(i & 0x00000001);
 	}
 
+	/**
+	 * 
+	 * @param i
+	 * @throws IOException
+	 */
 	public void write8Bit (byte i) throws IOException {
 		write8Bit((int)i);
 	}
@@ -72,6 +102,9 @@ public class BitOutputStream extends FilterOutputStream {
 		throw new Error("REPLACE THIS FUNCTION IN CODEBASE! USE write1Bit INSTEAD.");
 	}
 	
+	/**
+	 * 
+	 */
 	public void flush() throws IOException {
 		if (controlBit.count > 0) out.write(controlBit.writeLast());
 		super.flush();

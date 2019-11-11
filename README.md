@@ -26,15 +26,8 @@ alexandre.perez.josende@est.fib.upc.edu
 - [ ] Documentation
 ...
 
-## How to: Compile/Run/Test/Clean
+## How-to's:
 This will assume you dont have gradle, if you have gradle installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
-
-### Compile
-This will get all needed dependencies from the internet and build.
-#### On Linux:
-`> ./gradlew build`
-#### On Windows:
-`> gradlew.bat build`
 
 ### Run
 This will get all needed dependencies from the internet , build if needed and run the application.
@@ -53,6 +46,13 @@ This will get all needed dependencies from the internet , build if needed and ru
 `> ./gradlew test`
 #### On Windows:
 `> gradlew.bat test`
+
+### Generating Documentation:
+This will generate a 'Documentation' folder with a HTML5 version of Javadoc
+#### On Linux:
+`> ./gradlew javadoc`
+#### On Windows:
+`> gradlew.bat javadoc`
 
 ### Clean
 Its not really needed but its useful to know.

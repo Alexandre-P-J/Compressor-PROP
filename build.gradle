@@ -42,6 +42,24 @@ repositories {
     jcenter()
 }
 
+javadoc {
+    source = sourceSets.main.allJava
+    options.addBooleanOption('html5', true)
+    doLast {
+        def folder = new File('Documentation')
+        if (!folder.exists()) {
+            delete 'Documentation'
+        }
+        project.file('Documentation').mkdirs()
+        copy {
+            from fileTree('build/docs/javadoc')
+            into 'Documentation'
+        }
+    }
+}
+
+
+
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
