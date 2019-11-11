@@ -45,7 +45,7 @@ repositories {
 javadoc {
     dependsOn clean
     source = sourceSets.main.allJava
-    options.addBooleanOption('html5', true)
+    options.memberLevel = JavadocMemberLevel.PRIVATE
     doLast {
         def folder = new File('DOCS/Documentation')
         if (!folder.exists()) {

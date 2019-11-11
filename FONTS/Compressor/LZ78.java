@@ -74,7 +74,7 @@ public class LZ78 {
     /**
      * Write the code in bits into output stream.
      * @param bos the BitOutputStream.
-     * @param code the code to write.
+     * @param n the code to write.
      * @param bits number of bits from the code.
      * @throws IOException If there is a problem.
      */

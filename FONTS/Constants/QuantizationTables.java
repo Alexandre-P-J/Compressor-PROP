@@ -1,5 +1,8 @@
 package Constants;
 
+/**
+ * Static class containing 8x8 quantization tables for the jpeg algorithm
+ */
 public class QuantizationTables {
   public static final int[][] Luminance00 = { { 32, 33, 51, 81, 66, 39, 34, 17 },
                                               { 33, 36, 48, 47, 28, 23, 12, 12 },

@@ -1,10 +1,16 @@
 package Constants;
 
 public enum JPEG_Quality {
-    // Altering the order will break retrocompatibility. If needed, add more enumerations at the end.
-    // 127 Max enumerators, do not exceed this amount
+    /**
+     * Altering the order will break retrocompatibility. If needed, add more enumerations at the end.
+     * 127 Max enumerators, do not exceed this amount
+     */
     Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10, Q11, Q12, MAX, MIN, DEFAULT, JPEGStandard;
-  
+
+    /**
+     * Returns the Luminance table depending of the enum value
+     * @return returns the Luminance table mapped for each enumerator element
+     */
     public final int[][] getLuminanceTable() {
       switch (this) {
       case Q0:
@@ -46,6 +52,10 @@ public enum JPEG_Quality {
       }
     }
   
+    /**
+     * Returns the Chrominance table depending of the enum value
+     * @return returns the Chrominance table mapped for each enumerator element
+     */
     public final int[][] getChrominanceTable() {
       switch (this) {
       case Q0:
