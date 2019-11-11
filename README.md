@@ -1,13 +1,13 @@
 # Group Description
-- Ibars Cubel, Albert
-- Muñoz Busto, Isaac
-- Clemente Marín, Daniel
-- Pérez Josende, Alexandre
+##### Ibars Cubel, Albert
+##### Muñoz Busto, Isaac
+##### Clemente Marín, Daniel
+##### Pérez Josende, Alexandre
 
-- albert.ibars.cubel@est.fib.upc.edu
-- isaac.munoz.busto@est.fib.upc.edu
-- daniel.clemente.marin@est.fib.edu
-- alexandre.perez.josende@est.fib.upc.edu
+##### albert.ibars.cubel@est.fib.upc.edu
+##### isaac.munoz.busto@est.fib.upc.edu
+##### daniel.clemente.marin@est.fib.edu
+##### alexandre.perez.josende@est.fib.upc.edu
 
 ## Road to first assignment
 - [x] EXTRA: Custom dictionary size for LZ78
