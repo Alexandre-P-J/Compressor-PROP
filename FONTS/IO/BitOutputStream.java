@@ -1,6 +1,8 @@
 package IO;
 
-import java.io.* ;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.FilterOutputStream;
 
 public class BitOutputStream extends FilterOutputStream {
 	
@@ -47,7 +49,7 @@ public class BitOutputStream extends FilterOutputStream {
 
 	/**
 	 * Constructor creates a new instance of BitOuputStream.
-	 * @param os the OutputSream.
+	 * @param os the output stream to write of.
 	 */
 	public BitOutputStream (OutputStream os) { 
 		super(os); 
@@ -56,7 +58,7 @@ public class BitOutputStream extends FilterOutputStream {
 	/**
 	 * Writes a single bit into the included stream.
 	 * @param i is a single bit given as an int.
-	 * @throws IOException If there is a problem.
+	 * @throws IOException If there is a write problem.
 	 */
 	public void write1Bit (int i) throws IOException { 
 		int x = controlBit.writeOne(i >= 1 ? 1:0);
@@ -66,7 +68,7 @@ public class BitOutputStream extends FilterOutputStream {
 	/**
 	 * Writes a single bit into the included stream.
 	 * @param i is a boolean to express a single bit, true: 1, false: 0
-	 * @throws IOException If there is a problem.
+	 * @throws IOException If there is a write problem.
 	 */
 	public void write1Bit (boolean i) throws IOException { 
 		int x = controlBit.writeOne(i ? 1:0);

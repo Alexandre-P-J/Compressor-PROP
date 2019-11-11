@@ -1,39 +1,37 @@
 package IO;
 
-import java.io.* ;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FilterInputStream;
 
 public class BitInputStream extends FilterInputStream {
 
-	public BitInputStream (InputStream is) { 
-		super(is); 
-	}
-
-	class BitManager {
-		private int[] buf = new int[8];
-		private int cnt = -1 ;
+	class ControlBit {
+		private int[] buff = new int[8];
+		private int count = -1 ;
 
 		/**
 		 * If we are at the end of the stream.
-		 * @return
+		 * @return true if we are at the end of the stream, otherwise false.
 		 */
 		boolean atTheEnd () { 
-			return ((buf[7] == 1) && (cnt < 0)); 
+			return ((buff[7] == 1) && (count < 0)); 
 		}
 
 		/**
 		 * Set the flag for the end of stream.
 		 */
 		void setTheEnd () { 
-			buf[7] = 1;
-			cnt = -1;
+			buff[7] = 1;
+			count = -1;
 		}
 
 		/**
 		 * If we need to read the next byte.
-		 * @return
+		 * @return 
 		 */
 		boolean noMoreBuffer () { 
-			return cnt < 0; 
+			return count < 0; 
 		}
 
 		/**
@@ -41,17 +39,17 @@ public class BitInputStream extends FilterInputStream {
 		 * @param next
 		 */
 		void setNext (int next) { 
-			for (cnt = 0; cnt < 8; ++cnt) {
-				buf[cnt] = next % 2;
+			for (count = 0; count < 8; ++count) {
+				buff[count] = next % 2;
 				next /= 2;
 			}
 
-			if (buf[7] == 1) {
-				for (cnt = 7;cnt >= 0; cnt--)
-				if (buf[cnt] == 0) break;
-				cnt--;
+			if (buff[7] == 1) {
+				for (count = 7;count >= 0; count--)
+				if (buff[count] == 0) break;
+				count--;
 			} 
-			else cnt = 6;
+			else count = 6;
 		}
 
 		/**
@@ -59,19 +57,27 @@ public class BitInputStream extends FilterInputStream {
 		 * @return
 		 */		
 		int getNext() {
-			return buf[cnt--]; 
+			return buff[count--]; 
 		}
 
 		int left() {
-			return cnt+1; 
+			return count+1; 
 		}
 	};
 
-	BitManager bitManager = new BitManager();
+	ControlBit bitControl = new ControlBit();
 
 	byte[] tempBuf = null;
 	int tempBufPtr = 0;
 	int tempBufLen = 0;
+
+	/**
+	 * Constructor creates a new instance of BitOutputStream.
+	 * @param is the input stream to read of.
+	 */
+	public BitInputStream (InputStream is) { 
+		super(is); 
+	}
 
 	/**
 	 * 
@@ -92,17 +98,17 @@ public class BitInputStream extends FilterInputStream {
 	/**
 	 * 
 	 * @return
-	 * @throws IOException
+	 * @throws IOException 
 	 */
 	public int read1Bit() throws IOException {
-		if (bitManager.atTheEnd()) return -1;
-		if (bitManager.noMoreBuffer()) {
+		if (bitControl.atTheEnd()) return -1;
+		if (bitControl.noMoreBuffer()) {
 			int i = readNextByte();
-			if (i < 0) bitManager.setTheEnd();
-			else bitManager.setNext(i);
+			if (i < 0) bitControl.setTheEnd();
+			else bitControl.setNext(i);
 			return read1Bit(); // CHECK THIS 
 		}
-		return bitManager.getNext();
+		return bitControl.getNext();
 	}
 
 	// losing data on incomplete input returning -1 is expected

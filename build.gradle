@@ -43,17 +43,19 @@ repositories {
 }
 
 javadoc {
+    dependsOn clean
     source = sourceSets.main.allJava
-    options.addBooleanOption('html5', true)
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+    //options.addBooleanOption('html5', true)
     doLast {
-        def folder = new File('Documentation')
+        def folder = new File('DOCS/Documentation')
         if (!folder.exists()) {
-            delete 'Documentation'
+            delete 'DOCS/Documentation'
         }
-        project.file('Documentation').mkdirs()
+        project.file('DOCS/Documentation').mkdirs()
         copy {
             from fileTree('build/docs/javadoc')
-            into 'Documentation'
+            into 'DOCS/Documentation'
         }
     }
 }

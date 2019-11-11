@@ -12,7 +12,7 @@ public class ByteArray {
 
     /**
      * Constructor with a single byte.
-     * @param b
+     * @param b the byte to be contained in the new byte array.
      */
     public ByteArray(byte b) {
         array = new byte[] { b };
@@ -20,15 +20,15 @@ public class ByteArray {
 
     /**
      * Cloning constructor
-     * @param ab
+     * @param ba the byte array to be cloned.
      */
-    public ByteArray(byte[] ab) {
-        array = (byte[]) ab.clone();
+    public ByteArray(byte[] ba) {
+        array = (byte[]) ba.clone();
     }
 
     /**
      * Returns the size of the byte array.
-     * @return the size.
+     * @return the size as a Integer.
      */
     public int size() {
         return array.length;
@@ -56,7 +56,7 @@ public class ByteArray {
 
     /**
      * Returns the byte in a given position.
-     * @param p position 
+     * @param p position to get the byte of.
      * @return the byte in the position p.
      */
     public byte getBytePos(int p) {
@@ -65,16 +65,16 @@ public class ByteArray {
 
     /**
      * Concatenates another byte array into this one.
-     * @param ab the ByteArray to concatenate.
+     * @param ba the ByteArray to concatenate.
      * @return the concatenation in another newly created one.
      */
-    public ByteArray concatenate(ByteArray ab) {
-        int n = size() + ab.size();
+    public ByteArray concatenate(ByteArray ba) {
+        int n = size() + ba.size();
         byte[] b = new byte[n];
         for (int i = 0; i < size(); ++i)
             b[i] = getBytePos(i);
-        for (int i = 0; i < ab.size(); ++i)
-            b[i + size()] = ab.getBytePos(i);
+        for (int i = 0; i < ba.size(); ++i)
+            b[i + size()] = ba.getBytePos(i);
         return new ByteArray(b);
     }
 
@@ -88,6 +88,12 @@ public class ByteArray {
     }
 
     // Retorna el ByteArray entre [beginIndex, endIndex)
+    /**
+     * 
+     * @param beginIndex
+     * @param endIndex
+     * @return
+     */
     public ByteArray subByteArray(int beginIndex, int endIndex) {
         assert (beginIndex >= 0);
         assert (endIndex >= beginIndex);
@@ -99,6 +105,11 @@ public class ByteArray {
     }
 
     // Retorna l'index de la primera ocurrencia del ByteArray ba dins d'aquest ByteArray
+    /**
+     * 
+     * @param ba
+     * @return
+     */
     public int indexOf(ByteArray ba) {
         if (ba.size() == 0)
             return -1;
@@ -114,6 +125,12 @@ public class ByteArray {
     }
 
     // Retorna un ByteArray que ha eliminat els valors compresos entre [beginIndex, endIndex)
+    /**
+     * 
+     * @param beginIndex
+     * @param endIndex
+     * @return
+     */
     public ByteArray delete(int beginIndex, int endIndex) {
         assert (beginIndex >= 0);
         assert (endIndex >= 0);
@@ -134,7 +151,7 @@ public class ByteArray {
     }
 
     /**
-     * Drops the last character.
+     * Drops the last byte.
      * @return the last byte of the ByteArray.
      */
     public byte getLastByte() {
