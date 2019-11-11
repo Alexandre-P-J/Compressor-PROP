@@ -61,7 +61,18 @@ public class ByteArray {
         return concatenate(new ByteArray(b));
     }
 
-    public ByteArray substring (int beginIndex, int endIndex) {
+    public ByteArray substring(int beginIndex, int endIndex) {
+        assert(beginIndex >= 0);
+        assert(endIndex >= beginIndex);
+        assert(array.length >= endIndex);
+        byte[] bar = new byte[endIndex-beginIndex];
+        for (int i = 0; i < bar.length; ++i) {
+            bar[i] = array[beginIndex+i];
+        }
+        return new ByteArray(bar);
+    }
+
+    /*public ByteArray substring (int beginIndex, int endIndex) {
       int n = endIndex - beginIndex + 1;
       byte[] b = new byte[n];
       int index = beginIndex;
@@ -70,23 +81,23 @@ public class ByteArray {
         ++index;
       }
       return new ByteArray(b);
-    }
+    }*/
 
     public int indexOf(ByteArray ba) {
-      if (ba.size() == 0) return -1;
-      out:
-      for (int i = 0; i <= array.length - ba.size(); ++i) {
-        for (int j = 0; j < ba.size(); ++j) {
-            if (array[i + j] != ba.getBytePos(j)) {
-              continue out;
+        if (ba.size() == 0) return -1;
+        int end = (array.length - ba.size()) + 1;
+        for (int i = 0; i < end; ++i) {
+            for (int j = 0; j < ba.size(); ++j) {
+                if (ba.getBytePos(j) != array[i+j])
+                    break;
+                else if (j == (ba.size() - 1))
+                    return i;
             }
         }
-        return i;
-      }
-      return -1;
+        return -1;
     }
-
-	  public byte[] getBytes() {
+    
+    public byte[] getBytes() {
         return (byte[]) array.clone();
     }
 
