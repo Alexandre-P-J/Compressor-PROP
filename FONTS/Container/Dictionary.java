@@ -8,10 +8,10 @@ import java.util.Map;
 public class Dictionary {
 
     // Maximum size of the dictionary
-    int maxSize;
+    private int maxSize;
 
-    Map <ByteArray, Integer> m;
-    List <ByteArray> l; 
+    private Map <ByteArray, Integer> m;
+    private List <ByteArray> l; 
 
     /**
      * Constructor that creates a hasmap and an array list and 

@@ -29,7 +29,7 @@ public class LZW {
      * @param n the byte to encode.
      * @return the code generated, if not returns -1.
      */
-    int encodeByte (int n) {
+    private int encodeByte (int n) {
         byte b = (byte)n;
         ByteArray aux = ba.concatenate(b);
         int code = dict.getNumStr(aux);
@@ -50,7 +50,7 @@ public class LZW {
      * Encode de last byte of the sequence if there is something left. 
      * @return the code left.
      */
-    int encodeLastByte() {
+    private int encodeLastByte() {
         ByteArray aux = ba;
         ba = emptyBA;
         return dict.getNumStr(aux);
@@ -60,9 +60,9 @@ public class LZW {
      * Write the code in bits into output stream with the help of the BitOutputStream.
      * @param bos the BitOutputStream the write of.
      * @param code the code to write.
-     * @throws IOException If cannot write to the output stream.
+     * @throws IOException if writting to the output stream fails.
      */
-    void writeCode (BitOutputStream bos, int code) throws IOException {
+    private void writeCode (BitOutputStream bos, int code) throws IOException {
         for (int i = 0; i < nBits; ++i) {
             bos.write1Bit(code&1);
             code /= 2;  
@@ -75,7 +75,7 @@ public class LZW {
      * @param is the input stream to read data.
      * @param os the output stream to save data.
      * @param DictBitSize Dictionary size.
-     * @throws Exception If cannot read/write files.
+     * @throws Exception if reading or writting to a stream fails.
      */
     public void compress (InputStream is, OutputStream os, int DictBitSize) throws Exception {
         if (DictBitSize > 31 || DictBitSize < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");
@@ -103,9 +103,9 @@ public class LZW {
      * Read the code from the given bit input stream, and returns it as an int.
      * @param bis the BitInputStream to read of. 
      * @return an Integer with the code of nBits gereneted from the input stream.
-     * @throws IOException If cannot read from the input stream.
+     * @throws IOException if reading from the input stream fails.
      */
-    int readCode (BitInputStream bis) throws IOException {
+    private int readCode (BitInputStream bis) throws IOException {
         int n = 0;
         for (int i = 0; i < nBits; ++i) {
             int next = bis.read1Bit();
@@ -120,7 +120,7 @@ public class LZW {
      * @param code the code to decode.
      * @return a ByteArray with the code decoded.
      */
-    ByteArray disarray (int code) {
+    private ByteArray disarray (int code) {
         ByteArray s = dict.getStrNum(code);
         if (s == null) {
             s = ba.concatenate(ba.getBytePos(0));
@@ -138,7 +138,7 @@ public class LZW {
      * Decompresses the given input stream, writing to the given output stream.
      * @param is the input stream to read data.
      * @param os the output stream to write data.
-     * @throws Exception If cannot read/write files.
+     * @throws Exception if reading or writting to a stream fails.
      */
     public void decompress (InputStream is, OutputStream os) throws Exception {
         nBits = is.read();  // Dict size

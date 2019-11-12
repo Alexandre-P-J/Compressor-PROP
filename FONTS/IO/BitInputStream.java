@@ -14,14 +14,14 @@ public class BitInputStream extends FilterInputStream {
 		 * If we are at the end of the stream.
 		 * @return true if we are at the end of the stream, otherwise false.
 		 */
-		boolean atTheEnd () { 
+		private boolean atTheEnd () { 
 			return ((buff[7] == 1) && (count < 0)); 
 		}
 
 		/**
 		 * Set the flag for the end of stream.
 		 */
-		void setTheEnd () { 
+		private void setTheEnd () { 
 			buff[7] = 1;
 			count = -1;
 		}
@@ -30,7 +30,7 @@ public class BitInputStream extends FilterInputStream {
 		 * If we need to read the next byte.
 		 * @return 
 		 */
-		boolean noMoreBuffer () { 
+		private boolean noMoreBuffer () { 
 			return count < 0; 
 		}
 
@@ -38,7 +38,7 @@ public class BitInputStream extends FilterInputStream {
 		 * Set the buffer
 		 * @param next
 		 */
-		void setNext (int next) { 
+		private void setNext (int next) { 
 			for (count = 0; count < 8; ++count) {
 				buff[count] = next % 2;
 				next /= 2;
@@ -56,12 +56,8 @@ public class BitInputStream extends FilterInputStream {
 		 * Get the next bit.
 		 * @return
 		 */		
-		int getNext() {
+		private int getNext() {
 			return buff[count--]; 
-		}
-
-		int left() {
-			return count+1; 
 		}
 	};
 

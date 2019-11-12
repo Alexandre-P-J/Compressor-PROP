@@ -1,10 +1,10 @@
 package Container;
 
 public class ByteArray {
-    final byte[] array;
+    final private byte[] array;
 
     /**
-     * Default constructor, 0 length array
+     * Default constructor, 0 length array.
      */
     public ByteArray() {
         array = new byte[0];
@@ -19,7 +19,7 @@ public class ByteArray {
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * @param ba the byte array to be cloned.
      */
     public ByteArray(byte[] ba) {
@@ -35,8 +35,8 @@ public class ByteArray {
     }
 
     /**
-     * For the hash-table we need this.
-     * @return 
+     * Compares the array of an object with the main byte array. Need it for the hash-table.
+     * @return true if the two arrays are equal, otherwise false.
      */
     public boolean equals(Object o) {
         ByteArray ba = (ByteArray) o;
@@ -44,8 +44,8 @@ public class ByteArray {
     }
 
     /**
-     * For the hash-table we need to give a hash code.
-     * @return 
+     * Hash code for the hash-table.
+     * @return the code of the hash-table.
      */
     public int hashCode() {
         int code = 0;
@@ -79,7 +79,7 @@ public class ByteArray {
     }
 
     /**
-     * Concatenates a byte in this array of bytes
+     * Concatenates a byte in this array of bytes.
      * @param b the byte to concatenate.
      * @return the concatenations in another newly created one.
      */
@@ -87,12 +87,11 @@ public class ByteArray {
         return concatenate(new ByteArray(b));
     }
 
-    // Retorna el ByteArray entre [beginIndex, endIndex)
     /**
-     * 
-     * @param beginIndex
-     * @param endIndex
-     * @return
+     * Returns the ByteArray between [beginIndex, endIndex].
+     * @param beginIndex the first desired index.
+     * @param endIndex the final desired index.
+     * @return the ByteArray between [beginIndex, endIndex].
      */
     public ByteArray subByteArray(int beginIndex, int endIndex) {
         assert (beginIndex >= 0);
@@ -104,11 +103,11 @@ public class ByteArray {
         return new ByteArray(bar);
     }
 
-    // Retorna l'index de la primera ocurrencia del ByteArray ba dins d'aquest ByteArray
+    
     /**
-     * 
-     * @param ba
-     * @return
+     * Returns the index of the first ocurrence of ByteArray ba in this ByteArray.
+     * @param ba the ByteArray to look for.
+     * @return the index, otherwise returns -1.
      */
     public int indexOf(ByteArray ba) {
         if (ba.size() == 0)
@@ -124,12 +123,11 @@ public class ByteArray {
         return -1;
     }
 
-    // Retorna un ByteArray que ha eliminat els valors compresos entre [beginIndex, endIndex)
     /**
-     * 
-     * @param beginIndex
-     * @param endIndex
-     * @return
+     * Returns a ByteArray without the compressed values between [beginIndex, endIndex).
+     * @param beginIndex the first desired index.
+     * @param endIndex the final desired index.
+     * @return a ByteArray that has eliminated the values between [beginIndex, endIndex).
      */
     public ByteArray delete(int beginIndex, int endIndex) {
         assert (beginIndex >= 0);
@@ -159,8 +157,8 @@ public class ByteArray {
     }
 
     /**
-     * 
-     * @return
+     * Returns the ByteArray with the last byte drop.
+     * @return the ByteArray with the last byte drop.
      */
     public ByteArray dropLast() {
         byte[] arr = new byte[size() - 1];
