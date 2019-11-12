@@ -55,7 +55,7 @@ public class LZSS {
     * @param bis BitInputStream where the bits will be readed
     * @param bits Number of bits that will be readed
     * @return the bit sequence readed
-    * @throws IOException If reading from BitOuputStream fails
+    * @throws IOException If reading from BitInputStream fails
     */
     int readCode(BitInputStream bis, int bits) throws IOException {
         int n = 0;
