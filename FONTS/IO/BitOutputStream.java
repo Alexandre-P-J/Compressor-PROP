@@ -1,6 +1,8 @@
 package IO;
 
-import java.io.* ;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.FilterOutputStream;
 
 public class BitOutputStream extends FilterOutputStream {
 	
@@ -13,7 +15,7 @@ public class BitOutputStream extends FilterOutputStream {
 		 * @param next
 		 * @return
 		 */
-		int  writeOne (int next) {
+		private int  writeOne (int next) {
 			int res = -1;
 			buff = buff*2 + next;
 			count++;
@@ -30,7 +32,7 @@ public class BitOutputStream extends FilterOutputStream {
 		 * 
 		 * @return
 		 */
-		int  writeLast () { 
+		private int  writeLast () { 
 			int x = 0;
 			for (int i = 0; i < 7-count; ++i)
 				x = x*2 + 1;
@@ -47,7 +49,7 @@ public class BitOutputStream extends FilterOutputStream {
 
 	/**
 	 * Constructor creates a new instance of BitOuputStream.
-	 * @param os the OutputSream.
+	 * @param os the output stream to write of.
 	 */
 	public BitOutputStream (OutputStream os) { 
 		super(os); 
@@ -56,7 +58,7 @@ public class BitOutputStream extends FilterOutputStream {
 	/**
 	 * Writes a single bit into the included stream.
 	 * @param i is a single bit given as an int.
-	 * @throws IOException If there is a problem.
+	 * @throws IOException If there is a write problem.
 	 */
 	public void write1Bit (int i) throws IOException { 
 		int x = controlBit.writeOne(i >= 1 ? 1:0);
@@ -66,7 +68,7 @@ public class BitOutputStream extends FilterOutputStream {
 	/**
 	 * Writes a single bit into the included stream.
 	 * @param i is a boolean to express a single bit, true: 1, false: 0
-	 * @throws IOException If there is a problem.
+	 * @throws IOException If there is a write problem.
 	 */
 	public void write1Bit (boolean i) throws IOException { 
 		int x = controlBit.writeOne(i ? 1:0);
@@ -91,8 +93,8 @@ public class BitOutputStream extends FilterOutputStream {
 
 	/**
 	 * 
-	 * @param i
-	 * @throws IOException
+	 * @param i 
+	 * @throws IOException if writting to the output stream fails.
 	 */
 	public void write8Bit (byte i) throws IOException {
 		write8Bit((int)i);
@@ -101,9 +103,9 @@ public class BitOutputStream extends FilterOutputStream {
 	public void write(int i) throws Error {
 		throw new Error("REPLACE THIS FUNCTION IN CODEBASE! USE write1Bit INSTEAD.");
 	}
-	
+
 	/**
-	 * 
+	 * Cleans the stream of any element that may be or maybe not inside the stream.
 	 */
 	public void flush() throws IOException {
 		if (controlBit.count > 0) out.write(controlBit.writeLast());

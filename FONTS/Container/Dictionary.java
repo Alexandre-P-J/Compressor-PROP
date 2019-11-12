@@ -7,14 +7,16 @@ import java.util.Map;
 
 public class Dictionary {
 
-    int maxSize;
+    // Maximum size of the dictionary
+    private int maxSize;
 
-    Map <ByteArray, Integer> m;
-    List <ByteArray> l; 
+    private Map <ByteArray, Integer> m;
+    private List <ByteArray> l; 
 
     /**
-     * 
-     * @param maxSize
+     * Constructor that creates a hasmap and an array list and 
+     * defines the maximum size of the dictionary.
+     * @param maxSize the maximum size of the dictionary.
      */
     public Dictionary (int maxSize) {
         this.maxSize = maxSize;
@@ -34,9 +36,9 @@ public class Dictionary {
     }
 
     /**
-     * Gets the number for the given string.
-     * @param s
-     * @return 
+     * Gets the number for the given byte array.
+     * @param s the byte array to deal with to get his number.
+     * @return an Integer for the given byte array, if the byte array does not exist, retun -1.
      */
     public int getNumStr (ByteArray s) {
         return (m.containsKey(s) ? 
@@ -44,9 +46,9 @@ public class Dictionary {
     }
 
     /**
-     * Gets the string for the given number.
-     * @param n
-     * @return the ByteArray for the given number, if the number does not exist, return null
+     * Gets the byte array for the given number.
+     * @param n the number to deal with to get his byte array.
+     * @return the ByteArray for the given number, if the number does not exist, return null.
      */
     public ByteArray getStrNum (int n) {
         return (n < l.size() ? 
