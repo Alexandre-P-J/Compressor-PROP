@@ -10,11 +10,11 @@ public class Compressor {
             printUsage();
             System.exit(1);
         }
-            
+
         try {
             InputStream is = new BufferedInputStream(new FileInputStream(args[2]));
             OutputStream os = new BufferedOutputStream(new FileOutputStream(args[3]));
-           
+
             if (args[0].equals("LZW")) {
                 LZW fileW = new LZW();
                 if (args[1].equals("compress")) fileW.compress(is,os,DICT_BIT_SIZE);
@@ -39,6 +39,14 @@ public class Compressor {
                     printUsage();
                 }
             }
+            else if (args[0].equals("LZSS")) {
+                LZSS fileLZSS = new LZSS();
+                if (args[1].equals("compress")) fileLZSS.compress(is,os);
+                else if (args[1].equals("decompress")) fileLZSS.decompress(is,os);
+                else {
+                    printUsage();
+                }
+            }
             else {
                 printUsage();
             }
@@ -56,7 +64,7 @@ public class Compressor {
             System.exit(1);
         }
     }
-    
+
     public static void printUsage() {
         System.out.println("Arguments: LZW/LZ78 compress/decompress FromFile ToFile");
     }
