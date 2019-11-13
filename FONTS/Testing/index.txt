@@ -1,7 +1,12 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori Testing:
 
-filename:
-description
+Hi trobem tests per comprovar que funcioni correctament els algoritmes de compressio.
 
-filename2:
-description
+- IOTest.java:
+    Test per les classes BitInputStream i BitOutputStream.
+- LZ78Test.java:
+    Test per la classe LZ78.
+- LZSSTest.java:
+    Test per la classe LZSS.
+- LZWTest.java:
+    Test per la classe LZW.

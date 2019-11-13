@@ -1,7 +1,8 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori Constants:
 
-filename:
-description
+Hi trobem les constatns necessaries per l'algoritme JPEG.
 
-filename2:
-description
+- JPEG_Quality.java:
+    Codi amb les taules de luminancia i crominancia per les diferents calitats.
+- QuantizationTables.java:
+    Conte les taules de luminancia i crominancia.
