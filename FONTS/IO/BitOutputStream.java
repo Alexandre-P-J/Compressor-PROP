@@ -11,9 +11,9 @@ public class BitOutputStream extends FilterOutputStream {
 		int  count = 0;
 
 		/**
-		 * 
-		 * @param next
-		 * @return
+		 * If there is anything left to write
+		 * @param next a bit as an Integer.
+		 * @return Returns -1 if there is nothing yet to be written.
 		 */
 		private int  writeOne (int next) {
 			int res = -1;
@@ -29,8 +29,8 @@ public class BitOutputStream extends FilterOutputStream {
 		}
 
 		/**
-		 * 
-		 * @return
+		 * Write the lasts bits to the output stream.
+		 * @return the bits to write as an Integer.
 		 */
 		private int  writeLast () { 
 			int x = 0;
@@ -76,9 +76,9 @@ public class BitOutputStream extends FilterOutputStream {
 	}
 
 	/**
-	 * 
-	 * @param i
-	 * @throws IOException
+	 * Writes a byte into the included stream.
+	 * @param i the byte to write of.
+	 * @throws IOException if writting to the output stream fails.
 	 */
 	public void write8Bit (int i) throws IOException {
 		write1Bit((i >>> 7) & 0x00000001);
@@ -92,16 +92,12 @@ public class BitOutputStream extends FilterOutputStream {
 	}
 
 	/**
-	 * 
-	 * @param i 
+	 * Writes a byte into the included stream.
+	 * @param i the byte to write of.
 	 * @throws IOException if writting to the output stream fails.
 	 */
 	public void write8Bit (byte i) throws IOException {
 		write8Bit((int)i);
-	}
-
-	public void write(int i) throws Error {
-		throw new Error("REPLACE THIS FUNCTION IN CODEBASE! USE write1Bit INSTEAD.");
 	}
 
 	/**
