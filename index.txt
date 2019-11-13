@@ -1,4 +1,4 @@
-Directori arrel:
+Directori Arrel:
 
 /DOCS: 
     Conte la documentacio del projecte.
