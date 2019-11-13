@@ -28,7 +28,7 @@ public class BitInputStream extends FilterInputStream {
 
 		/**
 		 * If we need to read the next byte.
-		 * @return 
+		 * @return true if we need the next byte, otherwise false.
 		 */
 		private boolean noMoreBuffer () { 
 			return count < 0; 
@@ -36,14 +36,14 @@ public class BitInputStream extends FilterInputStream {
 
 		/**
 		 * Set the buffer
-		 * @param next
+		 * @param next put the bits of the byte into the array.
 		 */
 		private void setNext (int next) { 
 			for (count = 0; count < 8; ++count) {
 				buff[count] = next % 2;
 				next /= 2;
 			}
-
+			// if this was the last byte
 			if (buff[7] == 1) {
 				for (count = 7;count >= 0; count--)
 				if (buff[count] == 0) break;
@@ -54,7 +54,7 @@ public class BitInputStream extends FilterInputStream {
 
 		/**
 		 * Get the next bit.
-		 * @return
+		 * @return the next bit of the buffer.
 		 */		
 		private int getNext() {
 			return buff[count--]; 
@@ -63,9 +63,9 @@ public class BitInputStream extends FilterInputStream {
 
 	ControlBit bitControl = new ControlBit();
 
-	byte[] tempBuf = null;
-	int tempBufPtr = 0;
-	int tempBufLen = 0;
+	private byte[] tempBuf = null;
+	private int tempBufPtr = 0;
+	private int tempBufLen = 0;
 
 	/**
 	 * Constructor creates a new instance of BitOutputStream.
@@ -76,9 +76,9 @@ public class BitInputStream extends FilterInputStream {
 	}
 
 	/**
-	 * 
-	 * @return
-	 * @throws IOException
+	 * Reads the next byte from the stream.
+	 * @return the value of the next byte as an Integer.
+	 * @throws IOException If reading from the input streams fails.
 	 */
 	private int readNextByte () throws IOException { 
 		int val = -1;
@@ -92,9 +92,9 @@ public class BitInputStream extends FilterInputStream {
 	}
 
 	/**
-	 * 
-	 * @return
-	 * @throws IOException 
+	 * Reads a single bit from the included stream.
+	 * @return Returns either 1 or 0, and at the end of stream returns -1.
+	 * @throws IOException If reading from the input streams fails.
 	 */
 	public int read1Bit() throws IOException {
 		if (bitControl.atTheEnd()) return -1;
@@ -107,11 +107,10 @@ public class BitInputStream extends FilterInputStream {
 		return bitControl.getNext();
 	}
 
-	// losing data on incomplete input returning -1 is expected
 	/**
-	 * 
-	 * @return
-	 * @throws IOException
+	 * Reads a byte from the included stream.
+	 * @return Returns either 1 or 0, and at the end of stream returns -1.
+	 * @throws IOException If reading from the input streams fails.
 	 */
 	public int read8Bit() throws IOException {
 		int next;
@@ -121,9 +120,5 @@ public class BitInputStream extends FilterInputStream {
 			result |= next << i; 
 		}
 		return result & 0xFF;
-	}
-
-	public int read () throws Error {
-		throw new Error("REPLACE THIS FUNCTION IN CODEBASE! USE read1Bit() INSTEAD.");
 	}
 }
