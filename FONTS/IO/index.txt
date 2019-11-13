@@ -1,7 +1,8 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori IO:
 
-filename:
-description
+Hi trobem les classes orientades a controlar els fluxos d'entrada i sortida de bits.
 
-filename2:
-description
+- BitInputStream.java:
+    Conte la classe BitInputStream.
+- BitOutputStream.java:
+    Conte la classe BitOutputStream.

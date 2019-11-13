@@ -1,7 +1,8 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori Utils:
 
-filename:
-description
+Hi trobem aquelles classes complementaries i necessaries per el bon funcionament de l'algoritme JPEG.
 
-filename2:
-description
+- Color.java:
+    Conte la classe Color.
+- PPMTranslator.java:
+    Conte la calsse PPMTranslator.

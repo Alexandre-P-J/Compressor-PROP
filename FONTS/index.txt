@@ -1,7 +1,19 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori FONTS:
 
-filename:
-description
+Conte subdirectoris amb el codi font programat.
 
-filename2:
-description
+\Compressor:
+    Conte el codi font dels differents algoritmes de compressio.
+\Constants:
+    Conte les constatns necessaries per l'algoritme JPEG.
+\Container:
+    Conte les nostres estructures de dades (aixi com diccionari i byte array) per el bon funcionament dels LZs.
+\IO:
+    Conte les classes orientades a controlar els fluxos d'entrada i sortida de bits.
+\Testing:
+    Conte tests per comprovar que funcioni correctament els algoritmes de compressio.
+\Utils:
+    Conte totes aquelles classes complementaries i necessaries per el bon funcionament de l'algoritme JPEG.
+
+- Compressor.java: 
+    Main del programa.

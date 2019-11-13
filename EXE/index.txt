@@ -1,7 +1,4 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori EXE:
 
-filename:
-description
-
-filename2:
-description
+\DriverJPEG: 
+    Conte l'executable i els testejos sobre el DriverJPEG.

@@ -1,7 +1,8 @@
-ELEMENTS IN THIS DIRECTORY:
+Directori Container:
 
-filename:
-description
+Hi trobem les estructures de dades per el bon funcionament dels LZs.
 
-filename2:
-description
+- ByteArray.java:
+    Codi de la classe ByteArray.
+- Dictionary.java:
+    Codi de la classe Dictionary.
