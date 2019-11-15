@@ -11,11 +11,11 @@ public class LZ78Driver {
         }
 
         try {
-            InputStream is = new BufferedInputStream(new FileInputStream(args[2]));
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(args[3]));
+            InputStream is = new BufferedInputStream(new FileInputStream(args[1]));
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(args[2]));
             LZ78 file78 = new LZ78();
-            if (args[1].equals("compress")) file78.compress(is,os,DICT_BIT_SIZE);
-            else if (args[1].equals("decompress")) file78.decompress(is,os);
+            if (args[0].equals("compress")) file78.compress(is,os,DICT_BIT_SIZE);
+            else if (args[0].equals("decompress")) file78.decompress(is,os);
             else {
                 printUsage();
             }
@@ -23,7 +23,7 @@ public class LZ78Driver {
             os.close();
 
         } catch (FileNotFoundException fnfe) {
-            System.out.println(args[2] + " Not Found");
+            System.out.println(args[1] + " Not Found");
 			System.exit(1);
         } catch (IOException ioe) {
 			System.out.println("IO Error: " + ioe.getMessage());

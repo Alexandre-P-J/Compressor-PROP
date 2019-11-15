@@ -9,11 +9,11 @@ public class LZSSDriver {
         }
 
         try {
-            InputStream is = new BufferedInputStream(new FileInputStream(args[2]));
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(args[3]));
+            InputStream is = new BufferedInputStream(new FileInputStream(args[1]));
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(args[2]));
             LZSS fileSS = new LZSS();
-            if (args[1].equals("compress")) fileSS.compress(is,os);
-            else if (args[1].equals("decompress")) fileSS.decompress(is,os);
+            if (args[0].equals("compress")) fileSS.compress(is,os);
+            else if (args[0].equals("decompress")) fileSS.decompress(is,os);
             else {
                 printUsage();
             }
@@ -21,7 +21,7 @@ public class LZSSDriver {
             os.close();
 
         } catch (FileNotFoundException fnfe) {
-            System.out.println(args[2] + " Not Found");
+            System.out.println(args[1] + " Not Found");
 			System.exit(1);
         } catch (IOException ioe) {
 			System.out.println("IO Error: " + ioe.getMessage());

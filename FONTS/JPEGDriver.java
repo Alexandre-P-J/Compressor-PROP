@@ -23,7 +23,7 @@ public class JPEGDriver {
             os.close();
 
         } catch (FileNotFoundException fnfe) {
-            System.out.println(args[2] + " Not Found");
+            System.out.println(args[1] + " Not Found");
 			System.exit(1);
         } catch (IOException ioe) {
 			System.out.println("IO Error: " + ioe.getMessage());
