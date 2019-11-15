@@ -1,15 +1,10 @@
-package UnitTest_JPEG;
+package Compressor;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import UnitTest_JPEG.*;
 import Compressor.JPEG;
-import Constants.JPEG_Quality;
-
-
-
-import Compressor.Huffman;
 import java.io.*;
-import java.util.Random;
 
 // ESTO ES UN EJEMPLO DE DRIVER
 

@@ -1,6 +1,5 @@
 package Compressor;
 
-import Constants.JPEG_Quality;
 import Compressor.Huffman;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,11 +64,11 @@ public class JPEG {
     /**
      * cosine matrix
      */
-    private static final double c[][] = new double[8][8];
+    static final double c[][] = new double[8][8];
     /**
      * transformed cosine matrix
      */
-    private static final double cT[][] = new double[8][8];
+    static final double cT[][] = new double[8][8];
     /**
      * instance with operations compress(InputStream,OutputStream,int)
      * and decompress(InputStream,OutputStream,int)
@@ -93,7 +92,7 @@ public class JPEG {
      * Initializes c and cT matrices with the cosine matrix and the transformed
      * cosine matrix. Must be executed before any call to DCT and inverseDCT
      */
-    private static void initDCTMatrices() {
+    static void initDCTMatrices() {
         int i;
         int j;
         for (j = 0; j < 8; j++) {
@@ -295,7 +294,7 @@ public class JPEG {
      * @param output quantified 8x8 matrix of input
      * @param QuantizationTable copy of the 8x8 quantization table used by the compression
      */
-    private void Quantization(int[][] input, int[][] output, int[][] QuantizationTable) {
+    void Quantization(int[][] input, int[][] output, int[][] QuantizationTable) {
         for (int i = 0; i < 8; ++i)
             for (int j = 0; j < 8; ++j) {
                 output[i][j] = input[i][j] / QuantizationTable[i][j];
@@ -308,7 +307,7 @@ public class JPEG {
      * @param output dequantified 8x8 matrix of input
      * @param QuantizationTable copy of the 8x8 quantization table used by the decompression
      */
-    private void Dequantization(int[][] input, int[][] output, int[][] QuantizationTable) {
+    void Dequantization(int[][] input, int[][] output, int[][] QuantizationTable) {
         for (int i = 0; i < 8; ++i)
             for (int j = 0; j < 8; ++j) {
                 output[i][j] = input[i][j] * QuantizationTable[i][j];
@@ -319,7 +318,7 @@ public class JPEG {
      * Applies the DCT-II transformation to M matrix where M = input[y][x] - 128 (centers values around 0)
      * @param input 8x8 matrix to be transformed to the DCT-II transformation and stored in place
      */
-    private void DCT(int input[][]) {
+    void DCT(int input[][]) {
         double temp[][] = new double[8][8];
         double temp1;
         int i;
@@ -349,7 +348,7 @@ public class JPEG {
      * to undo the 128 that was substracted in DCT-II
      * @param input 8x8 matrix to be transformed to the DCT-III transformation and stored in place
      */
-    private void inverseDCT(int input[][]) {
+    void inverseDCT(int input[][]) {
         double temp[][] = new double[8][8];
         double temp1;
         int i;
@@ -388,7 +387,7 @@ public class JPEG {
      * @return array with length from 0 to 128 elements with the 2 elements per value from
      * the in matrix traversed in zigzag from the first non 0 value.
      */
-    private byte[] ZigZag(int[][] in) {
+    byte[] ZigZag(int[][] in) {
         byte[] data = null;
         int data_index = 0;
         int i = 8;
@@ -441,7 +440,7 @@ public class JPEG {
      * @return 8x8 Matrix obtained from in doing the inverse zigzag and filling the elements after the last
      * value from with 0s.
      */
-    private int[][] inverseZigZag(byte[] in) {
+    int[][] inverseZigZag(byte[] in) {
         int[][] data = new int[8][8];
         int i = 1;
         int j = 1;
@@ -484,7 +483,7 @@ public class JPEG {
      * @param os OutputStream where the encoded 8x8 mat matrix will be encoded
      * @throws IOException if fails to write to the OutputStream
      */
-    private void LosslessEncode(int[][] mat, OutputStream os) throws IOException {
+    void LosslessEncode(int[][] mat, OutputStream os) throws IOException {
         byte[] zz0 = ZigZag(mat);
         ByteArrayInputStream bai0 = new ByteArrayInputStream(zz0);
         matrixCompressor.compress(bai0, os, 128); // 8*8*2
@@ -497,7 +496,7 @@ public class JPEG {
      * @return 8x8 Matrix decoded from the encoded InputStream
      * @throws IOException if fails to read to the InputStream
      */
-    private int[][] LosslessDecode(InputStream is) throws IOException {
+    int[][] LosslessDecode(InputStream is) throws IOException {
         ByteArrayOutputStream bao0 = new ByteArrayOutputStream();
         matrixCompressor.decompress(is, bao0, 128); // 8*8*2
         bao0.flush();
