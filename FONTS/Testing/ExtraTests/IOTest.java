@@ -1,3 +1,4 @@
+package ExtraTests;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.* ;
@@ -8,7 +9,6 @@ import java.util.Random;
 // because Byte functions are implemented just by doing several
 // calls to bit functions
 public class IOTest {
-    /*
     @Test
     public void IOPushBitsTest() {
         for (int i = 0; i <= 1025; ++i) {
@@ -104,5 +104,4 @@ public class IOTest {
             assertEquals(output, "no exception", "exception");
         }
     }
-    */
 }

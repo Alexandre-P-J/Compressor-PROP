@@ -1,6 +1,7 @@
+package UnitTest_JPEG;
 import java.io.*;
 
-public class OutputStream extends java.io.OutputStream {
+public class OutputStreamStub extends java.io.OutputStream {
     private byte[] DiskData = new byte[0];
     final boolean verbose = true;
 

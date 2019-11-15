@@ -1,10 +1,18 @@
-plugins {
-    id "application"
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'eclipse'
+
+// Disable default test task
+project.gradle.startParameter.excludedTaskNames.add('test')
+
+// Set java compatibility version
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-apply plugin: 'java'
-apply plugin : 'eclipse'
-
+// Specify source paths
 sourceSets{
     main{
         java {
@@ -19,29 +27,151 @@ sourceSets{
     }
 }
 
+// Main driver class (default gradle build task)
 ext {
-   javaMainClass = "Compressor"
+   javaMainClass = "StatsDriver"
 }
- 
+
 application {
     mainClassName = javaMainClass
 }
 
-test {
-    testLogging {
-        outputs.upToDateWhen {false}
-        showStandardStreams = true
+// Generates and places jar files and documentation
+task PackProject(type: GradleBuild) {
+     tasks = ['clean', 'fatJPEGJar', 'fatLZ78Jar', 'fatLZSSJar', 'fatLZWJar', 'fatStatsJar', 'fatUnitTestJar', 'javadoc']
+}
+
+// Generates and places JPEGDriver.jar
+task fatJPEGJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "JPEGDriver"
+    }
+    baseName = 'JPEGDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/JPEGDriver.jar')
+            into 'EXE/JPEG'
+        }
     }
 }
 
-dependencies {
-  testCompile 'junit:junit:4.12'
+// Generates and places LZ78Driver.jar
+task fatLZ78Jar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "LZ78Driver"
+    }
+    baseName = 'LZ78Driver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/LZ78Driver.jar')
+            into 'EXE/LZ78'
+        }
+    }
 }
 
-repositories {
-    jcenter()
+// Generates and places LZSSDriver.jar
+task fatLZSSJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "LZSSDriver"
+    }
+    baseName = 'LZSSDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/LZSSDriver.jar')
+            into 'EXE/LZSS'
+        }
+    }
 }
 
+// Generates and places LZWDriver.jar
+task fatLZWJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "LZWDriver"
+    }
+    baseName = 'LZWDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/LZWDriver.jar')
+            into 'EXE/LZW'
+        }
+    }
+}
+
+// Generates and places StatsDriver.jar
+task fatStatsJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "StatsDriver"
+    }
+    baseName = 'StatsDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/StatsDriver.jar')
+            into 'EXE/Statistics'
+        }
+    }
+}
+
+// Generates and places UnitTest_JPEG.jar
+task fatUnitTestJar(type: Jar) {
+    includeEmptyDirs = false
+    manifest {
+        attributes 'Main-Class': "UnitTestJPEGDriver"
+    }
+    baseName = "UnitTestJPEG"
+
+    from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
+    from sourceSets.test.output
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/UnitTestJPEG.jar')
+            into 'EXE/UnitTestJPEG'
+        }
+    }
+}
+
+// Generate and run UnitTest_JPEG.jar
+task UnitTest(type: JavaExec) {
+  dependsOn fatUnitTestJar
+  classpath = files("build/libs/UnitTestJPEG.jar")
+}
+
+// Generates and places ExtraTests.jar
+task fatExtraTestsJar(type: Jar) {
+    includeEmptyDirs = false
+    manifest {
+        attributes 'Main-Class': "ExtraTestsDriver"
+    }
+    baseName = "ExtraTestsDriver"
+
+    from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
+    from sourceSets.test.output
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/ExtraTestsDriver.jar')
+            into 'EXE/ExtraTests'
+        }
+    }
+}
+
+// Generate and run ExtraTests.jar
+task ExtraTests(type: JavaExec) {
+  dependsOn fatExtraTestsJar
+  classpath = files("build/libs/ExtraTestsDriver.jar")
+}
+
+// Generate and place documentation
 javadoc {
     dependsOn clean
     source = sourceSets.main.allJava
@@ -59,44 +189,14 @@ javadoc {
     }
 }
 
+// Dependencies and repos
+dependencies {
+  testCompile 'junit:junit:4.12'
+}
 
-
-
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-
-tasks.withType(Test) {
-    testLogging {
-        // set options for log level LIFECYCLE
-        events TestLogEvent.FAILED,
-               TestLogEvent.PASSED,
-               TestLogEvent.SKIPPED,
-               TestLogEvent.STANDARD_OUT
-        exceptionFormat TestExceptionFormat.FULL
-        showExceptions true
-        showCauses true
-        showStackTraces true
-
-        // set options for log level DEBUG and INFO
-        debug {
-            events TestLogEvent.STARTED,
-                   TestLogEvent.FAILED,
-                   TestLogEvent.PASSED,
-                   TestLogEvent.SKIPPED,
-                   TestLogEvent.STANDARD_ERROR,
-                   TestLogEvent.STANDARD_OUT
-            exceptionFormat TestExceptionFormat.FULL
-        }
-        info.events = debug.events
-        info.exceptionFormat = debug.exceptionFormat
-
-        afterSuite { desc, result ->
-            if (!desc.parent) { // will match the outermost suite
-                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
-                def startItem = '|  ', endItem = '  |'
-                def repeatLength = startItem.length() + output.length() + endItem.length()
-                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
-            }
-        }
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
     }
+    mavenCentral()
 }

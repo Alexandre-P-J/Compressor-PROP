@@ -1,3 +1,4 @@
+package ExtraTests;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import Compressor.LZW;
@@ -5,7 +6,6 @@ import java.io.*;
 import java.util.Random;
 
 public class LZWTest {
-    /*
     @Test
     public void CompressDecompressSmall() {
         // Small size subset
@@ -64,5 +64,4 @@ public class LZWTest {
             assertEquals(output, "no exception", "exception");
         }
     }
-    */
 }

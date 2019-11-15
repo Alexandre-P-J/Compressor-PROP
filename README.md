@@ -32,25 +32,30 @@
 This will assume you dont have gradle, if you have gradle installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
 
 ### Run
-This will get all needed dependencies from the internet , build if needed and run the application.
+Use the .jar files under EXE/ if some .jar files are missing see the section below
+
+### Re/Packaging the Project
+This will regenerate all .jar files under EXE/ and regenerate the documentation under DOCS/
 #### On Linux:
-`> ./gradlew run --args="ARGUMENTS HERE"`
-For example you could run:
-`> ./gradlew run --args="LZSS compress README.md OUT"`
+`> ./gradlew PackProject`
 #### On Windows:
-`> gradlew.bat run --args="ARGUMENTS HERE"`
-For example you could run:
-`> gradlew.bat run --args="LZSS compress README.md OUT"`
+`> gradlew.bat PackProject`
 
 ### Running Tests:
-This will get all needed dependencies from the internet , build if needed and run the tests.
-#### On Linux:
-`> ./gradlew test`
-#### On Windows:
-`> gradlew.bat test`
+Tests can be found under EXE/ but its useful to recompile and run tests on the go. This will also update test .jar's
+#### Unit Test:
+##### On Linux:
+`> ./gradlew UnitTest`
+##### On Windows:
+`> gradlew.bat UnitTest`
+#### Extra Tests
+##### On Linux:
+`> ./gradlew ExtraTests`
+##### On Windows:
+`> gradlew.bat ExtraTests`
 
-### Generating Documentation:
-This will generate a 'Documentation' folder with a HTML5 version of Javadoc
+### Re/Generating Documentation Only:
+Documentation can be found under DOCS/Documentation but its useful to regenerate it on the go
 #### On Linux:
 `> ./gradlew javadoc`
 #### On Windows:
