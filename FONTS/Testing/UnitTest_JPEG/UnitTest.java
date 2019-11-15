@@ -55,7 +55,6 @@ public class UnitTest {
 
     @Test
     public void sometestexample() {
-        System.out.println("STARTING TEST BLAHBLAH");
         try {
             HuffmanStub huffmanStub = new HuffmanStub();
             InputStreamStub is =  new InputStreamStub();
