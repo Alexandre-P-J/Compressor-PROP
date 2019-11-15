@@ -37,7 +37,7 @@ application {
 }
 
 // Generates and places jar files and documentation
-task packProject(type: GradleBuild) {
+task PackProject(type: GradleBuild) {
      tasks = ['clean', 'fatJPEGJar', 'fatLZ78Jar', 'fatLZSSJar', 'fatLZWJar', 'fatStatsJar', 'fatUnitTestJar', 'javadoc']
 }
 
