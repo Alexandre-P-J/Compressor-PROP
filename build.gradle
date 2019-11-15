@@ -1,10 +1,18 @@
-plugins {
-    id "application"
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'eclipse'
+
+// Disable default test task
+project.gradle.startParameter.excludedTaskNames.add('test')
+
+// Set java compatibility version
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-apply plugin: 'java'
-apply plugin : 'eclipse'
-
+// Specify source paths
 sourceSets{
     main{
         java {
@@ -19,29 +27,59 @@ sourceSets{
     }
 }
 
+// Main driver class (default gradle build task)
 ext {
    javaMainClass = "Compressor"
 }
- 
+
 application {
     mainClassName = javaMainClass
 }
 
-test {
-    testLogging {
-        outputs.upToDateWhen {false}
-        showStandardStreams = true
+
+task FatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "$mainClassName"
+    }
+    baseName = 'Compressor-PROP'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+// Generates and places UnitTest_JPEG.jar using only the specified classes (ensure stub overrides)
+task fatUnitTestJar(type: Jar) {
+    //dependsOn clean
+    includeEmptyDirs = false
+    manifest {
+        attributes 'Main-Class': "TestRunner"
+    }
+    baseName = "UnitTest_JPEG"
+
+    //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    //include "Compressor/JPEG.class"
+    from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
+    //exclude "Compressor/Huffman.class"
+    //include "org/junit/**", "junit/**", "org/hamcrest/**", "**LICENSE**" // meto licencias por motivos eticos ;D
+    from sourceSets.test.output
+    //include "**"
+    //include "TestRunner.class", "UnitTest_JPEG.class", "Compressor/Huffman.class", "InputStream.class", "OutputStream.class",
+    //    "Constants/JPEG_Quality.class", "ByteArrayInputStream.class", "ByteArrayOutputStream.class"
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/UnitTest_JPEG.jar')
+            into 'EXE/UnitTest_JPEG.jar'
+        }
     }
 }
 
-dependencies {
-  testCompile 'junit:junit:4.12'
+// Generate and run UnitTest_JPEG.jar
+task UnitTest(type: JavaExec) {
+  dependsOn fatUnitTestJar
+  classpath = files("build/libs/UnitTest_JPEG.jar")
 }
 
-repositories {
-    jcenter()
-}
-
+// Generate and place documentation
 javadoc {
     dependsOn clean
     source = sourceSets.main.allJava
@@ -59,44 +97,14 @@ javadoc {
     }
 }
 
+// Dependencies and repos
+dependencies {
+  testCompile 'junit:junit:4.12'
+}
 
-
-
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-
-tasks.withType(Test) {
-    testLogging {
-        // set options for log level LIFECYCLE
-        events TestLogEvent.FAILED,
-               TestLogEvent.PASSED,
-               TestLogEvent.SKIPPED,
-               TestLogEvent.STANDARD_OUT
-        exceptionFormat TestExceptionFormat.FULL
-        showExceptions true
-        showCauses true
-        showStackTraces true
-
-        // set options for log level DEBUG and INFO
-        debug {
-            events TestLogEvent.STARTED,
-                   TestLogEvent.FAILED,
-                   TestLogEvent.PASSED,
-                   TestLogEvent.SKIPPED,
-                   TestLogEvent.STANDARD_ERROR,
-                   TestLogEvent.STANDARD_OUT
-            exceptionFormat TestExceptionFormat.FULL
-        }
-        info.events = debug.events
-        info.exceptionFormat = debug.exceptionFormat
-
-        afterSuite { desc, result ->
-            if (!desc.parent) { // will match the outermost suite
-                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
-                def startItem = '|  ', endItem = '  |'
-                def repeatLength = startItem.length() + output.length() + endItem.length()
-                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
-            }
-        }
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
     }
+    mavenCentral()
 }

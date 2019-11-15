@@ -19,8 +19,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
-#*.jar # Used by gradle wrapper?
+# Package Files
 *.war
 *.nar
 *.ear
@@ -42,6 +41,7 @@ hs_err_pid*
 
 # bin
 /bin
+EXE/*.jar
 
 # Mac
 .DS_Store
