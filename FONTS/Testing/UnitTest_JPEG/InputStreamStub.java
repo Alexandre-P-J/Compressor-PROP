@@ -1,6 +1,7 @@
+package UnitTest_JPEG;
 import java.io.*;
 
-public class InputStream extends java.io.InputStream {
+public class InputStreamStub extends java.io.InputStream {
     private byte[] DiskData;
     private int currentIndex = 0;
     final boolean verbose = true;

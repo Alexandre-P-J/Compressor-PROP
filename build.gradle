@@ -29,46 +29,113 @@ sourceSets{
 
 // Main driver class (default gradle build task)
 ext {
-   javaMainClass = "Compressor"
+   javaMainClass = "StatsDriver"
 }
 
 application {
     mainClassName = javaMainClass
 }
 
-
-task FatJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': "$mainClassName"
-    }
-    baseName = 'Compressor-PROP'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+// Generates and places jar files and documentation
+task packProject(type: GradleBuild) {
+     tasks = ['clean', 'fatJPEGJar', 'fatLZ78Jar', 'fatLZSSJar', 'fatLZWJar', 'fatStatsJar', 'fatUnitTestJar', 'javadoc']
 }
 
-// Generates and places UnitTest_JPEG.jar using only the specified classes (ensure stub overrides)
+// Generates and places JPEGDriver.jar
+task fatJPEGJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "JPEGDriver"
+    }
+    baseName = 'JPEGDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/JPEGDriver.jar')
+            into 'EXE/JPEG'
+        }
+    }
+}
+
+// Generates and places LZ78Driver.jar
+task fatLZ78Jar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "LZ78Driver"
+    }
+    baseName = 'LZ78Driver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/LZ78Driver.jar')
+            into 'EXE/LZ78'
+        }
+    }
+}
+
+// Generates and places LZSSDriver.jar
+task fatLZSSJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "LZSSDriver"
+    }
+    baseName = 'LZSSDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/LZSSDriver.jar')
+            into 'EXE/LZSS'
+        }
+    }
+}
+
+// Generates and places LZWDriver.jar
+task fatLZWJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "LZWDriver"
+    }
+    baseName = 'LZWDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/LZWDriver.jar')
+            into 'EXE/LZW'
+        }
+    }
+}
+
+// Generates and places StatsDriver.jar
+task fatStatsJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "StatsDriver"
+    }
+    baseName = 'StatsDriver'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/StatsDriver.jar')
+            into 'EXE/Statistics'
+        }
+    }
+}
+
+// Generates and places UnitTest_JPEG.jar
 task fatUnitTestJar(type: Jar) {
-    //dependsOn clean
     includeEmptyDirs = false
     manifest {
-        attributes 'Main-Class': "TestRunner"
+        attributes 'Main-Class': "UnitTest_JPEGDriver"
     }
     baseName = "UnitTest_JPEG"
 
-    //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    //include "Compressor/JPEG.class"
     from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
-    //exclude "Compressor/Huffman.class"
-    //include "org/junit/**", "junit/**", "org/hamcrest/**", "**LICENSE**" // meto licencias por motivos eticos ;D
     from sourceSets.test.output
-    //include "**"
-    //include "TestRunner.class", "UnitTest_JPEG.class", "Compressor/Huffman.class", "InputStream.class", "OutputStream.class",
-    //    "Constants/JPEG_Quality.class", "ByteArrayInputStream.class", "ByteArrayOutputStream.class"
     with jar
     doLast {
         copy {
             from fileTree('build/libs/UnitTest_JPEG.jar')
-            into 'EXE/UnitTest_JPEG.jar'
+            into 'EXE/UnitTest_JPEG'
         }
     }
 }

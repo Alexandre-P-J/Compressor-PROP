@@ -41,7 +41,7 @@ hs_err_pid*
 
 # bin
 /bin
-EXE/*.jar
+EXE/*/*.jar
 
 # Mac
 .DS_Store
