@@ -125,17 +125,17 @@ task fatStatsJar(type: Jar) {
 task fatUnitTestJar(type: Jar) {
     includeEmptyDirs = false
     manifest {
-        attributes 'Main-Class': "UnitTest_JPEGDriver"
+        attributes 'Main-Class': "UnitTestJPEGDriver"
     }
-    baseName = "UnitTest_JPEG"
+    baseName = "UnitTestJPEG"
 
     from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
     from sourceSets.test.output
     with jar
     doLast {
         copy {
-            from fileTree('build/libs/UnitTest_JPEG.jar')
-            into 'EXE/UnitTest_JPEG'
+            from fileTree('build/libs/UnitTestJPEG.jar')
+            into 'EXE/UnitTestJPEG'
         }
     }
 }
@@ -143,7 +143,32 @@ task fatUnitTestJar(type: Jar) {
 // Generate and run UnitTest_JPEG.jar
 task UnitTest(type: JavaExec) {
   dependsOn fatUnitTestJar
-  classpath = files("build/libs/UnitTest_JPEG.jar")
+  classpath = files("build/libs/UnitTestJPEG.jar")
+}
+
+// Generates and places ExtraTests.jar
+task fatExtraTestsJar(type: Jar) {
+    includeEmptyDirs = false
+    manifest {
+        attributes 'Main-Class': "ExtraTestsDriver"
+    }
+    baseName = "ExtraTestsDriver"
+
+    from { configurations.testRuntime.collect { it.isDirectory() ? it : zipTree(it) } }
+    from sourceSets.test.output
+    with jar
+    doLast {
+        copy {
+            from fileTree('build/libs/ExtraTestsDriver.jar')
+            into 'EXE/ExtraTests'
+        }
+    }
+}
+
+// Generate and run ExtraTests.jar
+task ExtraTests(type: JavaExec) {
+  dependsOn fatExtraTestsJar
+  classpath = files("build/libs/ExtraTestsDriver.jar")
 }
 
 // Generate and place documentation

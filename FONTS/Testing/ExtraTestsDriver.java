@@ -4,11 +4,11 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import UnitTest_JPEG.UnitTest;
+import ExtraTests.*;
 
-public class UnitTest_JPEGDriver {
+public class ExtraTestsDriver {
         public static void main(String args[]) {
-            Result result = JUnitCore.runClasses(UnitTest.class);
+            Result result = JUnitCore.runClasses(IOTest.class, LZ78Test.class, LZSSTest.class, LZWTest.class, HuffmanTest.class);
             
             for (Failure failure : result.getFailures()) {
                 System.out.printf("\n\n\n%s\n", failure.toString());
