@@ -1,19 +1,53 @@
 package Utils;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 import Utils.Color;
 
 public class PPMTranslator {
+    /**
+     * Defines which model (ASCII/BIN) its being used
+     */
     PPMType encoding;
+    /**
+     * Current input stream, null if writting
+     */
     InputStream is = null;
+    /**
+     * Current output stream, null if reading
+     */
     OutputStream os = null;
-    int height, width, maxValue;
+    /**
+     * height from a ppm image
+     */
+    int height;
+    /**
+     * width from a ppm image
+     */
+    int width;
+    /**
+     * maximum value of a color component
+     */
+    int maxValue;
 
+    /**
+     * Constructor for parsing
+     * @param is InputStream with a valid ppm representation
+     * @throws IOException if fails reading
+     */
     public PPMTranslator(InputStream is) throws IOException {
         this.is = is;
         extractHeader();
     }
 
+    /**
+     * Constructor for writting
+     * @param os OutputStream that will be written
+     * @param width Width that will be stored in the header
+     * @param height Height that will be stored in the header
+     * @throws IOException if fails writting
+     */
     public PPMTranslator(OutputStream os, int width, int height) throws IOException {
         this.os = os;
         this.width = width;
@@ -21,14 +55,27 @@ public class PPMTranslator {
         maxValue = 255;
     }
 
+    /**
+     * Getter for width
+     * @return width atribute
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Getter for Height
+     * @return height atribute
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * Getter to return the next color component in the input stream
+     * @return Component R or G or B
+     * @throws IOException if fails reading
+     */
     public int getNextComponent() throws IOException {
         assert (is != null);
         int num = 0;
@@ -46,6 +93,11 @@ public class PPMTranslator {
         return -1;
     }
 
+    /**
+     * Getter to return the next color in the input stream
+     * @return Color instance with the 3 color components initialized
+     * @throws IOException if fails reading
+     */
     public Color getNextColor() throws IOException {
         int r, g, b;
         if ((r = getNextComponent()) < 0)
@@ -63,6 +115,11 @@ public class PPMTranslator {
         return c;
     }
 
+    /**
+     * Setter for the next color component that will be written into the output stream
+     * @param num component value
+     * @throws IOException if fails writting
+     */
     public void setNextComponent(int num) throws IOException {
         if (encoding == PPMType.ASCII) {
             String str = String.valueOf(num) + '\n';
@@ -72,12 +129,21 @@ public class PPMTranslator {
             os.write(num);
     }
 
+    /**
+     * Setter for the next color that will be written into the output stream
+     * @param color valid Color instance
+     * @throws IOException if fails writting
+     */
     public void setNextColor(Color color) throws IOException {
         setNextComponent(color.r);
         setNextComponent(color.g);
         setNextComponent(color.b);
     }
 
+    /**
+     * Initializes this class atributes from reading a valid ppm from the input stream
+     * @throws IOException if fails reading or ppm is invalid
+     */
     private void extractHeader() throws IOException {
         int next;
         if ((next = is.read()) < 0)
@@ -100,6 +166,11 @@ public class PPMTranslator {
             throw new IOException("Wrong ppm codification! - Failed reading max value");
     }
 
+    /**
+     * Reads and returns the next integer from the header, avoids comments
+     * @return next integer value codified in ASCII in the input stream
+     * @throws IOException if fails reading
+     */
     private int readHeaderNum() throws IOException {
         int next;
         int num = 0;
@@ -131,6 +202,10 @@ public class PPMTranslator {
         return -1; // no number, just EOF
     }
 
+    /**
+     * Writtes the current header atributes into the output stream
+     * @throws IOException if fails writting
+     */
     public void writeHeader() throws IOException {
         this.encoding = PPMType.Raw;
         String type;
@@ -145,7 +220,9 @@ public class PPMTranslator {
     }
 
 }
-
+/**
+ * The different types of ppm encodings
+ */
 enum PPMType {
     ASCII, Raw
 }
