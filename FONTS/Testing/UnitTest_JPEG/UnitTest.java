@@ -160,8 +160,19 @@ public class UnitTest {
             HuffmanStub huffmanStub = new HuffmanStub();
             JPEG jpeg = new JPEG(huffmanStub);
             jpeg.initDCTMatrices();
-            assertArrayEquals(DCTInic, jpeg.c);
-            assertArrayEquals(DCTInicT, jpeg.cT);
+            assertEquals(8, jpeg.c.length);
+            assertEquals(8, jpeg.c[0].length);
+            assertEquals(8, jpeg.cT.length);
+            assertEquals(8, jpeg.cT[0].length);
+            for (int i = 0; i < 8; ++i)
+                for (int j = 0; j < 8; ++j) { // 10 similar decimal places is more than enough for this test
+                    String c = String.format("%10f", jpeg.c[i][j]);
+                    String c_Test = String.format("%10f", DCTInic[i][j]);
+                    assertEquals(c_Test, c);
+                    String cT = String.format("%10f", jpeg.cT[i][j]);
+                    String cT_Test = String.format("%10f", DCTInicT[i][j]);
+                    assertEquals(cT_Test, cT);
+                }
 
         } catch (Exception e) {
             assertEquals("no exception", e.toString());
