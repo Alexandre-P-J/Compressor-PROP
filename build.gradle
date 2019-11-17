@@ -38,7 +38,7 @@ application {
 
 // Generates and places jar files and documentation
 task PackProject(type: GradleBuild) {
-     tasks = ['clean', 'fatJPEGJar', 'fatLZ78Jar', 'fatLZSSJar', 'fatLZWJar', 'fatStatsJar', 'fatUnitTestJar', 'javadoc']
+     tasks = ['clean', 'fatJPEGJar', 'fatLZ78Jar', 'fatLZSSJar', 'fatLZWJar', 'fatStatsJar', 'fatUnitTestJar', 'fatExtraTestsJar', 'javadoc']
 }
 
 // Generates and places JPEGDriver.jar
