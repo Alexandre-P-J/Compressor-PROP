@@ -5,6 +5,8 @@ Directori EXE:
 
 - El_Quijote.txt:
     El nostre primer arxiu de testeig
+- Image.ppm:
+    La nostra primera imatge de testeig
 
 -- Havent executat ./gradlew PackProject ---
 
