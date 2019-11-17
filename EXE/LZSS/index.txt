@@ -1,0 +1,5 @@
+Directori LZSS
+
+- LZSSDriver.jar
+	Executable del LZSS.
+
