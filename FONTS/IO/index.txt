@@ -1,0 +1,9 @@
+Directori IO:
+
+Hi trobem les classes orientades a controlar els fluxos d'entrada i sortida de bits.
+
+- BitInputStream.java:
+    Conte la classe BitInputStream.
+    
+- BitOutputStream.java:
+    Conte la classe BitOutputStream.

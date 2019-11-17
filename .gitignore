@@ -1,7 +1,16 @@
-# Compiled class file
+# Gradle
+.gradle
+/build
+/buildSrc/build
+/buildSrc/subprojects/*/build
+/subprojects/*/build
+/subprojects/docs/src/samples/**/build
+/subprojects/internal-android-performance-testing/build-android-libs
+
+# Missplaced compiled class files
 *.class
 
-# Log file
+# Log files
 *.log
 
 # BlueJ files
@@ -10,8 +19,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
-*.jar
+# Package Files
 *.war
 *.nar
 *.ear
@@ -32,4 +40,14 @@ hs_err_pid*
 .project
 
 # bin
-bin/*
+/bin
+EXE/*/*.jar
+
+# Mac
+.DS_Store
+
+#IntellijIDEA
+.idea
+
+# Documentation Generate it every time (see readme)
+DOCS/Documentation

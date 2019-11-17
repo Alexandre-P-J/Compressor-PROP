@@ -1,0 +1,32 @@
+Directori FONTS:
+
+Conte subdirectoris amb el codi font programat.
+
+\Compressor:
+    Conte el codi font dels differents algoritmes de compressio.
+\Constants:
+    Conte les constatns necessaries per l'algoritme JPEG.
+\Container:
+    Conte les nostres estructures de dades (aixi com diccionari i byte array) per el bon funcionament dels LZs.
+\IO:
+    Conte les classes orientades a controlar els fluxos d'entrada i sortida de bits.
+\Testing:
+    Conte tests per comprovar que funcioni correctament els algoritmes de compressio, inclou el test unitari JPEG i els stubs necessaris.
+\Utils:
+    Conte totes aquelles classes complementaries i necessaries per el bon funcionament de l'algoritme JPEG.
+
+- JPEGDriver.java:
+    Driver de l'algoritme JPEG.
+
+- LZ78Driver.java:
+    Driver de l'algoritme LZ78.
+
+- LZSSDriver.java:
+    Driver de l'algoritme LZSS.
+
+- LZWDriver.java:
+    Driver de l'algoritme LZW.
+
+- StatsDriver.java:
+    Driver que formula les estadistiques.
+

@@ -1,0 +1,4 @@
+Directori ExtraTests:
+
+- Description.txt:
+	Fitxer de text que descriu els tests que hem realitzat

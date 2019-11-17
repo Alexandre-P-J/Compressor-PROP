@@ -1,0 +1,9 @@
+Directori Utils:
+
+Hi trobem aquelles classes complementaries i necessaries per el bon funcionament de l'algoritme JPEG.
+
+- Color.java:
+    Conte la classe Color.
+    
+- PPMTranslator.java:
+    Conte la calsse PPMTranslator.

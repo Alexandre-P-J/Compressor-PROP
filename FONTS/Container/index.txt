@@ -1,0 +1,9 @@
+Directori Container:
+
+Hi trobem les estructures de dades per el bon funcionament dels LZs.
+
+- ByteArray.java:
+    Codi de la classe ByteArray.
+    
+- Dictionary.java:
+    Codi de la classe Dictionary.

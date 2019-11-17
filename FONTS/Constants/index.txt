@@ -1,0 +1,6 @@
+Directori Constants:
+
+Hi trobem les constatns necessaries per l'algoritme JPEG.
+
+- JPEG_Quality.java:
+    Codi amb les taules de luminancia i crominancia per les diferents calitats.

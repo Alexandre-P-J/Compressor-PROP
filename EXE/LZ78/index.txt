@@ -1,0 +1,5 @@
+Directori LZ78
+
+- LZ78Driver.jar
+	Executable del LZ78.
+
