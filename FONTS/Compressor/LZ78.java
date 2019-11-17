@@ -23,18 +23,17 @@ public class LZ78 {
     };
 
     Dictionary dict;
-    // The number of bits that should be written for each code
+    // The number of bits to be written for each code
     int nBits;
     
     // The previous byte array that we should remember
-    // in order to instert into the dictionary.
     ByteArray emptyBA = new ByteArray();
     ByteArray ba = emptyBA;
     
     /**
-     * Encodes the next byte.
-     * @param n the byte to encode.
-     * @return the code generated, if not returns -1.
+     * Encodes the next byte
+     * @param n the byte to encode
+     * @return the code generated, if not returns -1
      */
     private int encodeByte (int n) {
         byte b = (byte)n;
@@ -54,8 +53,8 @@ public class LZ78 {
     }
 
     /**
-     * Encode de last byte of the sequence if there is something left.
-     * @return the code left.
+     * Encode de last byte of the sequence if there is something left
+     * @return the code left
      */
     private Code encodeLastByte () {
         if (ba.size() == 0) return null;
@@ -66,10 +65,10 @@ public class LZ78 {
     }
 
     /**
-     * Call the write function with the necessary bits to write the code.
-     * @param bos the BitOutputStream to write of.
-     * @param co the code to write.
-     * @throws IOException if wrtting to the output stream fails.
+     * Call the write function with the necessary bits to write the code
+     * @param bos BitOuputStream where the bits will be written
+     * @param co the code to write
+     * @throws IOException if wrtting to the output stream fails
      */
     private void writeCode (BitOutputStream bos, Code co) throws IOException {
 		writeCode(bos,co.c,8);
@@ -77,11 +76,11 @@ public class LZ78 {
     }
     
     /**
-     * Write the code in bits into output stream with the help of the BitOutputStream.
-     * @param bos the BitOutputStream the write of.
-     * @param n the code to write.
-     * @param bits number of bits from the code.
-     * @throws IOException if wrtting to the output stream fails.
+     * Write the code in bits into output stream with the help of the BitOutputStream
+     * @param bos BitOuputStream where the bits will be written
+     * @param n the code to write
+     * @param bits number of bits from the code
+     * @throws IOException if wrtting to the output stream fails
      */
     private void writeCode (BitOutputStream bos, int n, int bits) throws IOException {
 		for (int i = 0; i < bits; ++i) {
@@ -91,10 +90,10 @@ public class LZ78 {
     }
     
     /**
-     * Read the code from the given bit input stream, and returns it as a Code.
-     * @param bis the BitInputStream to read of.
-     * @return the code of nBits gereneted from the input stream.
-     * @throws IOException if reading from the input stream fails.
+     * Read the code from the given bit input stream, and returns it as a Code
+     * @param bis BitInputStream where the bits will be readed
+     * @return the code of nBits gereneted from the input stream
+     * @throws IOException if reading from the input stream fails
      */
     private Code readCode (BitInputStream bis) throws IOException { 
         int ch = readInt(bis,8);
@@ -105,11 +104,11 @@ public class LZ78 {
     }
 
     /**
-     * Read the code from the given bit input stream, and returns it as an int.
-     * @param bis the BitInputStream to read of.
-     * @param bits the number of bits of the code.
-     * @return an Integer with the code generated from the input stream.
-     * @throws IOException if reading from the input stream fails.
+     * Read the code from the given bit input stream, and returns it as an int
+     * @param bis BitInputStream where the bits will be readed
+     * @param bits the number of bits of the code
+     * @return an int with the code generated from the input stream
+     * @throws IOException if reading from the input stream fails
      */
     private int readInt (BitInputStream bis, int bits) throws IOException {
 		int n = 0;
@@ -122,12 +121,11 @@ public class LZ78 {
     }
 
     /**
-     * Creates a new dictionary with maximum the size of DictBitSize.
-     * Compresses the given input stream, writing to the given output stream.
-     * @param is the input stream to read data.
-     * @param os the output stream to save data..
-     * @param DictBitSize Dictionary size.
-     * @throws Exception if reading or writting to a stream fails.
+     * Compresses the input stream into the output stream given the max size of the input stream
+     * @param is InputStream with an amount of data between 0 and DictBitSize
+     * @param os OutputStream will be written with the compressed InputStream
+     * @param DictBitSize maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
+     * @throws Exception if reading or writting to a stream fails
      */
     public void compress (InputStream is, OutputStream os, int DictBitSize) throws Exception {
         if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
@@ -150,9 +148,9 @@ public class LZ78 {
     }
 
     /**
-     * Decodes the next code.
-     * @param co the code to decode.
-     * @return a ByteArray with the code decoded.
+     * Decodes the next code
+     * @param co the code to decode
+     * @return a ByteArray with the code decoded
      */
     private ByteArray disarray (Code co) {
         ByteArray aux = dict.getStrNum(co.code);
@@ -161,11 +159,10 @@ public class LZ78 {
     }
 
     /**
-     * Creates a new dictionary of the sized received in the first input stream byte.
-     * Decompresses the given input stream, writing to the given output stream.
-     * @param is the input stream to read data.
-     * @param os the output stream to write data
-     * @throws Exception if reading or writting to a stream fails.
+     * Decompresses the input stream into the output stream given the max size of the input stream
+     * @param is InputStream with an amount of data between 0 and DictBitSize
+     * @param os OutputStream will be written with the compressed InputStream
+     * @throws Exception if reading or writting to a stream fails
      */
     public void decompress (InputStream is, OutputStream os) throws Exception {
         nBits = is.read();
