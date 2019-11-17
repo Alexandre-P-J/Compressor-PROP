@@ -1,4 +1,4 @@
 Directori EXE:
 
-\DriverJPEG: 
+\ExtraTest: 
     Conte l'executable i els testejos sobre el DriverJPEG.

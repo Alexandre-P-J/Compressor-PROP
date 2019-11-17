@@ -4,5 +4,6 @@ Hi trobem aquelles classes complementaries i necessaries per el bon funcionament
 
 - Color.java:
     Conte la classe Color.
+    
 - PPMTranslator.java:
     Conte la calsse PPMTranslator.

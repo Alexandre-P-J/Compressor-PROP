@@ -11,9 +11,22 @@ Conte subdirectoris amb el codi font programat.
 \IO:
     Conte les classes orientades a controlar els fluxos d'entrada i sortida de bits.
 \Testing:
-    Conte tests per comprovar que funcioni correctament els algoritmes de compressio.
+    Conte tests per comprovar que funcioni correctament els algoritmes de compressio, inclou el test unitari JPEG i els stubs necessaris.
 \Utils:
     Conte totes aquelles classes complementaries i necessaries per el bon funcionament de l'algoritme JPEG.
 
-- Compressor.java: 
-    Main del programa.
+- JPEGDriver.java:
+    Driver de l'algoritme JPEG.
+
+- LZ78Driver.java:
+    Driver de l'algoritme LZ78.
+
+- LZSSDriver.java:
+    Driver de l'algoritme LZSS.
+
+- LZWDriver.java:
+    Driver de l'algoritme LZW.
+
+- StatsDriver.java:
+    Driver que formula les estadistiques.
+

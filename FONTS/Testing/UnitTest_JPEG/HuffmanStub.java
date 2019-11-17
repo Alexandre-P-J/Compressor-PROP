@@ -73,6 +73,7 @@ public class HuffmanStub extends Huffman {
 
     @Override
     public void compress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
+        System.out.println("Calls compress from Huffman STUB");
         if (count == 0) 
             for (int i = 0; i < Compressed1.length; ++i) 
                 os.write(Compressed1[i]);
@@ -86,6 +87,7 @@ public class HuffmanStub extends Huffman {
 
     @Override
     public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
+        System.out.println("Calls decompress from Huffman STUB");
         if (count == 0) 
             for (int i = 0; i < Decompressed1.length; ++i) 
                 os.write(Decompressed1[i]);

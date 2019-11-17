@@ -1,5 +1,7 @@
 Directori DOCS:
 
+Hi trobem la documentacio del projecte.
+
 - DocumentPrimeraEntrega.pdf: 
     Conte informacio del projecte, casos d'us i la seva descripcio, UML, descripcio dels algoritmes, descripcio de les estructures de dades, descripcio de les classes.
 
