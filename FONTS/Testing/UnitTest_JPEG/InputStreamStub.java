@@ -15,13 +15,13 @@ public class InputStreamStub extends java.io.InputStream {
         
         if (currentIndex >= DiskData.length) {
             if (verbose)
-                System.out.print("\nCalls read() from InputStream STUB [returns: -1]");
+                System.out.print("Calls read() from InputStream STUB [returns: -1]\n");
             return -1;
         }
         int ret = DiskData[currentIndex] & 0x000000FF;
         ++currentIndex;
         if (verbose)
-            System.out.printf("\nCalls read() from InputStream STUB [returns: %d]", ret);
+            System.out.printf("Calls read() from InputStream STUB [returns: %d]\n", ret);
         return ret;
     }
 
@@ -29,7 +29,7 @@ public class InputStreamStub extends java.io.InputStream {
     public int read(byte[] b) throws IOException {
         if ((currentIndex+b.length-1) >= DiskData.length) {
             if (verbose)
-                System.out.printf("\nCalls read(byte[] b) from InputStream STUB [arg0: %d byte array; returns: -1]", b.length);
+                System.out.printf("Calls read(byte[] b) from InputStream STUB [arg0: %d byte array; returns: -1]\n", b.length);
             return -1;
         } 
         for (int i = 0; i < b.length; ++i) {
@@ -37,7 +37,7 @@ public class InputStreamStub extends java.io.InputStream {
             ++currentIndex;
         }
         if (verbose)
-            System.out.printf("\nCalls read(byte[] b) from InputStream STUB [arg0: %d byte array; returns: 0]", b.length);
+            System.out.printf("Calls read(byte[] b) from InputStream STUB [arg0: %d byte array; returns: 0]\n", b.length);
         return 0;
     }
 

@@ -4,5 +4,6 @@ Hi trobem les classes orientades a controlar els fluxos d'entrada i sortida de b
 
 - BitInputStream.java:
     Conte la classe BitInputStream.
+    
 - BitOutputStream.java:
     Conte la classe BitOutputStream.

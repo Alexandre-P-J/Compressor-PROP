@@ -171,7 +171,7 @@ public class PPMTranslator {
      * @return next integer value codified in ASCII in the input stream
      * @throws IOException if fails reading
      */
-    private int readHeaderNum() throws IOException {
+    int readHeaderNum() throws IOException {
         int next;
         int num = 0;
         boolean numberRead = false;

@@ -3,7 +3,10 @@ package Compressor;
 import Container.ByteArray;
 import IO.BitInputStream;
 import IO.BitOutputStream;
-import java.io.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
 * @author Isaac Muñoz

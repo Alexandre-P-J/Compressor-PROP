@@ -6,7 +6,7 @@ import java.io.FilterInputStream;
 
 public class BitInputStream extends FilterInputStream {
 
-	class ControlBit {
+	class BitManager {
 		private int[] buff = new int[8];
 		private int count = -1 ;
 
@@ -61,7 +61,7 @@ public class BitInputStream extends FilterInputStream {
 		}
 	};
 
-	ControlBit bitControl = new ControlBit();
+	BitManager bitManager = new BitManager();
 
 	private byte[] tempBuf = null;
 	private int tempBufPtr = 0;
@@ -97,14 +97,14 @@ public class BitInputStream extends FilterInputStream {
 	 * @throws IOException If reading from the input streams fails.
 	 */
 	public int read1Bit() throws IOException {
-		if (bitControl.atTheEnd()) return -1;
-		if (bitControl.noMoreBuffer()) {
+		if (bitManager.atTheEnd()) return -1;
+		if (bitManager.noMoreBuffer()) {
 			int i = readNextByte();
-			if (i < 0) bitControl.setTheEnd();
-			else bitControl.setNext(i);
+			if (i < 0) bitManager.setTheEnd();
+			else bitManager.setNext(i);
 			return read1Bit(); // CHECK THIS 
 		}
-		return bitControl.getNext();
+		return bitManager.getNext();
 	}
 
 	/**
