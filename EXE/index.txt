@@ -10,16 +10,8 @@ Directori EXE:
 
 -- Havent executat ./gradlew PackProject ---
 
-\JPEG:
-    Conte l'executable JPEGDriver.jar
-\LZ78:
-    Conte l'executable LZ78Driver.jar
-\LZSS:
-    Conte l'executable LZSSDriver.jar
-\LZW:
-    Conte l'executable LZWDriver.jar
-\Statics:
-    Conte l'executable StatsDriver.jar
+\MainDriver:
+    Conte l'executable Compressor-PROP.jar
 \UnitTestJPEG:
     Conte l'executable UnitTestJPEG.jar
 

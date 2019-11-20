@@ -1,5 +1,0 @@
-Directori LZW
-
-- LZWDriver.jar
-	Executable del LZW.
-
