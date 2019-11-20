@@ -13,7 +13,7 @@
 This will assume you dont have gradle, if you have gradle 6.0 installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
 
 ### Run
-Use the .jar files under EXE/ if some .jar files are missing see the section below
+Use the .jar files under EXE/ if some .jar files are missing or recompilation its needed, see the section below
 
 ### Re/Packaging the Project
 This will regenerate all .jar files under EXE/ and regenerate the documentation under DOCS/
@@ -22,7 +22,7 @@ This will regenerate all .jar files under EXE/ and regenerate the documentation 
 #### On Windows:
 `> gradlew.bat PackProject`
 
-### Running Tests:
+### Update and Run Tests:
 Tests can be found under EXE/ but its useful to recompile and run tests on the go. This will also update test .jar's
 #### Unit Test:
 ##### On Linux:
@@ -34,6 +34,13 @@ Tests can be found under EXE/ but its useful to recompile and run tests on the g
 `> ./gradlew ExtraTests`
 ##### On Windows:
 `> gradlew.bat ExtraTests`
+
+### Update and Run Main Program:
+Main program can be found under EXE/ but its useful to recompile and run on the go. This will also update the .jar file
+#### On Linux:
+`> ./gradlew Main`
+#### On Windows:
+`> gradlew.bat Main`
 
 ### Re/Generating Documentation Only:
 Documentation can be found under DOCS/Documentation but its useful to regenerate it on the go
