@@ -1,10 +1,10 @@
-package Utils;
+package Domain;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import UnitTest_JPEG.*;
-import Compressor.JPEG;
-import Utils.Color;
+import Domain.JPEG;
+import Domain.Color;
 import java.io.*;
 
 public class UtilsTest {

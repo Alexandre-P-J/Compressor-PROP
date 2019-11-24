@@ -1,4 +1,4 @@
-package Container;
+package Domain;
 
 public class ByteArray {
     final private byte[] array;

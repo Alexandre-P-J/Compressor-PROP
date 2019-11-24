@@ -1,13 +1,10 @@
-package Compressor;
+package Domain;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.PriorityQueue;
-import Container.ByteArray;
-import IO.BitInputStream;
-import IO.BitOutputStream;
 
 /**
  * @author Alexandre Perez

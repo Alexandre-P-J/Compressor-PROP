@@ -1,7 +1,7 @@
 package ExtraTests;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import Compressor.LZ78;
+import Domain.LZ78;
 import java.io.*;
 import java.util.Random;
 

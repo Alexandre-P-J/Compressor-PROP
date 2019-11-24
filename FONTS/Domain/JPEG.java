@@ -1,13 +1,10 @@
-package Compressor;
+package Domain;
 
-import Compressor.Huffman;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import Utils.Color;
-import Utils.PPMTranslator;
 
 /**
  * @author Alexandre Perez

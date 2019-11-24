@@ -2,7 +2,7 @@ package ExtraTests;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-import Compressor.Huffman;
+import Domain.Huffman;
 import java.io.*;
 import java.util.Random;
 

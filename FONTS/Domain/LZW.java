@@ -1,9 +1,4 @@
-package Compressor;
-
-import Container.ByteArray;
-import Container.Dictionary;
-import IO.BitInputStream;
-import IO.BitOutputStream;
+package Domain;
 
 import java.io.IOException;
 import java.io.InputStream;

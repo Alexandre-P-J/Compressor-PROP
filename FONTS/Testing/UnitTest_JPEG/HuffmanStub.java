@@ -2,7 +2,7 @@ package UnitTest_JPEG;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import Compressor.Huffman;
+import Domain.Huffman;
 
 public class HuffmanStub extends Huffman {
 

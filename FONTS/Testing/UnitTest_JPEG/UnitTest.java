@@ -1,9 +1,9 @@
-package Compressor;
+package Domain;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import UnitTest_JPEG.*;
-import Compressor.JPEG;
+import Domain.JPEG;
 import java.io.*;
 
 public class UnitTest {
