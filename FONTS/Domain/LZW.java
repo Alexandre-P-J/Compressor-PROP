@@ -8,11 +8,11 @@ import java.io.OutputStream;
  * @author Albert Ibars
  */
 
-public class LZW {
+public class LZW implements Algorithm {
 
     Dictionary dict;
     // The number of bits to be written for each code
-    int nBits;
+    int nBits = 12;
 
     // The previous byte array that we should remember
     ByteArray emptyBA = new ByteArray();
@@ -64,15 +64,22 @@ public class LZW {
     }
 
     /**
+     * Sets the dictionary size that will be used at compression time
+     * @param DictBitSize maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
+     */
+    public void setDictionarySize(int DictBitSize) {
+        if (DictBitSize > 31 || DictBitSize < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");
+        nBits = DictBitSize;
+    }
+
+    /**
      * Compresses the input stream into the output stream given the max size of the input stream
      * @param is InputStream with an amount of data between 0 and DictBitSize
      * @param os OutputStream will be written with the compressed InputStream
-     * @param DictBitSize maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
      * @throws Exception If reading or writting to a stream fails
      */
-    public void compress (InputStream is, OutputStream os, int DictBitSize) throws Exception {
-        if (DictBitSize > 31 || DictBitSize < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");
-        nBits = DictBitSize;
+    @Override
+    public void compress (InputStream is, OutputStream os) throws Exception {
         dict = new Dictionary(1<<nBits);
         // Create a new dictionary with maximum of 2^bits entries
         for (int i = 0; i < 256; ++i)
@@ -131,6 +138,7 @@ public class LZW {
      * @param os OutputStream will be written with the compressed InputStream
      * @throws Exception If reading/writting to the input and output streams fails
      */
+    @Override
     public void decompress (InputStream is, OutputStream os) throws Exception {
         nBits = is.read();  // Dict size
         if (nBits > 31 || nBits < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");

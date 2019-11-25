@@ -39,7 +39,8 @@ public class LZWTest {
             InputStream is0 = new ByteArrayInputStream(IN);
             ByteArrayOutputStream os0 = new ByteArrayOutputStream();
             LZW alg_0 = new LZW();
-            alg_0.compress(is0, os0, DictSize);
+            alg_0.setDictionarySize(DictSize);
+            alg_0.compress(is0, os0);
             os0.close();
             byte[] Compressed = os0.toByteArray();
 

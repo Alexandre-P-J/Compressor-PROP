@@ -1,4 +1,5 @@
 package Domain;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -180,6 +181,21 @@ public class UnitTest {
     }
 
     @Test
+    public void setQuantizationTables() {
+        try {
+            HuffmanStub huffmanStub = new HuffmanStub();
+            JPEG jpeg = new JPEG(huffmanStub);
+            jpeg.setQuantizationTables(Luminance09, Chrominance09);
+            
+            assertArrayEquals(jpeg.LuminanceQuantizationTable, Luminance09);
+            assertArrayEquals(jpeg.ChrominanceQuantizationTable, Chrominance09);
+
+        } catch (Exception e) {
+            assertEquals("no exception", e.toString());
+        }
+    }
+
+    @Test
     public void compress() {
         try {
             HuffmanStub huffmanStub = new HuffmanStub();
@@ -188,8 +204,8 @@ public class UnitTest {
             OutputStreamStub os = new OutputStreamStub();
             huffmanStub.setCount(0);
                                    
-            JPEG jpeg = new JPEG(huffmanStub);;
-            jpeg.compress(is, os, Luminance09, Chrominance09);
+            JPEG jpeg = new JPEG(huffmanStub);
+            jpeg.compress(is, os);
                                                
             byte[] out = os.StubGetWrittenDiskData();
             assertArrayEquals(Image1PixelCompressed, out);
