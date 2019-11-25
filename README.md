@@ -9,6 +9,15 @@
 ##### daniel.clemente.marin@est.fib.edu
 ##### alexandre.perez.josende@est.fib.upc.edu
 
+## Road to second assignment
+- [x] DomainController basico para hacer un placeholder de la ui decente
+- [ ] Serializado y Decodificacion del filetree
+- [ ] Acceso aleatorio usando skip(long)
+- [ ] Separar Domain de Persistance y refactor
+- [ ] UI placeholder
+- [ ] UI Features
+- [ ] Actualizar diagramas, manual, etc
+
 ## How-to's:
 This will assume you dont have gradle, if you have gradle 6.0 installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
 
