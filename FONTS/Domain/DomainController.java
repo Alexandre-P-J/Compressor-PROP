@@ -61,16 +61,15 @@ public class DomainController {
         return tmp.getFolderNames();
     }
 
-    public static void overrideCompressionType(String relativePath, String Type) {
-        String subPath = Paths.get(relativePath).getParent().toString();
-        switch (Type) {
-            case "LZW":
-                
-                break;
-        
-            default:
-                break;
-        }
+    public static void setCompressionType(String relativePath, String Type) {
+        Archive f = Folder.getFile(FileTree.getRoot(), relativePath);
+        CompressionType cType = CompressionType.valueOf(Type);
+        f.setCompressionType(cType);
+    }
+
+    public static String getCompressionType(String relativePath) {
+        Archive f = Folder.getFile(FileTree.getRoot(), relativePath);
+        return f.getCompressionType().toString();
     }
 
     // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos

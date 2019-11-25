@@ -13,9 +13,14 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     private InputStream is = null;
     private OutputStream os = null;
     private final String Path;
+    private CompressionType CType;
 
     Archive(String Path) {
         this.Path = Path;
+        if (isImage())
+            CType = CompressionType.JPEG;
+        else
+            CType = CompressionType.LZW;
     }
 
     public InputStream getInputStream() throws Exception {
@@ -45,6 +50,14 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
 
     public boolean isImage() {
         return Path.substring(Path.length() - 4) == ".ppm";
+    }
+
+    public void setCompressionType(CompressionType Type) {
+        CType = Type;
+    }
+
+    public CompressionType getCompressionType() {
+        return CType;
     }
 
     public void close() throws IOException {

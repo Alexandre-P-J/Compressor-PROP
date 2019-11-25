@@ -94,6 +94,31 @@ public class Folder {
         return aux;
     }
 
+    public static Archive getFile(Folder start, String relativePath) {
+        String pattern = Pattern.quote(System.getProperty("file.separator"));
+        String steps[] = Paths.get(relativePath).toString().split(pattern);
+        Folder aux = start;
+        for (int i = 1; i < steps.length-1; ++i) {
+            Folder[] tmp = aux.getFolders();
+            boolean found = false;
+            for (int j = 0; j < tmp.length; ++j) {
+                if (tmp[j].getName().equals(steps[i])) {
+                    aux = tmp[j];
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return null;
+        }
+        Archive[] tmp = aux.getFiles();
+        for (int i = 0; i < tmp.length; ++i) {
+            if (tmp[i].getFilename().equals(steps[steps.length-1]))
+                return tmp[i];
+        }
+        return null;
+    }
+
     public String[] getPath() {
         Vector<String> v = new Vector<String>();
         Folder aux = this;
