@@ -1,7 +1,7 @@
 package ExtraTests;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import Compressor.LZ78;
+import Domain.LZ78;
 import java.io.*;
 import java.util.Random;
 
@@ -39,7 +39,8 @@ public class LZ78Test {
             InputStream is0 = new ByteArrayInputStream(IN);
             ByteArrayOutputStream os0 = new ByteArrayOutputStream();
             LZ78 alg_0 = new LZ78();
-            alg_0.compress(is0, os0, DictSize);
+            alg_0.setDictionarySize(DictSize);
+            alg_0.compress(is0, os0);
             os0.close();
             byte[] Compressed = os0.toByteArray();
 

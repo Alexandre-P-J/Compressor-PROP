@@ -1,13 +1,10 @@
-package Compressor;
+package Domain;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.PriorityQueue;
-import Container.ByteArray;
-import IO.BitInputStream;
-import IO.BitOutputStream;
 
 /**
  * @author Alexandre Perez
@@ -16,25 +13,32 @@ import IO.BitOutputStream;
 /**
  * Huffman encoder, compress an InputStream to an OutputStream and decompress a valid InputStream to an OutputStream
  */
-public class Huffman {
+public class Huffman implements Algorithm {
 
     /**
      * alphabet size of ASCII
      */ 
     private static final int R = 256;
+    private int nBits = 32;
+
+    /**
+     * sets the max size in bytes of the inputstream so the header can be optimized
+     * @param maxSizeInBytes maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
+     */
+    public void setMaxSizeHint(int maxSizeInBytes) {
+        nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
+        if ((nBits < 0) || (nBits > 32))
+            throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
+    }
 
     /**
      * Compresses the input stream into the output stream given the max size of the input stream.
      * @param is InputStream with an amount of data between 0 and maxSizeInBytes
      * @param os OutputStream will be written with the compressed InputStream
-     * @param maxSizeInBytes maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
      * @throws IOException If reading/writting to the input and output streams fails
      */
-    public void compress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
-        int nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
-        if ((nBits < 0) || (nBits > 32))
-            throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
-
+    @Override
+    public void compress(InputStream is, OutputStream os) throws IOException {
         // read the input
         BitOutputStream bos = new BitOutputStream(os);
         ByteArrayOutputStream aux = new ByteArrayOutputStream();
@@ -88,14 +92,10 @@ public class Huffman {
      * Decompresses the input stream into the output stream given the max size of the input stream.
      * @param is InputStream with an amount of data between 0 and maxSizeInBytes
      * @param os OutputStream will be written with the compressed InputStream
-     * @param maxSizeInBytes maximum size in bytes of the output stream (use 2^31-1 if unknown or default), this value must be the same provided at compression
      * @throws IOException If reading/writting to the input and output streams fails
      */
-    public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
-        int nBits = maxSizeInBytes == 0 ? 1 : 33 - Integer.numberOfLeadingZeros(maxSizeInBytes - 1);
-        if ((nBits < 0) || (nBits > 32))
-            throw new IllegalArgumentException("maxSizeInBytes must be in [0, 2^31-1]");
-
+    @Override
+    public void decompress(InputStream is, OutputStream os) throws IOException {
         BitInputStream bis = new BitInputStream(is);
 
         int length = 0;

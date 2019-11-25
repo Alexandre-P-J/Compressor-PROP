@@ -1,8 +1,4 @@
-package Compressor;
-
-import Container.ByteArray;
-import IO.BitInputStream;
-import IO.BitOutputStream;
+package Domain;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +12,7 @@ import java.io.OutputStream;
 * LZSS algorithm. Compress an InputStream to an OutputStream and decompress a valid InputStream to an OutputStream.
 */
 
-public class LZSS {
+public class LZSS implements Algorithm {
     /**
     * Number of bits to codify a position on the sliding window
     */
@@ -77,6 +73,7 @@ public class LZSS {
     * @param os OutputStream will be written with the compressed InputStream
     * @throws IOException If reading/writting to the input and output streams fails
     */
+    @Override
     public void compress(InputStream is, OutputStream os) throws IOException {
         ByteArray buffer = new ByteArray();
         BitOutputStream bos = new BitOutputStream(os);
@@ -159,6 +156,7 @@ public class LZSS {
     * @param os OutputStream will be written with the decompressed InputStream
     * @throws IOException If reading/writting to the input and output streams fails
     */
+    @Override
     public void decompress(InputStream is, OutputStream os) throws IOException {
         BitInputStream bis = new BitInputStream(is);
         int m = bis.read8Bit();

@@ -2,7 +2,8 @@ package ExtraTests;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.* ;
-import IO.*;
+import Domain.BitInputStream;
+import Domain.BitOutputStream;
 import java.util.Random;
 
 // There's no need to test Byte + bit functions at the same time

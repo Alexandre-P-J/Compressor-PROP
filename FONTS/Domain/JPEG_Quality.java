@@ -1,4 +1,4 @@
-package Constants;
+package Domain;
 
 /**
  * Enumerator that maps a jpeg quality into two 8x8 quantization tables for luminance and chrominance

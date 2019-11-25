@@ -1,9 +1,8 @@
-package Utils;
+package Domain;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import Utils.Color;
 
 public class PPMTranslator {
     /**

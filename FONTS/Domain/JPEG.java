@@ -1,13 +1,10 @@
-package Compressor;
+package Domain;
 
-import Compressor.Huffman;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import Utils.Color;
-import Utils.PPMTranslator;
 
 /**
  * @author Alexandre Perez
@@ -19,15 +16,31 @@ import Utils.PPMTranslator;
  * image in the form of an InputStream to a valid binary ppm image in the form of an
  * OutputStream.
  */
-public class JPEG {
+public class JPEG implements Algorithm {
     /**
-     * Table related to the amount of compression and quality on light intensity
+     * Table related to the amount of compression and quality on light intensity, initialized with a hand choosen table
      */
-    private int[][] LuminanceQuantizationTable;
+    int[][] LuminanceQuantizationTable = {  { 4,  3,  4,  7,  9,  11, 14, 17 },
+                                            { 3,  3,  4,  7,  9,  12, 12, 12 },
+                                            { 4,  4,  5,  9,  12, 12, 12, 12 },
+                                            { 7,  7,  9,  12, 12, 12, 12, 12 },
+                                            { 9,  9,  12, 12, 12, 12, 12, 12 },
+                                            { 11, 12, 12, 12, 12, 12, 12, 12 },
+                                            { 14, 12, 12, 12, 12, 12, 12, 12 },
+                                            { 17, 12, 12, 12, 12, 12, 12, 12 }
+                                         };
     /**
-     * Table related to the amount of compression and quality on color
+     * Table related to the amount of compression and quality on color, initialized with a hand choosen table
      */
-    private int[][] ChrominanceQuantizationTable;
+    int[][] ChrominanceQuantizationTable = {    {  4,  6, 12, 22, 20, 20, 17, 17 },
+                                                {  6,  8, 12, 14, 14, 12, 12, 12 },
+                                                { 12, 12, 14, 14, 12, 12, 12, 12 },
+                                                { 22, 14, 14, 12, 12, 12, 12, 12 },
+                                                { 20, 14, 12, 12, 12, 12, 12, 12 },
+                                                { 20, 12, 12, 12, 12, 12, 12, 12 },
+                                                { 17, 12, 12, 12, 12, 12, 12, 12 },
+                                                { 17, 12, 12, 12, 12, 12, 12, 12 }
+                                            };
     /**
      * 2D matrix of 8x8 Matrices for channel 0
      */
@@ -111,17 +124,23 @@ public class JPEG {
     }
 
     /**
-     * Compress a valid ppm image from an InputStream to an OutputStream given a compression quality
-     * @param is InputStream that contains a stream of bytes with a valid ppm image codification
-     * @param os OutputStream where the compressed image will be stored
+     * Sets the quantization tables used at compression time
      * @param LuminanceQT 8x8 Luminance quantization matrix
      * @param ChrominanceQT 8x8 Chrominance quantization matrix
-     * @throws IOException if reading or writting to a stream fails
      */
-    public void compress(InputStream is, OutputStream os, int[][] LuminanceQT, int[][] ChrominanceQT) throws IOException {
+    public void setQuantizationTables(int[][] LuminanceQT, int[][] ChrominanceQT) {
         LuminanceQuantizationTable = LuminanceQT;
         ChrominanceQuantizationTable = ChrominanceQT;
+    }
 
+    /**
+     * Compress a valid ppm image from an InputStream to an OutputStream
+     * @param is InputStream that contains a stream of bytes with a valid ppm image codification
+     * @param os OutputStream where the compressed image will be stored
+     * @throws IOException if reading or writting to a stream fails
+     */
+    @Override
+    public void compress(InputStream is, OutputStream os) throws IOException {
         PPMTranslator ppmfile = new PPMTranslator(is);
         width = ppmfile.getWidth();
         height = ppmfile.getHeight();
@@ -202,6 +221,7 @@ public class JPEG {
      * @param os OutputStream where the compressed image will be stored with a valid ppm image codification
      * @throws IOException if reading or writting to a stream fails
      */
+    @Override
     public void decompress(InputStream is, OutputStream os) throws IOException {
         // Read Quantization tables
         byte[] qMatrices = new byte[128]; // 8*8*2
@@ -486,7 +506,8 @@ public class JPEG {
     void LosslessEncode(int[][] mat, OutputStream os) throws IOException {
         byte[] zz0 = ZigZag(mat);
         ByteArrayInputStream bai0 = new ByteArrayInputStream(zz0);
-        matrixCompressor.compress(bai0, os, 128); // 8*8*2
+        matrixCompressor.setMaxSizeHint(128); // 8*8*2
+        matrixCompressor.compress(bai0, os);
     }
 
     /**
@@ -498,7 +519,8 @@ public class JPEG {
      */
     int[][] LosslessDecode(InputStream is) throws IOException {
         ByteArrayOutputStream bao0 = new ByteArrayOutputStream();
-        matrixCompressor.decompress(is, bao0, 128); // 8*8*2
+        matrixCompressor.setMaxSizeHint(128); // 8*8*2
+        matrixCompressor.decompress(is, bao0);
         bao0.flush();
         byte[] zz0 = bao0.toByteArray();
         bao0.close();

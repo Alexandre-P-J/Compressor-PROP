@@ -1,4 +1,4 @@
-package Utils;
+package Domain;
 /**
  * Utility class to store color and transform RGB/YCbCr
  */

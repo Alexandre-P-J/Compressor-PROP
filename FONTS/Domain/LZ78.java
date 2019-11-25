@@ -1,9 +1,4 @@
-package Compressor;
-
-import Container.ByteArray;
-import Container.Dictionary;
-import IO.BitInputStream;
-import IO.BitOutputStream;
+package Domain;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +8,7 @@ import java.io.OutputStream;
  * @author Daniel Clemente
  */
 
-public class LZ78 {
+public class LZ78 implements Algorithm {
     class Code {
         int c;          // The next byte/character
         int code;       // The code
@@ -24,7 +19,7 @@ public class LZ78 {
 
     Dictionary dict;
     // The number of bits to be written for each code
-    int nBits;
+    int nBits = 12;
     
     // The previous byte array that we should remember
     ByteArray emptyBA = new ByteArray();
@@ -121,15 +116,22 @@ public class LZ78 {
     }
 
     /**
+     * Sets the dictionary size that will be used at compression time
+     * @param DictBitSize maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
+     */
+    public void setDictionarySize(int DictBitSize) {
+        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
+        nBits = DictBitSize;
+    }
+
+    /**
      * Compresses the input stream into the output stream given the max size of the input stream
      * @param is InputStream with an amount of data between 0 and DictBitSize
      * @param os OutputStream will be written with the compressed InputStream
-     * @param DictBitSize maximum size in bytes of the input stream (use 2^31-1 if unknown or default), this value its needed for decompress
      * @throws Exception if reading or writting to a stream fails
      */
-    public void compress (InputStream is, OutputStream os, int DictBitSize) throws Exception {
-        if (DictBitSize > 31 || DictBitSize < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
-        nBits = DictBitSize;
+    @Override
+    public void compress (InputStream is, OutputStream os) throws Exception {
         dict = new Dictionary(1<<nBits);
         dict.add(emptyBA);
         os.write(nBits); // Write DictBitSize to the compressed stream
@@ -164,6 +166,7 @@ public class LZ78 {
      * @param os OutputStream will be written with the compressed InputStream
      * @throws Exception if reading or writting to a stream fails
      */
+    @Override
     public void decompress (InputStream is, OutputStream os) throws Exception {
         nBits = is.read();
         if (nBits > 31 || nBits < 0) throw new IllegalArgumentException("Dict size must be between 2^0 and 2^31 !");
