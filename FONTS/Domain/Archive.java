@@ -12,16 +12,16 @@ import java.io.IOException;
 public class Archive { // No quiero que se confunda o aparezcan errores debido a que ya existe java.io.File, Archive suena mal, no se me ocurre nada mejor
     private InputStream is = null;
     private OutputStream os = null;
-    private final String absPath;
+    private final String Path;
 
-    Archive(String absPath) {
-        this.absPath = absPath;
+    Archive(String Path) {
+        this.Path = Path;
     }
 
     public InputStream getInputStream() throws Exception {
         if (is == null) {
             if (os != null) throw new Exception("OutputStream already open, error trying to read");
-            is = new BufferedInputStream(new FileInputStream(absPath));
+            is = new BufferedInputStream(new FileInputStream(Path));
         }
         return is;
     }
@@ -29,22 +29,22 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     public OutputStream getOutputStream() throws Exception {
         if (os == null) {
             if (is != null) throw new Exception("InputStream already open, error trying to write");
-            os = new BufferedOutputStream(new FileOutputStream(absPath));
+            os = new BufferedOutputStream(new FileOutputStream(Path));
         }
         return os;
     }
 
     public String getFilename() {
-        return Paths.get(absPath).getFileName().toString();
+        return Paths.get(Path).getFileName().toString();
     }
 
     public String getSubPath() {
-        int size = absPath.length() - getFilename().length();
-        return absPath.substring(0, size);
+        int size = Path.length() - getFilename().length();
+        return Path.substring(0, size);
     }
 
     public boolean isImage() {
-        return absPath.substring(absPath.length() - 4) == ".ppm";
+        return Path.substring(Path.length() - 4) == ".ppm";
     }
 
     public void close() throws IOException {
