@@ -32,6 +32,10 @@ public class DomainController {
     }
 
     private static void initFileTree(File dir, Folder node) throws IOException {
+        if (dir.isFile()) { // special case
+            node.addFile(new Archive(dir.getCanonicalPath()));
+            return;
+        }
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
@@ -55,6 +59,18 @@ public class DomainController {
         Folder tmp = Folder.getFolder(FileTree.getRoot(), relativePath);
         assert(tmp != null);
         return tmp.getFolderNames();
+    }
+
+    public static void overrideCompressionType(String relativePath, String Type) {
+        String subPath = Paths.get(relativePath).getParent().toString();
+        switch (Type) {
+            case "LZW":
+                
+                break;
+        
+            default:
+                break;
+        }
     }
 
     // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos
