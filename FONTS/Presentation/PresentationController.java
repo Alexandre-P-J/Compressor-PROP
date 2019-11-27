@@ -1,6 +1,6 @@
 package Presentation;
 
-import Domain.DomainController;
+import javax.swing.SwingUtilities;
 
 public class PresentationController {
     // Singleton instance
@@ -8,6 +8,15 @@ public class PresentationController {
 
     // Private to avoid external use of the constructor
     private PresentationController() {}
+
+    public static void main (final String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MainFrame();
+            }
+        });
+    }
 
     // Singleton getter
     public static PresentationController getInstance() {
