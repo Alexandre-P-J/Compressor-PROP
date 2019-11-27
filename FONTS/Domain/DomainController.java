@@ -21,25 +21,8 @@ public class DomainController {
     
     // lo llama presentation controller con el path obtenido despues de pulsar SELECT
     public static void readFileTree(String path) throws IOException {
-        // check if compressed:
-        //      WIP
-        // compressed:
-        //      WIP
-        // Not compressed file/folder:
-        FileTree = new Folder("root", null);
-        readUncompressedFileTree(new File(path), FileTree);
+        FileTree = HeaderTranslator.readFileTree(path); // [PENDING REFACTOR, use PersistenceController]
     }
-
-    private static void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
-        if (node.isFile())
-            parentFolder.addFile(new Archive(node.getCanonicalPath()));
-        else {
-            Folder folder = new Folder(node.getName(), parentFolder);
-            File[] files = node.listFiles();
-            for (File file : files)
-                readUncompressedFileTree(file, folder);
-        }
-	}
 
     /**
      * Return filenames from the given relative path
@@ -71,26 +54,9 @@ public class DomainController {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.getCompressionType().toString();
     }
-    /*
-    private static void reserveHeader(Archive out, Folder dir) throws Exception {
-        String subpath = String.join("", dir.getPath());
-        Archive[] files = dir.getFiles();
-        for (Archive file : files) {
-            out.getOutputStream().write((subpath+"/"+file.getFilename()).getBytes());
-            byte[] reserve = new byte[8]; // long
-            out.getOutputStream().write(reserve);
-        }
-
-        Folder[] folders = dir.getFolders();
-        for (Folder folder : folders) {
-            
-        }
-    }*/
 
     // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos
-    public static void compress(String OutputFilePath) {
-
-    }
+    public static void compress(String OutputFilePath) {}
 
     // descomprime todos los archivos
     public static void decompress(String OutputFolderPath) {}
