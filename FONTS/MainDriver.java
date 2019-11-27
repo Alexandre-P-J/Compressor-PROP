@@ -4,21 +4,22 @@ public class MainDriver {
     public static void main(String[] args) {
         try {
             // EJEMPLO DE USO DEL DOMAIN CONTROLLER PARA SACAR DATOS PARA VISUALIZAR EN LA INTERFAZ (esto deberia estar en PresentationController u otra clase de esa capa)
+            
             /*
             DomainController dc = DomainController.getInstance();
-            dc.openNotCompressed("FONTS"); // initialize the file tree (selecciona un archivo/carpeta no comprimido)
+            dc.readFileTree("FONTS"); // initialize the file tree (selecciona un archivo/carpeta no importa si esta comprimido o no)
 
-            System.out.println("\nFiles:");
-            String[] f = dc.getFileNames("FONTS/Testing");
+            System.out.println("\nFiles in FONTS/Testing:");
+            String[] f = dc.getFileNames("FONTS/Testing"); // si hubieramos usado readFileTree con el path a un archivo aqui solo tendia sentido usar "/" (lee la docu...)
             for (int i = 0; i < f.length; ++i)
                 System.out.println(f[i]);
 
-            System.out.println("\nFolders:");
-            String[] f1 = dc.getFolderNames("FONTS/Testing");
+            System.out.println("\nFolders in FONTS:");
+            String[] f1 = dc.getFolderNames("FONTS");
             for (int i = 0; i < f1.length; ++i)
                 System.out.println(f1[i]);
             */
-
+        
         // acordaos de gestionar excepciones, comentado por ahora
         /*} catch (FileNotFoundException fnfe) {
             System.out.println("File Not Found");

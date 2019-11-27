@@ -43,11 +43,6 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
         return Paths.get(Path).getFileName().toString();
     }
 
-    public String getSubPath() {
-        int size = Path.length() - getFilename().length();
-        return Path.substring(0, size);
-    }
-
     public boolean isImage() {
         return Path.substring(Path.length() - 4) == ".ppm";
     }
@@ -63,9 +58,11 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     public void close() throws IOException {
         if (is != null) {
             is.close();
+            is = null;
         }
         if (os != null) {
             os.close();
+            os = null;
         }
     }
 }

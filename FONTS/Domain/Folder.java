@@ -34,6 +34,13 @@ public class Folder {
         return root;
     }
 
+    /*// Returns first valid folder, null if hyerarchy is empty or represented by an unique file at root
+    public Folder getFirstFolder() {
+        if (!root.folders.isEmpty()) // if isn't empty then only has 1 folder (invariant)
+            return root.folders.get(0);
+        return null;
+    }*/
+
     public String getName() {
         return name;
     }
@@ -68,61 +75,65 @@ public class Folder {
         return aux;
     }
 
-    public static Folder getFolder(Folder start, String relativePath) {
+    // start is not included in the path, hence the path must be relative to start
+    public static Folder getFolder(Folder start, String pathToFolder) throws Exception {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
-        String steps[] = Paths.get(relativePath).toString().split(pattern);
+        String steps[] = Paths.get(pathToFolder).toString().split(pattern);
         
-        if (steps.length == 1) {
-            if (start.name.equals(steps[0]))
-                return start;
-            return null;
-        }
+        if (pathToFolder.equals("/"))
+            return start.root;
+        else if (steps.length == 0) throw new Exception(pathToFolder + " folder path not valid");
+        
         Folder aux = start;
-        for (int i = 1; i < steps.length; ++i) {
-            Folder[] tmp = aux.getFolders();
+        for (String step : steps) {
+            Folder[] folders = aux.getFolders();
             boolean found = false;
-            for (int j = 0; j < tmp.length; ++j) {
-                if (tmp[j].getName().equals(steps[i])) {
-                    aux = tmp[j];
+            for (Folder folder : folders) {
+                if (folder.getName().equals(step)) {
+                    aux = folder;
                     found = true;
                     break;
                 }
             }
             if (!found)
-                return null;
+                throw new Exception("error traversing " + pathToFolder + " , " + step + " not found");
         }
         return aux;
     }
 
-    public static Archive getFile(Folder start, String relativePath) {
+    // start is not included in the path, hence the path must be relative to start
+    public static Archive getFile(Folder start, String pathToFile) throws Exception {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
-        String steps[] = Paths.get(relativePath).toString().split(pattern);
+        String steps[] = Paths.get(pathToFile).toString().split(pattern);
+        
+        if (steps.length == 0) throw new Exception(pathToFile + " filepath not valid");
+        
         Folder aux = start;
-        for (int i = 1; i < steps.length-1; ++i) {
-            Folder[] tmp = aux.getFolders();
+        int end = steps.length - 1;
+        for (int i = 0; i < end; ++i) {
+            Folder[] folders = aux.getFolders();
             boolean found = false;
-            for (int j = 0; j < tmp.length; ++j) {
-                if (tmp[j].getName().equals(steps[i])) {
-                    aux = tmp[j];
+            for (Folder folder : folders) {
+                if (folder.getName().equals(steps[i])) {
+                    aux = folder;
                     found = true;
                     break;
                 }
             }
             if (!found)
-                return null;
+                throw new Exception("error traversing " + pathToFile + " , " + steps[i] + " not found");
         }
-        Archive[] tmp = aux.getFiles();
-        for (int i = 0; i < tmp.length; ++i) {
-            if (tmp[i].getFilename().equals(steps[steps.length-1]))
-                return tmp[i];
-        }
-        return null;
+        Archive[] files = aux.getFiles();
+        for (Archive file : files)
+            if (file.getFilename().equals(steps[end]))
+                return file;
+        throw new Exception(steps[end] + " does not exist at " + pathToFile);
     }
 
     public String[] getPath() {
         Vector<String> v = new Vector<String>();
         Folder aux = this;
-        while (aux != null) {
+        while (aux != root) {
             v.add(0, aux.getName());
             aux = aux.parent;
         }

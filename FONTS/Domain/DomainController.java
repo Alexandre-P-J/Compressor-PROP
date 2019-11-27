@@ -18,62 +18,79 @@ public class DomainController {
     public static DomainController getInstance() {
         return instance;
     }
-
-    // lo llama presentation controller para abrir un archivo comprimido al pulsar SELECT
-    // esta funcion inicializa FileTree (se lee la cabecera del comprimido)
-    public static void openCompressed(String absPath) {}
     
-    // lo llama presentation controller para abrir un archivo/carpeta no comprimido al pulsar SELECT
-    // esta funcion inicializa FileTree
-    public static void openNotCompressed(String path) throws IOException {
-        String name = Paths.get(path).getFileName().toString();
-        FileTree = new Folder(name, null);
-        initFileTree(new File(path), FileTree);
+    // lo llama presentation controller con el path obtenido despues de pulsar SELECT
+    public static void readFileTree(String path) throws IOException {
+        // check if compressed:
+        //      WIP
+        // compressed:
+        //      WIP
+        // Not compressed file/folder:
+        FileTree = new Folder("root", null);
+        readUncompressedFileTree(new File(path), FileTree);
     }
 
-    private static void initFileTree(File dir, Folder node) throws IOException {
-        if (dir.isFile()) { // special case
-            node.addFile(new Archive(dir.getCanonicalPath()));
-            return;
+    private static void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
+        if (node.isFile())
+            parentFolder.addFile(new Archive(node.getCanonicalPath()));
+        else {
+            Folder folder = new Folder(node.getName(), parentFolder);
+            File[] files = node.listFiles();
+            for (File file : files)
+                readUncompressedFileTree(file, folder);
         }
-		File[] files = dir.listFiles();
-		for (File file : files) {
-			if (file.isDirectory()) {
-                Folder f = new Folder(file.getName(), node);
-				initFileTree(file, f);
-			} else {
-				node.addFile(new Archive(file.getCanonicalPath()));
-			}
-		}
 	}
 
-    // la usa presentation controller para
-    public static String[] getFileNames(String relativePath) {
-        Folder tmp = Folder.getFolder(FileTree.getRoot(), relativePath);
-        assert(tmp != null);
-        return tmp.getFileNames();
+    /**
+     * Return filenames from the given relative path
+     * @param pathToParentFolder either "/" or "foo/bar.." (replacing ".." with the rest of the path)
+     * @return an array of filenames contained in the folder with path equal to path argument
+     * @throws Exception if path is invalid or filetree not initialized
+     */
+    public static String[] getFileNames(String pathToParentFolder) throws Exception {
+        return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFileNames();
     }
 
-    // la usa presentation controller para
-    public static String[] getFolderNames(String relativePath) {
-        Folder tmp = Folder.getFolder(FileTree.getRoot(), relativePath);
-        assert(tmp != null);
-        return tmp.getFolderNames();
+    /**
+     * Return folder names from the given relative path
+     * @param pathToParentFolder either "/" or "foo/bar.." (replacing ".." with the rest of the path)
+     * @return an array of folder names contained in the folder with path equal to path argument
+     * @throws Exception if path is invalid or filetree not initialized
+     */
+    public static String[] getFolderNames(String pathToParentFolder) throws Exception {
+        return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFolderNames();
     }
 
-    public static void setCompressionType(String relativePath, String Type) {
-        Archive f = Folder.getFile(FileTree.getRoot(), relativePath);
+    public static void setCompressionType(String path, String Type) throws Exception {
+        Archive f = Folder.getFile(FileTree.getRoot(), path);
         CompressionType cType = CompressionType.valueOf(Type);
         f.setCompressionType(cType);
     }
 
-    public static String getCompressionType(String relativePath) {
-        Archive f = Folder.getFile(FileTree.getRoot(), relativePath);
+    public static String getCompressionType(String path) throws Exception {
+        Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.getCompressionType().toString();
     }
+    /*
+    private static void reserveHeader(Archive out, Folder dir) throws Exception {
+        String subpath = String.join("", dir.getPath());
+        Archive[] files = dir.getFiles();
+        for (Archive file : files) {
+            out.getOutputStream().write((subpath+"/"+file.getFilename()).getBytes());
+            byte[] reserve = new byte[8]; // long
+            out.getOutputStream().write(reserve);
+        }
+
+        Folder[] folders = dir.getFolders();
+        for (Folder folder : folders) {
+            
+        }
+    }*/
 
     // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos
-    public static void compress(String OutputFilePath) {}
+    public static void compress(String OutputFilePath) {
+
+    }
 
     // descomprime todos los archivos
     public static void decompress(String OutputFolderPath) {}
