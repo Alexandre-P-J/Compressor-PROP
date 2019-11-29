@@ -1,8 +1,10 @@
-import java.io.*;
-import Domain.DomainController;
+//import java.io.*;
+//import Domain.DomainController;
+import Presentation.PresentationController;
 public class MainDriver {
     public static void main(String[] args) {
         try {
+            PresentationController.DisplayUI();
             // EJEMPLO DE USO DEL DOMAIN CONTROLLER PARA SACAR DATOS PARA VISUALIZAR EN LA INTERFAZ (esto deberia estar en PresentationController u otra clase de esa capa)
             
             /*

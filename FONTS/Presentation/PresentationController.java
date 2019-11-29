@@ -9,7 +9,7 @@ public class PresentationController {
     // Private to avoid external use of the constructor
     private PresentationController() {}
 
-    public static void main (final String[] args) {
+    public static void DisplayUI () {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
