@@ -2,22 +2,58 @@ package Domain;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 
 public class HeaderTranslator {
 
     public static Folder readFileTree(String path) throws IOException {
-        Folder FileTree = new Folder("root", null);
-        // check if compressed:
-        //      WIP
-        // compressed:
-        //      WIP
-        // Not compressed file/folder:
-        readUncompressedFileTree(new File(path), FileTree);
+        Folder FileTree;
+        try {
+            FileTree = new Folder("root", null);
+            InputStream is = new BufferedInputStream(new FileInputStream(path));
+            readCompressedFileTree(is, FileTree);
+        } catch (Exception e) {
+            FileTree = new Folder("root", null);
+            readUncompressedFileTree(new File(path), FileTree);
+        }
         
         return FileTree;
     }
 
-    public static void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
+    private static void readCompressedFileTree(InputStream is, Folder parentFolder) throws Exception {
+        int next = is.read();
+        while ((next > 0) && (next <= 4)) {
+            byte[] buf0 = new byte[8];
+            is.read(buf0);
+            long index = toLong(buf0);
+            int size = is.read();
+            byte[] buf1 = new byte[size];
+            is.read(buf1);
+            String name = new String(buf1, "UTF-8");
+            Archive file = new Archive(parentFolder.getPath() + "/" + name);
+            file.setHeaderIndex(index);
+            parentFolder.addFile(file);
+            next = is.read();
+        }
+        while (next == 0) {
+            int size = is.read();
+            byte[] buff = new byte[size];
+            is.read(buff);
+            String name = new String(buff, "UTF-8");
+            Folder folder = new Folder(name, parentFolder);
+            readCompressedFileTree(is, folder);
+            next = is.read();
+        }
+        if (next == 0x05) {
+            return;
+        }
+        else throw new Exception("Invalid file type");
+    }
+
+    private static void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
         if (node.isFile())
             parentFolder.addFile(new Archive(node.getCanonicalPath()));
         else {
@@ -26,91 +62,65 @@ public class HeaderTranslator {
             for (File file : files)
                 readUncompressedFileTree(file, folder);
         }
-	}
+    }
     
-    private static void reserveFileHeader(Archive[] files, BitOutputStream bos) throws Exception {
+    public static void reserveHeader(OutputStream os, Folder parentFolder) throws Exception {
+        reserve(os, parentFolder);
+        os.flush();
+    }
+    
+    private static void reserve(OutputStream os, Folder parentFolder) throws Exception {
+        Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
-            byte type = 0;
-            switch (file.getCompressionType()) {
-                case LZW:
-                    type = 0x01;
-                    break;
-                case LZ78:
-                    type = 0x02;
-                    break;
-                case LZSS:
-                    type = 0x03;
-                    break;
-                case JPEG:
-                    type = 0x04;
-                    break;
-                default:
-                    throw new Exception("Invalid compression type");
-            }
-            bos.write8Bit(type);
-            for (int i = 0; i < 8; ++i) {
-                bos.write8Bit(0);
-            }
-            byte[] name = file.getFilename().getBytes("UTF-8");
-            for (byte b : name) {
-                bos.write8Bit(b);
-            }
-            bos.flush();
+            reserveFileHeader(os, file);
         }
+        Folder[] folders = parentFolder.getFolders();
+        for (Folder folder : folders) {
+            os.write(0x00); // Type: Folder
+            byte[] name = folder.getName().getBytes("UTF-8");
+            os.write(name.length);
+            os.write(name);
+            reserve(os, folder);    
+        }
+        os.write(0x05);
+    }
+
+    private static void reserveFileHeader(OutputStream os, Archive file) throws Exception {
+        byte type = 0;
+        switch (file.getCompressionType()) {
+            case LZW:
+                type = 0x01;
+                break;
+            case LZ78:
+                type = 0x02;
+                break;
+            case LZSS:
+                type = 0x03;
+                break;
+            case JPEG:
+                type = 0x04;
+                break;
+            default:
+                throw new Exception("Invalid compression type");
+        }
+        os.write(type);
+        byte[] zero = new byte[8];
+        for (int i = 0; i < 8; ++i) {
+            os.write(0);
+        }
+        byte[] name = file.getFilename().getBytes("UTF-8");
+        os.write(name.length);
+        os.write(name);
     }
     
-    public static void reserveHeader(BitOutputStream bos, Folder dir) throws Exception {
-        Archive[] files = dir.getFiles();
-        reserveFileHeader(files, bos);
-        Folder[] folders = dir.getFolders();
-        for (Folder folder : folders) {
-            bos.write8Bit(0x00); // Folder type
-            byte[] name = folder.getName().getBytes("UTF-8");
-            for (byte b : name) {
-                bos.write8Bit(b);
-            }
-            bos.flush();
-            reserveHeader(bos, folder);
-        }
-
-    }
 
     public static void setHeaderValues(Archive compressedFile, Folder FileTreeRoot) {
 
     }
 
-    public static void readCompressedFileTree(BitInputStream bis, Folder parentFolder) throws Exception {
-        int type;
-        while ((type = bis.read8Bit()) >= 0) {
-            if ((type > 0) && (type <= 4)) { // File
-                byte[] localPointer = new byte[8];
-                for (int i = 0; i < 8; ++i) {
-                    localPointer[i] = (byte)bis.read8Bit();
-                }
-                long index = toLong(localPointer);
-                int next;
-                ByteArray ba = new ByteArray();
-                while ((next = bis.read8Bit()) >= 0) {
-                    ba.concatenate((byte)next);
-                }
-                String name = new String(ba.getBytes(), "UTF-8");
-                Archive file = new Archive(parentFolder.getPath() + "/" + name);
-                file.setHeaderIndex(index);
-                parentFolder.addFile(file);
-            }
-            else if (type == 0) { // Folder
-                int next;
-                ByteArray ba = new ByteArray();
-                while ((next = bis.read8Bit()) >= 0) {
-                    ba.concatenate((byte)next);
-                }
-                String name = new String(ba.getBytes(), "UTF-8");
-                Folder folder = new Folder(name, parentFolder);
-                readCompressedFileTree(bis, folder);
-            }
-            else throw new Exception("Invalid file type");
-        }
-    }
+    
+
+    
 
     private static long toLong(byte[] bytes) {
         long result = 0;

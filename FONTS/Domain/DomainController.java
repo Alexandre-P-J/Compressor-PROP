@@ -5,6 +5,7 @@ import Persistence.PersistenceController;
 import java.io.File;
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class DomainController {
     // Singleton instance
@@ -56,9 +57,14 @@ public class DomainController {
     }
 
     // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos
-    public static void compress(String OutputFilePath) {}
+    public static void compress(String OutputFilePath) throws Exception {
+        Archive out = new Archive(OutputFilePath);
+        HeaderTranslator.reserveHeader(out.getOutputStream(), FileTree.getRoot());
+    }
 
     // descomprime todos los archivos
-    public static void decompress(String OutputFolderPath) {}
+    public static void decompress(String OutputFolderPath) throws Exception {
+        Archive in = new Archive(OutputFolderPath);
+    }
     
 }
