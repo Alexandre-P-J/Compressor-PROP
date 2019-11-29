@@ -1,4 +1,4 @@
-package Domain;
+package Persistence;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +14,7 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     private OutputStream os = null;
     private final String Path;
     private CompressionType CType;
+    private long index = -1; // position of the first byte after a full compression
 
     Archive(String Path) {
         this.Path = Path;
@@ -53,6 +54,14 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
 
     public CompressionType getCompressionType() {
         return CType;
+    }
+
+    public void setHeaderIndex(long position) {
+        index = position;
+    }
+
+    public long getHeaderIndex() {
+        return index;
     }
 
     public void close() throws IOException {
