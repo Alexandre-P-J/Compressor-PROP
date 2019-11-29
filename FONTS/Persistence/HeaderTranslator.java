@@ -1,4 +1,4 @@
-package Domain;
+package Persistence;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +104,6 @@ public class HeaderTranslator {
                 throw new Exception("Invalid compression type");
         }
         os.write(type);
-        byte[] zero = new byte[8];
         for (int i = 0; i < 8; ++i) {
             os.write(0);
         }

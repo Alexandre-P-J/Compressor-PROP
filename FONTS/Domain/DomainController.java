@@ -2,15 +2,12 @@ package Domain;
 
 import Presentation.PresentationController;
 import Persistence.PersistenceController;
-import java.io.File;
-import java.nio.file.Paths;
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class DomainController {
     // Singleton instance
     private static final DomainController instance = new DomainController();
-    private static Folder FileTree; // must be the root of the filetree
 
     // Private to avoid external use of the constructor
     private DomainController() {}
@@ -22,7 +19,7 @@ public class DomainController {
     
     // lo llama presentation controller con el path obtenido despues de pulsar SELECT
     public static void readFileTree(String path) throws IOException {
-        FileTree = HeaderTranslator.readFileTree(path); // [PENDING REFACTOR, use PersistenceController]
+        PersistenceController.readFileTree(path);
     }
 
     /**
@@ -32,7 +29,7 @@ public class DomainController {
      * @throws Exception if path is invalid or filetree not initialized
      */
     public static String[] getFileNames(String pathToParentFolder) throws Exception {
-        return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFileNames();
+        return PersistenceController.getFileNames(pathToParentFolder);
     }
 
     /**
@@ -42,29 +39,25 @@ public class DomainController {
      * @throws Exception if path is invalid or filetree not initialized
      */
     public static String[] getFolderNames(String pathToParentFolder) throws Exception {
-        return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFolderNames();
+        return PersistenceController.getFolderNames(pathToParentFolder);
     }
 
     public static void setCompressionType(String path, String Type) throws Exception {
-        Archive f = Folder.getFile(FileTree.getRoot(), path);
-        CompressionType cType = CompressionType.valueOf(Type);
-        f.setCompressionType(cType);
+        PersistenceController.setCompressionType(path, Type);
     }
 
     public static String getCompressionType(String path) throws Exception {
-        Archive f = Folder.getFile(FileTree.getRoot(), path);
-        return f.getCompressionType().toString();
+        return PersistenceController.getCompressionType(path);
     }
 
     // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos
     public static void compress(String OutputFilePath) throws Exception {
-        Archive out = new Archive(OutputFilePath);
-        HeaderTranslator.reserveHeader(out.getOutputStream(), FileTree.getRoot());
+        OutputStream os = PersistenceController.reserveHeader(OutputFilePath);
     }
 
     // descomprime todos los archivos
     public static void decompress(String OutputFolderPath) throws Exception {
-        Archive in = new Archive(OutputFolderPath);
+        
     }
     
 }
