@@ -6,7 +6,7 @@
 
 ##### albert.ibars.cubel@est.fib.upc.edu
 ##### isaac.munoz.busto@est.fib.upc.edu
-##### daniel.clemente.marin@est.fib.edu
+##### daniel.clemente.marin@est.fib.upc.edu
 ##### alexandre.perez.josende@est.fib.upc.edu
 
 ## Road to second assignment
