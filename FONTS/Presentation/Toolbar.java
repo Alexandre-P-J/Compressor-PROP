@@ -21,6 +21,7 @@ public class Toolbar extends JPanel implements ActionListener {
         fileButton = new JButton("Abrir archivo");
         compressButton = new JButton("Comprimir/Descomprimir");
         fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         s = new String();
         f = new File(s);
 
