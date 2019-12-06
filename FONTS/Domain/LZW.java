@@ -8,7 +8,7 @@ import java.io.OutputStream;
  * @author Albert Ibars
  */
 
-public class LZW implements Algorithm {
+public class LZW extends Algorithm {
 
     Dictionary dict;
     // The number of bits to be written for each code

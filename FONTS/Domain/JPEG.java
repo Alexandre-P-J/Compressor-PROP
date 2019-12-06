@@ -16,7 +16,7 @@ import java.io.ByteArrayInputStream;
  * image in the form of an InputStream to a valid binary ppm image in the form of an
  * OutputStream.
  */
-public class JPEG implements Algorithm {
+public class JPEG extends Algorithm {
     /**
      * Table related to the amount of compression and quality on light intensity, initialized with a hand choosen table
      */

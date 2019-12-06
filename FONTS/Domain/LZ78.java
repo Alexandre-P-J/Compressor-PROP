@@ -8,7 +8,7 @@ import java.io.OutputStream;
  * @author Daniel Clemente
  */
 
-public class LZ78 implements Algorithm {
+public class LZ78 extends Algorithm {
     class Code {
         int c;          // The next byte/character
         int code;       // The code
