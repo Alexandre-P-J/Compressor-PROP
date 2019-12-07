@@ -4,26 +4,40 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
 public class HeaderTranslator {
+    private Boolean compressedFileTree = null;
+    private long headerSize = 0;
 
-    public static Folder readFileTree(String path) throws IOException {
+    public Boolean fileTreeIsCompressed() {
+        return compressedFileTree;
+    }
+
+    public long getReadHeaderSize() {
+        return headerSize;
+    }
+
+    public Folder readFileTree(String path) throws IOException {
         Folder FileTree;
         try {
             FileTree = new Folder("root", null);
-            InputStream is = new BufferedInputStream(new FileInputStream(path));
-            readCompressedFileTree(is, FileTree);
+            InputStreamWatcher isw = new InputStreamWatcher(new BufferedInputStream(new FileInputStream(path)));
+            readCompressedFileTree(isw, FileTree);
+            headerSize = isw.getReadBytes();
+            compressedFileTree = true;
         } catch (Exception e) {
             FileTree = new Folder("root", null);
             readUncompressedFileTree(new File(path), FileTree);
+            compressedFileTree = false;
         }
         
         return FileTree;
     }
 
-    private static void readCompressedFileTree(InputStream is, Folder parentFolder) throws Exception {
+    private void readCompressedFileTree(InputStream is, Folder parentFolder) throws Exception {
         int next = is.read();
         while ((next > 0) && (next <= 4)) {
             byte[] buf0 = new byte[8];
@@ -53,7 +67,7 @@ public class HeaderTranslator {
         else throw new Exception("Invalid file type");
     }
 
-    private static void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
+    private void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
         if (node.isFile())
             parentFolder.addFile(new Archive(node.getCanonicalPath()));
         else {
@@ -64,12 +78,12 @@ public class HeaderTranslator {
         }
     }
     
-    public static void reserveHeader(OutputStream os, Folder parentFolder) throws Exception {
+    public void reserveHeader(OutputStream os, Folder parentFolder) throws Exception {
         reserve(os, parentFolder);
         os.flush();
     }
     
-    private static void reserve(OutputStream os, Folder parentFolder) throws Exception {
+    private void reserve(OutputStream os, Folder parentFolder) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
             reserveFileHeader(os, file);
@@ -80,12 +94,12 @@ public class HeaderTranslator {
             byte[] name = folder.getName().getBytes("UTF-8");
             os.write(name.length);
             os.write(name);
-            reserve(os, folder);    
+            reserve(os, folder);
         }
         os.write(0x05);
     }
 
-    private static void reserveFileHeader(OutputStream os, Archive file) throws Exception {
+    private void reserveFileHeader(OutputStream os, Archive file) throws Exception {
         byte type = 0;
         switch (file.getCompressionType()) {
             case LZW:
@@ -113,15 +127,33 @@ public class HeaderTranslator {
     }
     
 
-    public static void setHeaderValues(Archive compressedFile, Folder FileTreeRoot) {
-
+    public void setHeaderValues(String path, Folder parentFolder) throws Exception {
+        RandomAccessFile raf = new RandomAccessFile(path, "rw");
+        setHeader(raf, parentFolder);
+        raf.close();
     }
 
+
+    private void setHeader(RandomAccessFile header, Folder parentFolder) throws Exception {
+        Archive[] files = parentFolder.getFiles();
+        for (Archive file : files) {
+            header.skipBytes(1);
+            header.write(toArray(file.getHeaderIndex()));
+            header.skipBytes(header.read()); // skip filename length and filename
+        }
+        Folder[] folders = parentFolder.getFolders();
+        for (Folder folder : folders) {
+            header.skipBytes(1);
+            header.skipBytes(header.read()); // skip folder name length and folder name
+            setHeader(header, folder);
+        }
+        header.skipBytes(1);
+    }
     
 
     
 
-    private static long toLong(byte[] bytes) {
+    private long toLong(byte[] bytes) {
         long result = 0;
         result |= (long)(bytes[0]) << 56;
         result |= ((long)(bytes[1]) << 48) & 0x00FF000000000000L;
@@ -134,7 +166,7 @@ public class HeaderTranslator {
         return result;
     }
 
-    private static byte[] toArray(long value) {
+    private byte[] toArray(long value) {
         byte[] result = new byte[8];
         result[0] = (byte)((value >> 56) & 0x00000000000000FFL);
         result[1] = (byte)((value >> 48) & 0x00000000000000FFL);

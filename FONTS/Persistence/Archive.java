@@ -10,11 +10,10 @@ import java.nio.file.Paths;
 import java.io.IOException;
 
 public class Archive { // No quiero que se confunda o aparezcan errores debido a que ya existe java.io.File, Archive suena mal, no se me ocurre nada mejor
-    private InputStream is = null;
-    private OutputStream os = null;
     private final String Path;
     private CompressionType CType;
-    private long index = -1; // position of the first byte after a full compression
+    private long index = -1; // offset from the start of the compressed file
+    private Statistics stats;
 
     Archive(String Path) {
         this.Path = Path;
@@ -25,19 +24,11 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     }
 
     public InputStream getInputStream() throws Exception {
-        if (is == null) {
-            if (os != null) throw new Exception("OutputStream already open, error trying to read");
-            is = new BufferedInputStream(new FileInputStream(Path));
-        }
-        return is;
+        return new BufferedInputStream(new FileInputStream(Path));
     }
 
     public OutputStream getOutputStream() throws Exception {
-        if (os == null) {
-            if (is != null) throw new Exception("InputStream already open, error trying to write");
-            os = new BufferedOutputStream(new FileOutputStream(Path));
-        }
-        return os;
+        return new BufferedOutputStream(new FileOutputStream(Path));
     }
 
     public String getFilename() {
@@ -45,7 +36,9 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     }
 
     public boolean isImage() {
-        return Path.substring(Path.length() - 4) == ".ppm";
+        if (Path.length() > 4)
+            return Path.substring(Path.length() - 4) == ".ppm";
+        return false;
     }
 
     public void setCompressionType(CompressionType Type) {
@@ -64,14 +57,11 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
         return index;
     }
 
-    public void close() throws IOException {
-        if (is != null) {
-            is.close();
-            is = null;
-        }
-        if (os != null) {
-            os.close();
-            os = null;
-        }
+    public Statistics getStatistics() {
+        return stats;
+    }
+
+    public void setStatistics(Statistics s) {
+        stats = s;
     }
 }
