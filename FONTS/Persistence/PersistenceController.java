@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -147,7 +148,7 @@ public class PersistenceController {
 
     public static void compressFiletree(String outputPath) throws Exception {
         Archive out = new Archive(outputPath);
-        OutputStream os = out.getOutputStream();
+        OutputStream os = new BufferedOutputStream(out.getOutputStream());
         OutputStreamWatcher osw = new OutputStreamWatcher(os);
         headerTranslator.reserveHeader(osw, FileTree.getRoot());
         totalStats.inputSize = 0;
@@ -160,7 +161,7 @@ public class PersistenceController {
     }
 
     public static void decompressFiletree(String outputPath) throws Exception {
-        InputStream is = new FileInputStream(openedPath);
+        InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
         is.skip(headerTranslator.getReadHeaderSize());
         File f = new File(outputPath);
         f.mkdir();
@@ -183,7 +184,7 @@ public class PersistenceController {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
             Statistics stats = new Statistics();
-            InputStreamWatcher isw = new InputStreamWatcher(file.getInputStream());
+            InputStreamWatcher isw = new InputStreamWatcher(new BufferedInputStream(file.getInputStream()));
             OutputStreamWatcher osw = new OutputStreamWatcher(os);
             long timeStart = System.currentTimeMillis();
             DomainController.chainCompress(isw, osw, file.getCompressionType().toString());
@@ -209,7 +210,7 @@ public class PersistenceController {
         for (Archive file : files) {
             Statistics stats = new Statistics();
             InputStreamWatcher isw = new InputStreamWatcher(is);
-            OutputStreamWatcher osw = new OutputStreamWatcher(new FileOutputStream(path+"/"+file.getFilename()));
+            OutputStreamWatcher osw = new OutputStreamWatcher(new BufferedOutputStream(new FileOutputStream(path+"/"+file.getFilename())));
             long timeStart = System.currentTimeMillis();
             DomainController.chainDecompress(isw, osw, file.getCompressionType().toString());
             long timeEnd = System.currentTimeMillis();

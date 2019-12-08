@@ -72,10 +72,18 @@ public class DomainController {
         return PersistenceController.getImage(Path);
     }
 
+    /**
+     * Returns the total time of the last compress/decompress operation
+     * @return time in miliseconds
+     */
     public static long getTotalTimeStat() {
         return PersistenceController.getTotalTimeStat();
     }
 
+    /**
+     * Returns the total size of the input data from the last compress/decompress operation
+     * @return size in bytes
+     */
     public static long getTotalInputSizeStat() {
         return PersistenceController.getTotalInputSizeStat();
     }
