@@ -1,20 +1,23 @@
 package Presentation;
 
 import Domain.DomainController;
-
 import javax.swing.SwingUtilities;
-import java.io.File;
-import java.io.IOException;
 
 public class PresentationController {
-    private static String s = new String();
+    private static NavigationPanel navigator;
     // Singleton instance
     private static final PresentationController instance = new PresentationController();
+
     // Private to avoid external use of the constructor
-    private PresentationController() {}
-    private static DomainController dc = DomainController.getInstance();
-    
-    public static void DisplayUI () {
+    private PresentationController() {
+    }
+
+    // Singleton getter
+    public static PresentationController getInstance() {
+        return instance;
+    }
+
+    public static void DisplayUI() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -23,29 +26,29 @@ public class PresentationController {
         });
     }
 
-    public static String[] obtenerArchivos(File f, boolean carpetas) {
-        try {
-            String[] ficheros;
-            s = f.getAbsolutePath();
-            dc.readFileTree(s);
-            s = f.getName();
-            if (carpetas) {
-                ficheros = dc.getFolderNames(s);
-            }
-            else {
-                ficheros = dc.getFileNames(s);
-            }
-            dc.getFileNames(s);
-            return ficheros;
-        } 
-        catch (Exception exc) {
-            return null;
-        }
+    public static boolean readFileTree(String path) throws Exception {
+        boolean compressed = DomainController.readFileTree(path);
+        navigator.refresh("");
+        return compressed;
     }
 
-    // Singleton getter
-    public static PresentationController getInstance() {
-        return instance;
+    public static void compressTo(String OutputFilePath) throws Exception {
+        DomainController.compressTo(OutputFilePath);
     }
 
+    public static void decompressTo(String OutputFolderPath) throws Exception {
+        DomainController.decompressTo(OutputFolderPath);
+    }
+
+    public static void setNavigator(NavigationPanel np) {
+        navigator = np;
+    }
+
+    public static String[] getFolderNames(String Path) throws Exception {
+        return DomainController.getFolderNames(Path);
+    }
+
+    public static String[] getFileNames(String Path) throws Exception {
+        return DomainController.getFileNames(Path);
+    }
 }

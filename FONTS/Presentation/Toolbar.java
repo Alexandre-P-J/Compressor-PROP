@@ -6,27 +6,33 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 
 public class Toolbar extends JPanel implements ActionListener {
-
     private final JButton fileButton;
     private final JButton compressButton;
     private final JFileChooser fileChooser;
-    private String s;
-    private static File f;
-    private static PresentationController Pc;
+    private final JFileChooser compressedSaveChooser;
+    private final JFileChooser decompressedSaveChooser;
+    private boolean compressed;
 
-    private StringListener textListener;
-    
     public Toolbar() {
         setBorder(BorderFactory.createEtchedBorder());
-        fileButton = new JButton("Abrir archivo");
-        compressButton = new JButton("Comprimir/Descomprimir");
+        fileButton = new JButton("Open");
+        compressButton = new JButton("Compress/Decompress");
+        compressButton.setVisible(false);
+
         fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        s = new String();
-        f = new File(s);
+
+        compressedSaveChooser = new JFileChooser();
+        compressedSaveChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        compressedSaveChooser.setDialogTitle("Save As");
+        compressedSaveChooser.setApproveButtonText("Save");
+
+        decompressedSaveChooser = new JFileChooser();
+        decompressedSaveChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        decompressedSaveChooser.setDialogTitle("Save Into");
+        decompressedSaveChooser.setApproveButtonText("Save");
 
         compressButton.addActionListener(this);
         fileButton.addActionListener(this);
@@ -37,57 +43,43 @@ public class Toolbar extends JPanel implements ActionListener {
         add(compressButton);
     }
 
-    public void setStringListener(final StringListener listener) {
-        this.textListener = listener;
-    }
-
     public void actionPerformed(final ActionEvent e) {
         final JButton clicked = (JButton) e.getSource();
 
-       if (clicked == fileButton) {
-           
-            if(textListener != null){
-                if(fileChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION){
-                    textListener.limpiarText();
-                    System.out.println(fileChooser.getSelectedFile());
-                    f = fileChooser.getSelectedFile();
-                    s = f.getName();
-                    double tam = (double) f.length();
-                    String tama = String.valueOf(tam);
-                    if (f.isFile()) {
-                        textListener.textEmitted("- " + s + "\n");
+        if (clicked == fileButton) {
+            if (fileChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
+                File f = fileChooser.getSelectedFile();
+                try {
+                    compressed = PresentationController.readFileTree(f.getCanonicalPath());
+                    if (compressed)
+                        compressButton.setText("Decompress");
+                    else {
+                        compressButton.setText("Compress");
                     }
-                    else if (f.isDirectory()) {
-                        String[] archivos = Pc.obtenerArchivos(f, true);
-                        String aux;
-                        if (archivos != null) {
-                            System.out.println(archivos.length);
-                            for (int i = 0; i < archivos.length; ++i) {
-                                aux = "+ " + archivos[i] + "\n";
-                                textListener.textEmitted(aux);
-                            }
-                        }
-                        else {
-                            System.out.println("archivos es nulo");
-                        }
-                        archivos = Pc.obtenerArchivos(f, false);
-                        if (archivos != null) {
-                            System.out.println(archivos.length);
-                            for (int i = 0; i < archivos.length; ++i) {
-                                aux = "- " + archivos[i] + "\n";
-                                textListener.textEmitted(aux);
-                            }
-                        }
-                        else {
-                            System.out.println("archivos es nulo");
-                        }
-                    }                    
+                    compressButton.setVisible(true);
+                } catch (Exception exc) {
+                    System.out.println(exc.getMessage());
                 }
             }
-        } 
-        else{
-            if(textListener != null) {
-            textListener.textEmitted("Comprimiendo...\n");
+        } else if (clicked == compressButton) {
+            if (compressed) {
+                if (decompressedSaveChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
+                    File f = decompressedSaveChooser.getSelectedFile();
+                    try {
+                        PresentationController.decompressTo(f.getCanonicalPath());
+                    } catch (Exception exc) {
+                        System.out.println(exc.getMessage());
+                    }
+                }
+            } else {
+                if (compressedSaveChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
+                    File f = compressedSaveChooser.getSelectedFile();
+                    try {
+                        PresentationController.compressTo(f.getCanonicalPath());
+                    } catch (Exception exc) {
+                        System.out.println(exc.getMessage());
+                    }
+                }
             }
         }
     }
