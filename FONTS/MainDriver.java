@@ -14,9 +14,27 @@ public class MainDriver {
             DomainController.readFileTree("TESTING");
             DomainController.compressTo("Out");
             DomainController.readFileTree("Out");
-            //System.out.println(DomainController.getDocument("TESTING/MainDriver.java"));
+            //System.out.println(DomainController.getDocument("TESTING/subdir/Algorithm.java"));
             DomainController.decompressTo("zzz");
+            
+            /*
+            InputStream is2 = new FileInputStream("Original1.ppm");
+            OutputStream os2 = new FileOutputStream("Out");
+            JPEG inst2 = new JPEG(new Huffman());
+            inst2.compress(is2, os2);
 
+            InputStream is3 = new FileInputStream("Out");
+            OutputStream os3 = new FileOutputStream("DEC");
+            JPEG inst3 = new JPEG(new Huffman());
+            inst3.decompress(is3, os3);
+            */
+
+            /*
+            InputStream is2 = new FileInputStream("COM");
+            OutputStream os2 = new FileOutputStream("DE0");
+            JPEG inst2 = new JPEG(new Huffman());
+            inst2.decompress(is2, os2);
+            */
             /*
             
             JPEG inst0 = new JPEG(new Huffman());

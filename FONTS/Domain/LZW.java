@@ -96,7 +96,7 @@ public class LZW extends Algorithm {
         }
         code = encodeLastByte();
         if (code >= 0) writeCode(bos, code);
-        bos.flush();
+        bos.eof();
     }
 
     /**

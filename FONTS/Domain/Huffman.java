@@ -105,7 +105,6 @@ public class Huffman extends Algorithm {
                 throw new IOException();
             length |= (next << i);
         }
-
         if (length < 1)
             return; // return if decompressed is an empty stream
 

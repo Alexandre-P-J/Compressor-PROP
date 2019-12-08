@@ -100,13 +100,17 @@ public class BitOutputStream extends FilterOutputStream {
 		write8Bit((int)i);
 	}
 
+	/**
+	 * Sets the EOF flag and flushes the stream.
+	 * @throws IOException if writting to the output stream fails.
+	 */
 	public void eof() throws IOException {
 		out.write(controlBit.writeLast());
 		super.flush();
 	}
 
 	/**
-	 * Cleans the stream of any element that may be or maybe not inside the stream.
+	 * Flushes the stream of any element that may be or maybe not inside the stream.
 	 */
 	public void flush() throws IOException {
 		if (controlBit.count > 0) 

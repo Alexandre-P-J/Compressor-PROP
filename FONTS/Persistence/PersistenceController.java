@@ -100,6 +100,8 @@ public class PersistenceController {
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
         if (isFileTreeCompressed()) {
             InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
+            System.out.println(headerTranslator.getReadHeaderSize());
+            System.out.println(f.getHeaderIndex());
             is.skip(f.getHeaderIndex());
             DomainController.chainDecompress(is, baos, f.getCompressionType().toString());
         }

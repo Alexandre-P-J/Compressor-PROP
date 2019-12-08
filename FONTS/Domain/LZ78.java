@@ -146,7 +146,7 @@ public class LZ78 extends Algorithm {
         // If there something left in ba
         Code co = encodeLastByte();
         if (co != null) writeCode(bos, co);
-        bos.flush();
+        bos.eof();
     }
 
     /**

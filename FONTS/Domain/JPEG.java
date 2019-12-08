@@ -144,7 +144,7 @@ public class JPEG extends Algorithm {
         PPMTranslator ppmfile = new PPMTranslator(is);
         width = ppmfile.getWidth();
         height = ppmfile.getHeight();
-
+        
         // 8x8 Matrix subdivision (uses margin at the image right and down borders if
         // height or width arent multiple of 8)
         m_width = width / 8;
@@ -252,7 +252,7 @@ public class JPEG extends Algorithm {
         height |= ((int) (integer[5]) << 16) & 0x00FF0000;
         height |= ((int) (integer[6]) << 8) & 0x0000FF00;
         height |= ((int) (integer[7])) & 0x000000FF;
-
+        
         // Initialize Matrices
         m_width = width / 8;
         if (width % 8 != 0)
@@ -260,7 +260,7 @@ public class JPEG extends Algorithm {
         m_height = height / 8;
         if (height % 8 != 0)
             m_height = m_height + 1;
-
+        
         M0 = new int[m_height][m_width][8][8];
         M1 = new int[m_height][m_width][8][8];
         M2 = new int[m_height][m_width][8][8];
@@ -279,7 +279,7 @@ public class JPEG extends Algorithm {
                 Dequantization(M2[i][j], M2[i][j], ChrominanceQuantizationTable);
                 inverseDCT(M2[i][j]);
             }
-
+        
         // writes the ppm file converting the component matrices into RGB output
         PPMTranslator ppmFile = new PPMTranslator(os, width, height);
         ppmFile.writeHeader();

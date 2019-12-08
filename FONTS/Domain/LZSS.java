@@ -147,7 +147,7 @@ public class LZSS extends Algorithm {
             if (buffer.size() > windowSize)
                 buffer = buffer.delete(0, buffer.size() - windowSize);
         }
-        bos.flush();
+        bos.eof();
     }
 
     /**

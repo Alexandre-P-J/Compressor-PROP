@@ -36,8 +36,9 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     }
 
     public boolean isImage() {
-        if (Path.length() > 4)
-            return Path.substring(Path.length() - 4) == ".ppm";
+        if (Path.length() > 4) {
+            return Path.substring(Path.length() - 4).equals(".ppm");
+        }
         return false;
     }
 
