@@ -7,7 +7,6 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
-import java.io.IOException;
 
 public class Archive { // No quiero que se confunda o aparezcan errores debido a que ya existe java.io.File, Archive suena mal, no se me ocurre nada mejor
     private final String Path;
@@ -43,7 +42,11 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
         return false;
     }
 
-    public void setCompressionType(CompressionType Type) {
+    public void setCompressionType(CompressionType Type) throws Exception {
+        if (isImage() && (Type != CompressionType.JPEG)) 
+            throw new Exception("Compression algorithm not compatible with images!");
+        if (!isImage() && (Type == CompressionType.JPEG))
+            throw new Exception("JPEG algorithm not compatible with documents!");
         CType = Type;
     }
 

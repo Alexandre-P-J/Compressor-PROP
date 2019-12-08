@@ -50,6 +50,7 @@ public class PersistenceController {
     }
 
     public static void setCompressionType(String path, String Type) throws Exception {
+        if (isFileTreeCompressed()) throw new Exception("Cannot change compression algorithm of a compressed file!");
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         CompressionType cType = CompressionType.valueOf(Type);
         f.setCompressionType(cType);
@@ -114,14 +115,14 @@ public class PersistenceController {
             }
         }
         baos.flush();
-        return new String(baos.toByteArray(), "UTF-8"); // TESTING, IF ASSUMING UTF-8 DOESN'T WORK, JUST DONT ADD THE PARAMETER
+        return new String(baos.toByteArray(), "UTF-8"); // UTF-8 Encoding
     }
 
     public static byte[] getImage(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
-        throw new Exception("GETTING IMAGES NOT YET IMPLEMENDED!!!");
-        /*PPMTranslator ppmt;
+        if (!f.isImage()) throw new Exception(Path+" Not an image!");
+        PPMTranslator ppmt;
         if (isFileTreeCompressed()) {
             InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
             is.skip(f.getHeaderIndex());
@@ -133,18 +134,20 @@ public class PersistenceController {
         else {
             InputStream is = f.getInputStream();
             ppmt = new PPMTranslator(is);
-        }*/
-        /*
+        }
+        
         int w = ppmt.getWidth();
+        byte[] wa = toArray(w);
         int h = ppmt.getHeight();
-        byte[] result = new byte[2 + (w*h*3)];
-        result[0] = (byte)w; REPLACE ME WITH 4 BYTES!!!
-        result[1] = (byte)h;
-        for (int i = 0; i < result.length; ++i)
+        byte[] ha = toArray(h);
+        byte[] result = new byte[8 + (w*h*3)];
+        System.arraycopy(wa, 0, result, 0, 4);
+        System.arraycopy(ha, 0, result, 4, 4);
+        for (int i = 8; i < result.length; ++i)
             result[i] = (byte)ppmt.getNextComponent(); // unsigned encoding
         return result;
-        */    
     }
+
 
     public static void compressFiletree(String outputPath) throws Exception {
         Archive out = new Archive(outputPath);
@@ -171,7 +174,7 @@ public class PersistenceController {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
             Statistics stats = new Statistics();
-            InputStreamWatcher isw = new InputStreamWatcher(new BufferedInputStream(file.getInputStream()));
+            InputStreamWatcher isw = new InputStreamWatcher(file.getInputStream());
             OutputStreamWatcher osw = new OutputStreamWatcher(os);
             long timeStart = System.currentTimeMillis();
             DomainController.chainCompress(isw, osw, file.getCompressionType().toString());
@@ -217,5 +220,14 @@ public class PersistenceController {
             f.mkdir();
             traverseDecompress(is, folder, f.getCanonicalPath());
         }
+    }
+
+    private static byte[] toArray(int value) {
+        byte[] result = new byte[4];
+        result[0] = (byte)((value >> 24) & 0x000000FF);
+        result[1] = (byte)((value >> 16) & 0x000000FF);
+        result[2] = (byte)((value >> 8) & 0x000000FF);
+        result[3] = (byte)(value & 0x000000FF);
+        return result;
     }
 }

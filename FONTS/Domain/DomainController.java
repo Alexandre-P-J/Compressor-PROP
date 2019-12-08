@@ -44,30 +44,65 @@ public class DomainController {
         return PersistenceController.getFolderNames(pathToParentFolder);
     }
 
+    /**
+     * Sets the compression type for the file in the given path
+     * @param path relative path to a file
+     * @param Type the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @throws Exception if the file does not exist, or the compression type does not support the file 
+     * or if changing the compression of an already compressed file, or the compression type does not exist
+     */
     public static void setCompressionType(String path, String Type) throws Exception {
         PersistenceController.setCompressionType(path, Type);
     }
 
+    /**
+     * Returns the current compression type for the file in the given path
+     * @param path relative path to a file
+     * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @throws Exception if the file does not exist
+     */
     public static String getCompressionType(String path) throws Exception {
         return PersistenceController.getCompressionType(path);
     }
 
-    //public static byte[] openFile(String path) {}
 
-    // escribe la cabecera (con la jerarquia de FileTree) y comprime todos los archivos
+    /**
+     * Compresses the entire file tree to the given file path
+     * @param OutputFilePath Path to the resulting compressed file
+     * @throws Exception if any of the compressions fails or invalid OutputFilePath
+     */
     public static void compressTo(String OutputFilePath) throws Exception {
-        PersistenceController.compressFiletree(OutputFilePath); // traverses the filetree calling chainCompress on each file
+        // traverses the filetree calling chainCompress on each file
+        PersistenceController.compressFiletree(OutputFilePath);
     }
 
-    // descomprime todos los archivos
+    /**
+     * Decompresses the entire file tree into the given folder path
+     * @param OutputFolderPath Path to the folder to save the decompressed data
+     * @throws Exception if any of the decompressions fails, or invalid OutputFolderPath
+     */
     public static void decompressTo(String OutputFolderPath) throws Exception {
-        PersistenceController.decompressFiletree(OutputFolderPath); // traverses the filetree calling chainDecompress on each file
+        // traverses the filetree calling chainDecompress on each file
+        PersistenceController.decompressFiletree(OutputFolderPath);
     }
 
+    /**
+     * Returns a decompressed document from the compressed or not compressed filetree
+     * @param Path relative path to the file
+     * @return String that contains the entire document in UTF-8
+     * @throws Exception if i/o error, or the decompression fails
+     */
     public static String getDocument(String Path) throws Exception {
         return PersistenceController.getDocument(Path);
     }
 
+    /**
+     * Returns a decompressed image from the compressed or not compressed filetree
+     * @param Path relative path to the image
+     * @return byte[] where 4 first bytes codify the width (int), the 4 next the height (int) and the rest of bytes
+     * is a sequence of RGBRGBRGB... values
+     * @throws Exception if i/o error, or the decompression fails
+     */
     public static byte[] getImage(String Path) throws Exception {
         return PersistenceController.getImage(Path);
     }
@@ -88,23 +123,51 @@ public class DomainController {
         return PersistenceController.getTotalInputSizeStat();
     }
 
+    /**
+     * Returns the total size of the output data from the last compress/decompress operation
+     * @return size in bytes
+     */
     public static long getTotalOutputSizeStat() {
         return PersistenceController.getTotalOutputSizeStat();
     }
 
+    /**
+     * Returns the time of the last compress/decompress operation for the file in the given path
+     * @param path relative path to a file
+     * @return time in miliseconds
+     * @throws Exception if the file does not exist
+     */
     public static long getFileTimeStat(String path) throws Exception {
         return PersistenceController.getFileTimeStat(path);
     }
 
+    /**
+     * Returns the input size of the last compress/decompress operation for the file in the given path
+     * @param path relative path to a file
+     * @return size in bytes
+     * @throws Exception if the file does not exist
+     */
     public static long getFileInputSizeStat(String path) throws Exception {
         return PersistenceController.getFileInputSizeStat(path);
     }
 
+    /**
+     * Returns the output size of the last compress/decompress operation for the file in the given path
+     * @param path relative path to a file
+     * @return size in bytes
+     * @throws Exception if the file does not exist
+     */
     public static long getFileOutputSizeStat(String path) throws Exception {
         return PersistenceController.getFileOutputSizeStat(path);
     }
 
-    //called by persistance, returns a long[3] containing statistics
+    /**
+     * Compresses an InputStream to an OutputStream with the compression algorithm given by compressionType
+     * @param is InputStream containing valid uncompressed data
+     * @param os OutputStream will contain the compressed data from InputStream
+     * @param compressionType String that specifies the compression algorithm, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @throws Exception if the compression fails or i/o error
+     */
     public static void chainCompress(InputStream is, OutputStream os, String compressionType) throws Exception {
         Algorithm alg;
         switch (compressionType) {
@@ -126,7 +189,13 @@ public class DomainController {
         alg.compress(is, os);
     }
 
-    //called by persistance, returns a long[3] containing statistics
+    /**
+     * Decompresses an InputStream to an OutputStream with the compression algorithm given by compressionType
+     * @param is InputStream containing valid compressed data
+     * @param os OutputStream will contain the decompressed data from InputStream
+     * @param compressionType String that specifies the compression algorithm, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @throws Exception if the decompression fails or i/o error
+     */
     public static void chainDecompress(InputStream is, OutputStream os, String compressionType) throws Exception {
         Algorithm alg;
         switch (compressionType) {
