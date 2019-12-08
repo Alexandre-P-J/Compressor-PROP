@@ -12,7 +12,7 @@ import java.io.OutputStream;
 * LZSS algorithm. Compress an InputStream to an OutputStream and decompress a valid InputStream to an OutputStream.
 */
 
-public class LZSS implements Algorithm {
+public class LZSS extends Algorithm {
     /**
     * Number of bits to codify a position on the sliding window
     */
@@ -147,7 +147,7 @@ public class LZSS implements Algorithm {
             if (buffer.size() > windowSize)
                 buffer = buffer.delete(0, buffer.size() - windowSize);
         }
-        bos.flush();
+        bos.eof();
     }
 
     /**

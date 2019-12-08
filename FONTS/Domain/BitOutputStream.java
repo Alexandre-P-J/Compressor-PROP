@@ -101,10 +101,20 @@ public class BitOutputStream extends FilterOutputStream {
 	}
 
 	/**
-	 * Cleans the stream of any element that may be or maybe not inside the stream.
+	 * Sets the EOF flag and flushes the stream.
+	 * @throws IOException if writting to the output stream fails.
+	 */
+	public void eof() throws IOException {
+		out.write(controlBit.writeLast());
+		super.flush();
+	}
+
+	/**
+	 * Flushes the stream of any element that may be or maybe not inside the stream.
 	 */
 	public void flush() throws IOException {
-		if (controlBit.count > 0) out.write(controlBit.writeLast());
+		if (controlBit.count > 0) 
+			out.write(controlBit.writeLast());
 		super.flush();
 	}
 }
