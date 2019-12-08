@@ -12,12 +12,6 @@ public class OutputStreamWatcher extends FilterOutputStream { // Decorator
     }
 
     @Override
-    public void write(byte[] b) throws IOException {
-        super.write(b);
-        //writtenBytes += b.length; I dont know why
-    }
-
-    @Override
     public void write(int b) throws IOException {
         super.write(b);
         ++writtenBytes;

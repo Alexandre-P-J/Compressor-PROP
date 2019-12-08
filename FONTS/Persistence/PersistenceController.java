@@ -163,21 +163,8 @@ public class PersistenceController {
     public static void decompressFiletree(String outputPath) throws Exception {
         InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
         is.skip(headerTranslator.getReadHeaderSize());
-        File f = new File(outputPath);
-        f.mkdir();
         traverseDecompress(is, FileTree.getRoot(), outputPath);
         is.close();
-        /*System.out.println(Folder.getFile(FileTree.getRoot(), "TESTING/Presentation/Toolbar.java").getHeaderIndex());
-        //Archive f = Folder.getFile(FileTree.getRoot(), "TESTING/MainDriver.java");
-        InputStream is = new FileInputStream(openedPath);
-        is.skip(89327);//headerTranslator.getReadHeaderSize());
-        //System.out.println(headerTranslator.getReadHeaderSize());
-        OutputStream os = new FileOutputStream("Test");//f.getFilename());
-        DomainController.chainDecompress(is, os, "LZW");
-        os.flush();
-        os.close();
-        //traverseDecompress();
-        */
     }
 
     private static void traverseCompress(OutputStream os, Folder parentFolder) throws Exception {
