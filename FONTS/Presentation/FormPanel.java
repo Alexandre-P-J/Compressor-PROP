@@ -8,19 +8,22 @@ import javax.swing.border.Border;
 
 public class FormPanel extends JPanel {
 
-    private final JLabel TitTamaño;
+    private final JLabel TitTam;
     private final JLabel TitVisualizacion;
-    private final JTextField TamañoField;
+    private final TextArea TamField;
     private final JComboBox comboBox;
+    private StringListener textListener;
+    private PanelListener panel;
 
     public FormPanel() {
         final Dimension dim = getPreferredSize();
         dim.width = 250;
         setPreferredSize(dim);
 
-        TitTamaño = new JLabel("Tamaño: ");
-        TamañoField = new JTextField(10);
-        TitVisualizacion = new JLabel("Previsualización: ");
+        TitTam = new JLabel("Tama\u00f1o: ");
+        TamField = new TextArea();
+        TamField.setPreferredSize(new Dimension(100,100));
+        TitVisualizacion = new JLabel("Previsualizaci\u00f3n: ");
         comboBox = new JComboBox();
 
         final DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
@@ -32,10 +35,14 @@ public class FormPanel extends JPanel {
 
         final String alg = (String) comboBox.getSelectedItem();
 
-        final Border innerBorder = BorderFactory.createTitledBorder("Información del archivo");
+        final Border innerBorder = BorderFactory.createTitledBorder("Informaci\u00f3n del archivo");
         final Border outerBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
         setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
         layoutComponents();
+    }
+    public void escribirenTam (String tam) {
+        System.out.println(tam);
+        TamField.append(tam);
     }
 
         public void layoutComponents() {
@@ -52,13 +59,13 @@ public class FormPanel extends JPanel {
             constr.fill = GridBagConstraints.NONE;
             constr.anchor = GridBagConstraints.LINE_END;
             constr.insets = new Insets(0,0,0,5);
-            add(TitTamaño, constr);
+            add(TitTam, constr);
 
             constr.gridx = 1;
             constr.gridy = 0;
             constr.anchor = GridBagConstraints.LINE_START;
             constr.insets = new Insets(0,0,0,0);
-            add(TamañoField, constr);
+            add(TamField, constr);
 
             constr.gridy++;
 

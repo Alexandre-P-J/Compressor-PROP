@@ -1,6 +1,5 @@
 package Presentation;
 
-public interface StringListener {
+public interface PanelListener {
     public void textEmitted(String text);
-    public void limpiarText();
 }

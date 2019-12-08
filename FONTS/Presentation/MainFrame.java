@@ -24,6 +24,9 @@ public class MainFrame extends JFrame{
             public void textEmitted(String text) {
                 textPanel.appendText(text);
             }
+            public void limpiarText() {
+                textPanel.limpiarText();
+            }
         });
 
         add(formPanel, BorderLayout.EAST);

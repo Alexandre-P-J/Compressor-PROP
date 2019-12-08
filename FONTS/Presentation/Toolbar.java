@@ -1,10 +1,12 @@
 package Presentation;
 
+import Presentation.PresentationController;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 public class Toolbar extends JPanel implements ActionListener {
 
@@ -12,10 +14,11 @@ public class Toolbar extends JPanel implements ActionListener {
     private final JButton compressButton;
     private final JFileChooser fileChooser;
     private String s;
-    private File f;
+    private static File f;
+    private static PresentationController Pc;
 
     private StringListener textListener;
-
+    
     public Toolbar() {
         setBorder(BorderFactory.createEtchedBorder());
         fileButton = new JButton("Abrir archivo");
@@ -45,10 +48,40 @@ public class Toolbar extends JPanel implements ActionListener {
            
             if(textListener != null){
                 if(fileChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION){
+                    textListener.limpiarText();
                     System.out.println(fileChooser.getSelectedFile());
                     f = fileChooser.getSelectedFile();
                     s = f.getName();
-                    textListener.textEmitted("Has seleccionado " + s);
+                    double tam = (double) f.length();
+                    String tama = String.valueOf(tam);
+                    if (f.isFile()) {
+                        textListener.textEmitted("- " + s + "\n");
+                    }
+                    else if (f.isDirectory()) {
+                        String[] archivos = Pc.obtenerArchivos(f, true);
+                        String aux;
+                        if (archivos != null) {
+                            System.out.println(archivos.length);
+                            for (int i = 0; i < archivos.length; ++i) {
+                                aux = "+ " + archivos[i] + "\n";
+                                textListener.textEmitted(aux);
+                            }
+                        }
+                        else {
+                            System.out.println("archivos es nulo");
+                        }
+                        archivos = Pc.obtenerArchivos(f, false);
+                        if (archivos != null) {
+                            System.out.println(archivos.length);
+                            for (int i = 0; i < archivos.length; ++i) {
+                                aux = "- " + archivos[i] + "\n";
+                                textListener.textEmitted(aux);
+                            }
+                        }
+                        else {
+                            System.out.println("archivos es nulo");
+                        }
+                    }                    
                 }
             }
         } 
@@ -57,5 +90,5 @@ public class Toolbar extends JPanel implements ActionListener {
             textListener.textEmitted("Comprimiendo...\n");
             }
         }
-    } 
+    }
 }
