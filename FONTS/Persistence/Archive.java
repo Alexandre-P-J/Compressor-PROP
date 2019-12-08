@@ -17,6 +17,7 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
 
     Archive(String Path) {
         this.Path = Path;
+        stats = new Statistics();
         if (isImage())
             CType = CompressionType.JPEG;
         else
