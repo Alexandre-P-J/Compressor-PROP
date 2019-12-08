@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 
-public class FormPanel extends JPanel {
+public class FormPanel extends JPanel implements SingleClick {
 
     private final JLabel TitTam;
     private final JLabel TitVisualizacion;
@@ -94,4 +94,8 @@ public class FormPanel extends JPanel {
             add(comboBox, constr);
         }
 
+        
+        public void SingleClick_Event(String context) {
+            System.out.println(context + " [!!!]CON ESTE PATH TIENES MAS QUE SUFICIENTE PARA HACER CONSULTAS Y MODIFICACIONES CON FUNCIONES DE DOMAINCONTROLLER (A TRAVES DE PRESENTATION CONTROLLER)[!!!]\n");
+        }
 }
