@@ -31,8 +31,8 @@ public class DomainController {
      * @throws Exception if path is invalid or filetree not initialized
      */
     public static String[] getFileNames(String pathToParentFolder) throws Exception {
-        System.out.println("entra en domain");
-
+        if (pathToParentFolder.length() == 0)
+            pathToParentFolder = "/";
         return PersistenceController.getFileNames(pathToParentFolder);
     }
 
@@ -43,6 +43,8 @@ public class DomainController {
      * @throws Exception if path is invalid or filetree not initialized
      */
     public static String[] getFolderNames(String pathToParentFolder) throws Exception {
+        if (pathToParentFolder.length() == 0)
+            pathToParentFolder = "/";
         return PersistenceController.getFolderNames(pathToParentFolder);
     }
 

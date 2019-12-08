@@ -4,9 +4,9 @@ import java.awt.*;
 
 import javax.swing.JFrame;
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
 
-    private final TextPanel textPanel;
+    private final NavigationPanel navigation;
     private final Toolbar toolbar;
     private FormPanel formPanel;
 
@@ -16,22 +16,14 @@ public class MainFrame extends JFrame{
         setLayout(new BorderLayout());
 
         toolbar = new Toolbar();
-        textPanel = new TextPanel();
+        navigation = new NavigationPanel();
         formPanel = new FormPanel();
-
-        toolbar.setStringListener(new StringListener() {
-            @Override
-            public void textEmitted(String text) {
-                textPanel.appendText(text);
-            }
-            public void limpiarText() {
-                textPanel.limpiarText();
-            }
-        });
+        PresentationController.setNavigator(navigation);
+        navigation.subscribeSingleClick(formPanel); // receive file selection signals
 
         add(formPanel, BorderLayout.EAST);
         add(toolbar, BorderLayout.NORTH);
-        add(textPanel, BorderLayout.CENTER);
+        add(navigation, BorderLayout.CENTER);
 
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
