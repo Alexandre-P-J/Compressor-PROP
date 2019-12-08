@@ -51,3 +51,6 @@ EXE/*/*.jar
 
 # Documentation Generate it every time (see readme)
 DOCS/Documentation
+
+# Working folders
+TESTS/

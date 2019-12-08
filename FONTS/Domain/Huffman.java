@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 /**
  * Huffman encoder, compress an InputStream to an OutputStream and decompress a valid InputStream to an OutputStream
  */
-public class Huffman implements Algorithm {
+public class Huffman extends Algorithm {
 
     /**
      * alphabet size of ASCII
@@ -105,7 +105,6 @@ public class Huffman implements Algorithm {
                 throw new IOException();
             length |= (next << i);
         }
-
         if (length < 1)
             return; // return if decompressed is an empty stream
 

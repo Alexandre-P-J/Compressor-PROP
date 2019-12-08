@@ -8,7 +8,7 @@ import java.io.OutputStream;
  * @author Albert Ibars
  */
 
-public class LZW implements Algorithm {
+public class LZW extends Algorithm {
 
     Dictionary dict;
     // The number of bits to be written for each code
@@ -80,13 +80,14 @@ public class LZW implements Algorithm {
      */
     @Override
     public void compress (InputStream is, OutputStream os) throws Exception {
+        BitOutputStream bos = new BitOutputStream(os);
+        bos.write8Bit(nBits); // Write DictBitSize to the compressed stream
+
         dict = new Dictionary(1<<nBits);
         // Create a new dictionary with maximum of 2^bits entries
         for (int i = 0; i < 256; ++i)
             dict.add(new ByteArray((byte)i));
-        os.write(nBits); // Write DictBitSize to the compressed stream
 
-        BitOutputStream bos = new BitOutputStream(os);
         int code;   // next input byte
         int next;   // next code generated
         while ((next = is.read()) >= 0){
@@ -95,7 +96,7 @@ public class LZW implements Algorithm {
         }
         code = encodeLastByte();
         if (code >= 0) writeCode(bos, code);
-        bos.flush();
+        bos.eof();
     }
 
     /**
@@ -140,7 +141,8 @@ public class LZW implements Algorithm {
      */
     @Override
     public void decompress (InputStream is, OutputStream os) throws Exception {
-        nBits = is.read();  // Dict size
+        BitInputStream bis = new BitInputStream(is);
+        nBits = bis.read8Bit();  // Dict size
         if (nBits > 31 || nBits < 8) throw new IllegalArgumentException("Dict size must be between 2^8 and 2^31 !");
         // Create a new dictionary with maximum of 2^bits entries
         dict = new Dictionary(1<<nBits);
@@ -148,7 +150,6 @@ public class LZW implements Algorithm {
         for (int i = 0; i < 256; ++i)
             dict.add(new ByteArray((byte)i));
 
-        BitInputStream bis = new BitInputStream(is);
         ByteArray s;    // Next entry
         int code;       // Next code to be read
         while ((code = readCode(bis)) >= 0) {
