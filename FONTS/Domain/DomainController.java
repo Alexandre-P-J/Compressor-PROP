@@ -53,7 +53,7 @@ public class DomainController {
      * @return a String[] containing the identifier of all implemented compression algorithms
      */
     public static String[] getValidCompressionTypes() {
-        return new String[] {"LZW", "LZ78", "LZW", "JPEG"};
+        return new String[] {"LZW", "LZ78", "LZSS", "JPEG"};
     }
 
     /**
