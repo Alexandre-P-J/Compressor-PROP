@@ -80,7 +80,7 @@ public class Folder {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String steps[] = Paths.get(pathToFolder).toString().split(pattern);
         
-        if (pathToFolder.equals("/"))
+        if (pathToFolder.equals("."))
             return start.root;
         else if (steps.length == 0) throw new Exception(pathToFolder + " folder path not valid");
         

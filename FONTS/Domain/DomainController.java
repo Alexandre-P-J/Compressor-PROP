@@ -26,25 +26,25 @@ public class DomainController {
 
     /**
      * Return filenames from the given relative path
-     * @param pathToParentFolder either "/" or "foo/bar.." (replacing ".." with the rest of the path)
+     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
     public static String[] getFileNames(String pathToParentFolder) throws Exception {
         if (pathToParentFolder.length() == 0)
-            pathToParentFolder = "/";
+            pathToParentFolder = ".";
         return PersistenceController.getFileNames(pathToParentFolder);
     }
 
     /**
      * Return folder names from the given relative path
-     * @param pathToParentFolder either "/" or "foo/bar.." (replacing ".." with the rest of the path)
+     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
      * @return an array of folder names contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
     public static String[] getFolderNames(String pathToParentFolder) throws Exception {
         if (pathToParentFolder.length() == 0)
-            pathToParentFolder = "/";
+            pathToParentFolder = ".";
         return PersistenceController.getFolderNames(pathToParentFolder);
     }
 

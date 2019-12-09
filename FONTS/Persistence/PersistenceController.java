@@ -200,7 +200,7 @@ public class PersistenceController {
         for (Archive file : files) {
             Statistics stats = new Statistics();
             InputStreamWatcher isw = new InputStreamWatcher(is);
-            OutputStreamWatcher osw = new OutputStreamWatcher(new BufferedOutputStream(new FileOutputStream(path+"/"+file.getFilename())));
+            OutputStreamWatcher osw = new OutputStreamWatcher(new BufferedOutputStream(new FileOutputStream(path+System.getProperty("file.separator")+file.getFilename())));
             long timeStart = System.currentTimeMillis();
             DomainController.chainDecompress(isw, osw, file.getCompressionType().toString());
             long timeEnd = System.currentTimeMillis();
@@ -216,7 +216,7 @@ public class PersistenceController {
         }
         Folder[] folders = parentFolder.getFolders();
         for (Folder folder : folders) {
-            File f = new File(path+"/"+folder.getName());
+            File f = new File(path+System.getProperty("file.separator")+folder.getName());
             f.mkdir();
             traverseDecompress(is, folder, f.getCanonicalPath());
         }
