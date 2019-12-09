@@ -47,7 +47,7 @@ public class HeaderTranslator {
             byte[] buf1 = new byte[size];
             is.read(buf1);
             String name = new String(buf1, "UTF-8");
-            Archive file = new Archive(parentFolder.getPath() + "/" + name);
+            Archive file = new Archive(parentFolder.getPath() + System.getProperty("file.separator") + name);
             file.setHeaderIndex(index);
             parentFolder.addFile(file);
             next = is.read();

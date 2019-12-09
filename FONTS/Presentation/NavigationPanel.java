@@ -85,7 +85,7 @@ public class NavigationPanel extends JPanel {
         }
         String result = "";
         for (int i = 0; i < steps.length - 2; ++i) {
-            result = result + steps[i] + "/";
+            result = result + steps[i] + System.getProperty("file.separator");
         }
         return result + steps[steps.length - 2];
     }
@@ -93,7 +93,7 @@ public class NavigationPanel extends JPanel {
     private String pathTraverse(String Folder) {
         if (currentPath.length() == 0)
             return Folder;
-        return currentPath + "/" + Folder;
+        return currentPath + System.getProperty("file.separator") + Folder;
     }
 
     private void clean() {
