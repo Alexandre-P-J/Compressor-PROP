@@ -97,6 +97,11 @@ public class PersistenceController {
         return stats.outputSize;
     }
 
+    public static boolean isFileImage(String path) throws Exception {
+        Archive f = Folder.getFile(FileTree.getRoot(), path);
+        return f.isImage();
+    }
+
     public static String getDocument(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);

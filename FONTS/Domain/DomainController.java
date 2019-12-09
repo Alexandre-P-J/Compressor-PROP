@@ -49,6 +49,24 @@ public class DomainController {
     }
 
     /**
+     * Returns an array of all implemented compression algorithms
+     * @return a String[] containing the identifier of all implemented compression algorithms
+     */
+    public static String[] getValidCompressionTypes() {
+        return new String[] {"LZW", "LZ78", "LZW", "JPEG"};
+    }
+
+    /**
+     * Returns true if the file in the path is a ppm image
+     * @param path relative path to a file
+     * @return true if the file in the path is a ppm image, false otherwise
+     * @throws Exception if the path does not point a file
+     */
+    public static boolean isFileImage(String path) throws Exception {
+        return PersistenceController.isFileImage(path);
+    }
+
+    /**
      * Sets the compression type for the file in the given path
      * @param path relative path to a file
      * @param Type the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
