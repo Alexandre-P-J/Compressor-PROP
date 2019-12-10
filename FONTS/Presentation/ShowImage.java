@@ -7,9 +7,13 @@ import javax.swing.*;
 public class ShowImage extends JPanel {
 
     private byte[] byte_array;
-    protected int width, height;
+    protected int width = 0;
+    protected int height = 0;
+    private JFrame frame;
 
-    public ShowImage(String path) {
+
+    public ShowImage(String path, JFrame frame) {
+        this.frame = frame;
         try {
             byte_array = PresentationController.getImage(path);
         } catch (Exception e) {
@@ -26,6 +30,8 @@ public class ShowImage extends JPanel {
         width = byte_array[3] & 0xFF | (byte_array[2] & 0xFF) << 8 | (byte_array[1] & 0xFF) << 16 | (byte_array[0] & 0xFF) << 24;
         height = byte_array[7] & 0xFF | (byte_array[6] & 0xFF) << 8 | (byte_array[5] & 0xFF) << 16 | (byte_array[4] & 0xFF) << 24;
 
+        frame.setSize(width, height);
+
         int i = 0;
         int j = 0;
 
@@ -39,7 +45,7 @@ public class ShowImage extends JPanel {
             Color pixelColor = new Color (red,green,blue);
             
             g.setColor(pixelColor);
-            g.drawLine(i+10, j+10, i+10, j+10); // added 10 for margin
+            g.drawLine(i, j, i, j);
             ++i; 
         }   
     }

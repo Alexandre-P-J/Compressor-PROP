@@ -19,12 +19,13 @@ public class MainFrame extends JFrame {
         navigation = new NavigationPanel();
         formPanel = new FormPanel();
         PresentationController.setNavigator(navigation);
-        navigation.subscribeSingleClick(formPanel); // receive file selection signals
+        navigation.subscribeClickFile(formPanel); // receive file selection signals
+        navigation.subscribeClickFolder(formPanel); // receive folder selection signals
 
         add(formPanel, BorderLayout.EAST);
         add(toolbar, BorderLayout.NORTH);
         add(navigation, BorderLayout.CENTER);
-
+        
         setSize(600, 500);
         setLocationRelativeTo(null);    //centering frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FormPanel extends JPanel implements ActionListener, SingleClick {
+public class FormPanel extends JPanel implements ActionListener, NavigationClickObserver {
 
     // Dani
     /*
@@ -24,7 +24,7 @@ public class FormPanel extends JPanel implements ActionListener, SingleClick {
     private String filePath;
 
     public FormPanel() {
-
+        setVisible(false);
         // Inicializations Dani
         /*
         MidaInput = 0;
@@ -59,10 +59,10 @@ public class FormPanel extends JPanel implements ActionListener, SingleClick {
         // Algorithm JComboBox
         algorithmCombo = new JComboBox();
         final DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
-        comboModel.addElement("LZ78");
-        comboModel.addElement("LZSS");
-        comboModel.addElement("LZW");
-        comboModel.addElement("JPEG");
+        String[] Ctypes = PresentationController.getValidCompressionTypes();
+        for (String alg : Ctypes) {
+            comboModel.addElement(alg);
+        }
         algorithmCombo.setModel(comboModel);
 
         // Dictionary size JSpinner
@@ -253,9 +253,9 @@ public class FormPanel extends JPanel implements ActionListener, SingleClick {
         }
     }
 
-    public void SingleClick_Event(String context) {
+    public void SingleClick_File(String context) {
+        setVisible(true);
         filePath = context;
-        System.out.println(context + " [!!!]CON ESTE PATH TIENES MAS QUE SUFICIENTE PARA HACER CONSULTAS Y MODIFICACIONES CON FUNCIONES DE DOMAINCONTROLLER (A TRAVES DE PRESENTATION CONTROLLER)[!!!]\n");
         /*
         try {
             if (PresentationController.isFileImage(context)) {
@@ -273,6 +273,10 @@ public class FormPanel extends JPanel implements ActionListener, SingleClick {
         stats(context);
         */
     }
+
+    public void SingleClick_Folder(String context) {
+        setVisible(false);
+    }  
 
     /*
     public void stats(String file) {
