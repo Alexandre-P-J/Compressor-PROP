@@ -1,6 +1,7 @@
 package Persistence;
 
 import Domain.DomainController;
+import Domain.JPEG_Quality;
 import Domain.PPMTranslator;
 
 import java.io.ByteArrayOutputStream;
@@ -102,6 +103,24 @@ public class PersistenceController {
         return f.isImage();
     }
 
+    public static final int[][] getLuminanceTable(String quality) {
+        return JPEG_Quality.valueOf(quality).getLuminanceTable();
+    }
+
+    public static final int[][] getChrominanceTable(String quality) {
+        return JPEG_Quality.valueOf(quality).getChrominanceTable();
+    }
+
+    public static String getCompressionParameter(String path) throws Exception {
+        Archive f = Folder.getFile(FileTree.getRoot(), path);
+        return f.getCompressionArgument();
+    }
+
+    public static void setCompressionParameter(String path, String arg) throws Exception {
+        Archive f = Folder.getFile(FileTree.getRoot(), path);
+        f.setCompressionArgument(arg);
+    }
+
     public static String getDocument(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
@@ -182,7 +201,7 @@ public class PersistenceController {
             InputStreamWatcher isw = new InputStreamWatcher(file.getInputStream());
             OutputStreamWatcher osw = new OutputStreamWatcher(os);
             long timeStart = System.currentTimeMillis();
-            DomainController.chainCompress(isw, osw, file.getCompressionType().toString());
+            DomainController.chainCompress(isw, osw, file.getCompressionType().toString(), file.getCompressionArgument());
             long timeEnd = System.currentTimeMillis();
             stats.inputSize = isw.getReadBytes();
             stats.outputSize = osw.getWrittenBytes();
