@@ -56,6 +56,26 @@ public class DomainController {
         return new String[] {"LZW", "LZ78", "LZSS", "JPEG"};
     }
 
+    public static String[] getValidCompressionParameters(String compressionType) throws Exception {
+        switch (compressionType) {
+            case "LZW":
+                return new String[] {"8", "9", "10", "11", "12", "13", "14", "15", 
+                    "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26",
+                    "27", "28", "29", "30", "31"};
+            case "LZ78":
+                return new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", 
+                    "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", 
+                    "24", "25", "26", "27", "28", "29", "30", "31"};
+            case "LZSS":
+                return new String[0];
+            case "JPEG":
+                return new String[] {"Q0", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", 
+                    "Q10", "Q11", "Q12", "MAX", "MIN", "DEFAULT", "JPEGStandard"};
+            default:
+                throw new Exception("Invalid Compression Type!");
+        }
+    }
+
     /**
      * Returns true if the file in the path is a ppm image
      * @param path relative path to a file
@@ -87,6 +107,13 @@ public class DomainController {
         return PersistenceController.getCompressionType(path);
     }
 
+    public static String getCompressionParameter(String path) throws Exception {
+        return PersistenceController.getCompressionParameter(path);
+    }
+
+    public static void setCompressionParameter(String path, String arg) throws Exception {
+        PersistenceController.setCompressionParameter(path, arg);
+    }
 
     /**
      * Compresses the entire file tree to the given file path
@@ -190,20 +217,26 @@ public class DomainController {
      * @param compressionType String that specifies the compression algorithm, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @throws Exception if the compression fails or i/o error
      */
-    public static void chainCompress(InputStream is, OutputStream os, String compressionType) throws Exception {
+    public static void chainCompress(InputStream is, OutputStream os, String compressionType, String arg0) throws Exception {
         Algorithm alg;
         switch (compressionType) {
             case "LZW":
-                alg = new LZW();
+                LZW lzw = new LZW();
+                lzw.setDictionarySize(Integer.valueOf(arg0));
+                alg = lzw;
                 break;
             case "LZ78":
-                alg = new LZ78();
+                LZ78 lz78 = new LZ78();
+                lz78.setDictionarySize(Integer.valueOf(arg0));
+                alg = lz78;
                 break;
             case "LZSS":
                 alg = new LZSS();
                 break;
             case "JPEG":
-                alg = new JPEG(new Huffman());
+                JPEG jpeg = new JPEG(new Huffman());
+                jpeg.setQuantizationTables(PersistenceController.getLuminanceTable(arg0), PersistenceController.getChrominanceTable(arg0));
+                alg = jpeg;
                 break;
             default:
                 throw new Exception("Invalid Compression Type!");
