@@ -3,57 +3,151 @@ package Presentation;
 import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class FormPanel extends JPanel implements SingleClick {
+public class FormPanel extends JPanel implements ActionListener, SingleClick {
 
-    private final JLabel TitTam;
-    private final JLabel TitVisualizacion;
-    private final TextArea TamField;
-    private final JComboBox comboBox;
-    private StringListener textListener;
-    private PanelListener panel;
+    // Dani
+    /*
+    private final JLabel TitTam, TitTamO, TitTemps, TitTamInTotal, TitTamOutTotal, TitTempsTotal;
+    private JLabel TamField, TamOField, TempsField, TamInTotal, TamOutTotal, TempsTotal;
+    private long MidaInput, MidaOutput, TempsFile, MidaInputTotal, MidaOutputTotal, TotalTime;
+    private DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
+    */
+    private final JLabel titleDictSize, titleVisualization, titleStatistics;
+    private JTextField statistics;
+    private JButton displayButton;
+    private JSpinner dictSize;
+    private final JComboBox algorithmCombo;
+    private String filePath;
 
     public FormPanel() {
+
+        // Inicializations Dani
+        /*
+        MidaInput = 0;
+        TitTam = new JLabel("Tama\u00f1o ultimo archivo: ");
+        TitTamO = new JLabel("Tama\u00f1o archivo output: ");
+        TitTemps = new JLabel("Ultim temps: ");
+        TitTamInTotal = new JLabel("Tama\u00f1o total Input: ");
+        TitTamOutTotal = new JLabel("Tama\u00f1o total Output: ");
+        TitTempsTotal = new JLabel("Temps total: ");
+        TamField = new JLabel("");
+        TamOField = new JLabel("");
+        TempsField = new JLabel("");
+        TamInTotal = new JLabel("");
+        TamOutTotal = new JLabel("");
+        TempsTotal = new JLabel("");
+        String str = Long.toString(MidaInput); //????
+        String[] algoritmes = PresentationController.getValidCompressionTypes();
+
+        algorithmCombo = new JComboBox();
+        
+        for (int i = 0; i < algoritmes.length; ++i) {
+            comboModel.addElement(algoritmes[i]);
+        }
+        algorithmCombo.setModel(comboModel);
+        */
+
+        // Dimensions
         final Dimension dim = getPreferredSize();
         dim.width = 250;
         setPreferredSize(dim);
 
-        TitTam = new JLabel("Tama\u00f1o: ");
-        TamField = new TextArea();
-        TamField.setPreferredSize(new Dimension(100,100));
-        TitVisualizacion = new JLabel("Previsualizaci\u00f3n: ");
-        comboBox = new JComboBox();
-
+        // Algorithm JComboBox
+        algorithmCombo = new JComboBox();
         final DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
         comboModel.addElement("LZ78");
         comboModel.addElement("LZSS");
         comboModel.addElement("LZW");
         comboModel.addElement("JPEG");
-        comboBox.setModel(comboModel);
+        algorithmCombo.setModel(comboModel);
 
-        final String alg = (String) comboBox.getSelectedItem();
+        // Dictionary size JSpinner
+        titleDictSize = new JLabel("Dictionary size: ");
+        dictSize = new JSpinner(new SpinnerNumberModel(12, 0, 31, 1));
+        dictSize.setPreferredSize(new Dimension(40, 20));
 
-        final Border innerBorder = BorderFactory.createTitledBorder("Informaci\u00f3n del archivo");
-        final Border outerBorder = BorderFactory.createEmptyBorder(5, 5, 5, 5);
-        setBorder(BorderFactory.createCompoundBorder(outerBorder, innerBorder));
+        // Visualization image Button
+        titleVisualization = new JLabel("Visualization: ");
+        displayButton = new JButton("Display");
+
+        // Statistics compression values
+        titleStatistics = new JLabel("Statistics: ");
+        statistics = new JTextField("Soy las estadisticas");
+        statistics.setEditable(false);
+        statistics.setBorder(BorderFactory.createEmptyBorder());
+
+        // Layout GridBag
+        setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Compressor properties"));
         layoutComponents();
-    }
-    public void escribirenTam (String tam) {
-        System.out.println(tam);
-        TamField.append(tam);
+
+        displayButton.addActionListener(this);
     }
 
-        public void layoutComponents() {
+    public void layoutComponents() {
+        setLayout(new GridBagLayout());
+        final GridBagConstraints constr = new GridBagConstraints();
 
-            setLayout(new GridBagLayout());
+        // First Row
+        constr.gridx = 0;
+        constr.gridy = 0;
+        constr.anchor = GridBagConstraints.LINE_END;
+        constr.insets = new Insets(10, 0, 0, 5);
+        add(new JLabel("Algorithm: "), constr);
 
-            final GridBagConstraints constr = new GridBagConstraints();
+        constr.gridx = 1;
+        constr.gridy = 0;
+        constr.anchor = GridBagConstraints.LINE_START;
+        constr.insets = new Insets(10, 0, 0, 0);
+        add(algorithmCombo, constr);
 
-            constr.weightx = 1;
-            constr.weighty = 0.1;
+        // Second row
+        constr.gridx = 0;
+        constr.gridy = 1;
+        constr.anchor = GridBagConstraints.LINE_END;
+        constr.insets = new Insets(10, 0, 0, 5);
+        add(titleDictSize, constr);
 
+        constr.gridx = 1;
+        constr.anchor = GridBagConstraints.LINE_START;
+        constr.insets = new Insets(10, 0, 0, 0);
+        add(dictSize, constr);
+
+        // Third row
+        constr.gridx = 0;
+        constr.gridy = 2;
+        constr.anchor = GridBagConstraints.LINE_END;
+        constr.insets = new Insets(25, 5, 0, 0);
+        add(titleVisualization, constr);
+
+        // Fourth row
+        constr.gridx = 1;
+        constr.gridy = 3;
+        constr.anchor = GridBagConstraints.LINE_START;
+        constr.insets = new Insets(10, 0, 0, 0);
+        add(displayButton, constr);
+
+        // Fifth row
+        constr.gridx = 0;
+        constr.gridy = 4;
+        constr.anchor = GridBagConstraints.LINE_START;
+        constr.insets = new Insets(25, 5, 0, 0);
+        ;
+        add(titleStatistics, constr);
+
+        // Sixth row
+        constr.gridx = 1;
+        constr.gridy = 5;
+        constr.anchor = GridBagConstraints.LINE_END;
+        constr.insets = new Insets(10, 0, 0, 0);
+        add(statistics, constr);
+
+        //////////////////////////////////////
+        /*
+            //TamañoUltimFileInput
             constr.gridx = 0;
             constr.gridy = 0;
             constr.fill = GridBagConstraints.NONE;
@@ -69,33 +163,137 @@ public class FormPanel extends JPanel implements SingleClick {
 
             constr.gridy++;
 
-            constr.weightx = 1;
-            constr.weighty = 0.1;
-
+            //TamañoUltimFileOutput
             constr.gridx = 0;
-            
-            constr.anchor = GridBagConstraints.FIRST_LINE_START;
+
+            constr.fill = GridBagConstraints.NONE;
+            constr.anchor = GridBagConstraints.LINE_END;
             constr.insets = new Insets(0,0,0,5);
-            add(TitVisualizacion, constr);
+            add(TitTamO, constr);
+
+
+            constr.gridx = 1;
+            constr.anchor = GridBagConstraints.LINE_START;
+            constr.insets = new Insets(0,0,0,0);
+            add(TamOField, constr);
 
             constr.gridy++;
 
-            constr.weightx = 1;
-            constr.weighty = 0.1;
-
+            //TamañoUltimTemps
             constr.gridx = 0;
-            constr.anchor = GridBagConstraints.FIRST_LINE_END;
+
+            constr.fill = GridBagConstraints.NONE;
+            constr.anchor = GridBagConstraints.LINE_END;
             constr.insets = new Insets(0,0,0,5);
-            add(new JLabel("Algoritmo:"), constr);
+            add(TitTemps, constr);
 
             constr.gridx = 1;
-            constr.anchor = GridBagConstraints.FIRST_LINE_START;
+            constr.anchor = GridBagConstraints.LINE_START;
             constr.insets = new Insets(0,0,0,0);
-            add(comboBox, constr);
-        }
+            add(TempsField, constr);
 
-        
-        public void SingleClick_Event(String context) {
-            System.out.println(context + " [!!!]CON ESTE PATH TIENES MAS QUE SUFICIENTE PARA HACER CONSULTAS Y MODIFICACIONES CON FUNCIONES DE DOMAINCONTROLLER (A TRAVES DE PRESENTATION CONTROLLER)[!!!]\n");
+            constr.gridy++;
+
+             //TamañoInputTotal
+            constr.gridx = 0;
+
+            constr.fill = GridBagConstraints.NONE;
+            constr.anchor = GridBagConstraints.LINE_END;
+            constr.insets = new Insets(0,0,0,5);
+            add(TitTamInTotal, constr);
+
+            constr.gridx = 1;
+            constr.anchor = GridBagConstraints.LINE_START;
+            constr.insets = new Insets(0,0,0,0);
+            add(TamInTotal, constr);
+
+            constr.gridy++; 
+
+            //TamañoOutputTotal
+            constr.gridx = 0;
+
+            constr.fill = GridBagConstraints.NONE;
+            constr.anchor = GridBagConstraints.LINE_END;
+            constr.insets = new Insets(0,0,0,5);
+            add(TitTamOutTotal, constr);
+
+            constr.gridx = 1;
+            constr.anchor = GridBagConstraints.LINE_START;
+            constr.insets = new Insets(0,0,0,0);
+            add(TamOutTotal, constr);
+
+            constr.gridy++;
+
+            //TempsTotal
+            constr.gridx = 0;
+
+            constr.fill = GridBagConstraints.NONE;
+            constr.anchor = GridBagConstraints.LINE_END;
+            constr.insets = new Insets(0,0,0,5);
+            add(TitTempsTotal, constr);
+
+            constr.gridx = 1;
+            constr.anchor = GridBagConstraints.LINE_START;
+            constr.insets = new Insets(0,0,0,0);
+            add(TempsTotal, constr);
+
+            constr.gridy++; 
+            */
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == displayButton) {
+            try {
+                ShowFrame v2 = new ShowFrame(filePath);
+                v2.setVisible(true);
+            } catch (Exception exc) {
+                JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
+            }
         }
+    }
+
+    public void SingleClick_Event(String context) {
+        filePath = context;
+        System.out.println(context + " [!!!]CON ESTE PATH TIENES MAS QUE SUFICIENTE PARA HACER CONSULTAS Y MODIFICACIONES CON FUNCIONES DE DOMAINCONTROLLER (A TRAVES DE PRESENTATION CONTROLLER)[!!!]\n");
+        /*
+        try {
+            if (PresentationController.isFileImage(context)) {
+                comboModel.removeAllElements();
+                comboModel.addElement("JPEG");
+            }
+            else {
+                comboModel.removeElement("JPEG");
+            }
+            algorithmCombo.setModel(comboModel);
+        }
+        catch (Exception e) {
+                System.out.println(e.getMessage());
+        }
+        stats(context);
+        */
+    }
+
+    /*
+    public void stats(String file) {
+        try {
+            MidaInput = PresentationController.getFileInputSizeStat(file);
+            MidaOutput = PresentationController.getFileOutputSizeStat(file);
+            TempsFile = PresentationController.getFileTimeStat(file);
+            MidaInputTotal = PresentationController.getTotalInputSizeStat();
+            MidaOutputTotal = PresentationController.getTotalOutputSizeStat();
+            TotalTime = PresentationController.getTotalTimeStat();
+            TamField.setText(String.valueOf(MidaInput));
+            TamOField.setText(String.valueOf(MidaOutput));
+            TempsField.setText(String.valueOf(TempsFile));
+            TamInTotal.setText(String.valueOf(MidaInputTotal));
+            TamOutTotal.setText(String.valueOf(MidaOutputTotal));
+            TempsTotal.setText(String.valueOf(TotalTime));
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    */
+
 }

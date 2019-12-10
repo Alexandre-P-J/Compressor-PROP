@@ -11,7 +11,7 @@ public class MainFrame extends JFrame {
     private FormPanel formPanel;
 
     public MainFrame() {
-        super("Compressor-PROP");
+        setTitle("El Compressor");
 
         setLayout(new BorderLayout());
 
@@ -26,6 +26,7 @@ public class MainFrame extends JFrame {
         add(navigation, BorderLayout.CENTER);
 
         setSize(600, 500);
+        setLocationRelativeTo(null);    //centering frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
