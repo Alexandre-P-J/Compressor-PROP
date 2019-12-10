@@ -15,7 +15,8 @@ public class NavigationPanel extends JPanel {
     private static final String returnSymbol = String.valueOf("\u2b9c") + " ..";
     private static String folderSymbol;
     private DefaultListModel<String> model = new DefaultListModel<>();
-    private Vector<SingleClick> singleClickSubscribers = new Vector<SingleClick>();
+    private Vector<NavigationClickObserver> singleClickFileSubscribers = new Vector<NavigationClickObserver>();
+    private Vector<NavigationClickObserver> singleClickFolderSubscribers = new Vector<NavigationClickObserver>();
 
     public NavigationPanel() {
         JList<String> jlist = new JList<>(model);
@@ -50,8 +51,12 @@ public class NavigationPanel extends JPanel {
                     if (index >= 0) {
                         Object o = theList.getModel().getElementAt(index);
                         if (Arrays.asList(FileNames).contains(o.toString())) {
-                            for (SingleClick si : singleClickSubscribers) {
-                                si.SingleClick_Event(pathTraverse(o.toString()));
+                            for (NavigationClickObserver si : singleClickFileSubscribers) {
+                                si.SingleClick_File(pathTraverse(o.toString()));
+                            }
+                        } else {
+                            for (NavigationClickObserver si : singleClickFolderSubscribers) {
+                                si.SingleClick_Folder(pathTraverse(o.toString()));
                             }
                         }
                     }
@@ -113,7 +118,11 @@ public class NavigationPanel extends JPanel {
         return "[FOLDER]";
     }
 
-    public void subscribeSingleClick(SingleClick si) {
-        singleClickSubscribers.add(si);
+    public void subscribeClickFile(NavigationClickObserver si) {
+        singleClickFileSubscribers.add(si);
+    }
+
+    public void subscribeClickFolder(NavigationClickObserver si) {
+        singleClickFolderSubscribers.add(si);
     }
 }
