@@ -11,16 +11,21 @@ import java.nio.file.Paths;
 public class Archive { // No quiero que se confunda o aparezcan errores debido a que ya existe java.io.File, Archive suena mal, no se me ocurre nada mejor
     private final String Path;
     private CompressionType CType;
+    private String compressionArg;
     private long index = -1; // offset from the start of the compressed file
     private Statistics stats;
 
     Archive(String Path) {
         this.Path = Path;
         stats = new Statistics();
-        if (isImage())
+        if (isImage()) {
             CType = CompressionType.JPEG;
-        else
+            compressionArg = "DEFAULT";
+        }
+        else {
             CType = CompressionType.LZW;
+            compressionArg = "12";
+        }
     }
 
     public InputStream getInputStream() throws Exception {
@@ -52,6 +57,14 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
 
     public CompressionType getCompressionType() {
         return CType;
+    }
+
+    public void setCompressionArgument(String arg) {
+        compressionArg = arg;
+    }
+
+    public String getCompressionArgument() {
+        return compressionArg;
     }
 
     public void setHeaderIndex(long position) {
