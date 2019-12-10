@@ -44,11 +44,51 @@ public class PresentationController {
         navigator = np;
     }
 
-    public static String[] getFolderNames(String Path) throws Exception {
-        return DomainController.getFolderNames(Path);
+    public static String[] getFolderNames(String path) throws Exception {
+        return DomainController.getFolderNames(path);
     }
 
-    public static String[] getFileNames(String Path) throws Exception {
-        return DomainController.getFileNames(Path);
+    public static String[] getFileNames(String path) throws Exception {
+        return DomainController.getFileNames(path);
+    }
+
+    public static String getDocument(String path) throws Exception {
+        return DomainController.getDocument(path);
+    }
+
+    public static byte[] getImage(String path) throws Exception {
+        return DomainController.getImage(path);
+    }
+    
+    public static boolean isFileImage(String path) throws Exception {
+        return DomainController.isFileImage(path);
+    }
+
+    public static long getTotalTimeStat() {
+        return DomainController.getTotalTimeStat();
+    }
+
+    public static long getTotalInputSizeStat() {
+        return DomainController.getTotalInputSizeStat();
+    }
+
+    public static long getTotalOutputSizeStat() {
+        return DomainController.getTotalOutputSizeStat();
+    }
+
+    public static long getFileTimeStat(String path) throws Exception {
+        return DomainController.getFileTimeStat(path);
+    }
+
+    public static long getFileInputSizeStat(String path) throws Exception {
+        return DomainController.getFileInputSizeStat(path);
+    }
+
+    public static long getFileOutputSizeStat(String path) throws Exception {
+        return DomainController.getFileOutputSizeStat(path);
+    }
+
+    public static String[] getValidCompressionTypes() {
+        return DomainController.getValidCompressionTypes();
     }
 }
