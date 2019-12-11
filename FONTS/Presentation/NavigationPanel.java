@@ -6,17 +6,21 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.Font;
 
 public class NavigationPanel extends JPanel {
     private String currentPath;
     private String[] FileNames = new String[0];
     private String[] FolderNames = new String[0];
     private static final String returnSymbol = String.valueOf("\u2b9c") + " ..";
+    private static String folderSymbol;
     private DefaultListModel<String> model = new DefaultListModel<>();
-    private Vector<SingleClick> singleClickSubscribers = new Vector<SingleClick>();
+    private Vector<NavigationClickObserver> singleClickFileSubscribers = new Vector<NavigationClickObserver>();
+    private Vector<NavigationClickObserver> singleClickFolderSubscribers = new Vector<NavigationClickObserver>();
 
     public NavigationPanel() {
         JList<String> jlist = new JList<>(model);
+        folderSymbol = getCompatibleFolderSymbol(jlist.getFont()) + " ";
         setLayout(new BorderLayout());
         setVisible(true);
         add(new JScrollPane(jlist), BorderLayout.CENTER);
@@ -24,13 +28,13 @@ public class NavigationPanel extends JPanel {
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent mouseEvent) {
                 JList<String> theList = (JList) mouseEvent.getSource();
-                if (mouseEvent.getClickCount() == 2) { // double click
+                if (mouseEvent.getClickCount() % 2 == 0) { // double click
                     int index = theList.locationToIndex(mouseEvent.getPoint());
                     if (index >= 0) {
                         Object o = theList.getModel().getElementAt(index);
-                        if (contains(FolderNames, o.toString())) {
+                        if (Arrays.asList(FolderNames).contains(o.toString())) {
                             try {
-                                refresh(pathTraverse(o.toString().substring(2)));
+                                refresh(pathTraverse(o.toString().substring(folderSymbol.length())));
                             } catch (Exception e) {
                                 System.out.println("Unreachable Folder");
                             }
@@ -46,9 +50,13 @@ public class NavigationPanel extends JPanel {
                     int index = theList.locationToIndex(mouseEvent.getPoint());
                     if (index >= 0) {
                         Object o = theList.getModel().getElementAt(index);
-                        if (contains(FileNames, o.toString())) {
-                            for (SingleClick si : singleClickSubscribers) {
-                                si.SingleClick_Event(pathTraverse(o.toString()));
+                        if (Arrays.asList(FileNames).contains(o.toString())) {
+                            for (NavigationClickObserver si : singleClickFileSubscribers) {
+                                si.SingleClick_File(pathTraverse(o.toString()));
+                            }
+                        } else {
+                            for (NavigationClickObserver si : singleClickFolderSubscribers) {
+                                si.SingleClick_Folder(pathTraverse(o.toString()));
                             }
                         }
                     }
@@ -69,7 +77,7 @@ public class NavigationPanel extends JPanel {
         Arrays.sort(FileNames);
         Arrays.sort(FolderNames);
         for (int i = 0; i < FolderNames.length; ++i) {
-            FolderNames[i] = String.valueOf("\uF115") + " " + FolderNames[i]; // Unicode magic (show folder character)
+            FolderNames[i] = folderSymbol + FolderNames[i];
             model.addElement(FolderNames[i]);
         }
         for (int i = 0; i < FileNames.length; ++i) {
@@ -100,15 +108,21 @@ public class NavigationPanel extends JPanel {
         model.removeAllElements();
     }
 
-    private boolean contains(String[] arr, String e) {
-        for (String s : arr) {
-            if (s.equals(e))
-                return true;
+    private String getCompatibleFolderSymbol(Font f) {
+        int[] symbols = { 0x1F5C1, 0x1F5C0, 0x1F5BF, 0x1F4C1, 0x1F4C2 };
+        for (int sym : symbols) {
+            if (f.canDisplay(sym)) {
+                return String.valueOf(Character.toChars(sym));
+            }
         }
-        return false;
+        return "[FOLDER]";
     }
 
-    public void subscribeSingleClick(SingleClick si) {
-        singleClickSubscribers.add(si);
+    public void subscribeClickFile(NavigationClickObserver si) {
+        singleClickFileSubscribers.add(si);
+    }
+
+    public void subscribeClickFolder(NavigationClickObserver si) {
+        singleClickFolderSubscribers.add(si);
     }
 }
