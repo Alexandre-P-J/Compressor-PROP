@@ -1,8 +1,6 @@
 package Persistence;
 
 import Domain.DomainController;
-import Domain.JPEG_Quality;
-import Domain.PPMTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -142,34 +140,19 @@ public class PersistenceController {
         return new String(baos.toByteArray(), "UTF-8"); // UTF-8 Encoding
     }
 
-    public static byte[] getImage(String Path) throws Exception {
+    public static InputStream getImage(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
         if (!f.isImage()) throw new Exception(Path+" Not an image!");
-        PPMTranslator ppmt;
         if (isFileTreeCompressed()) {
             InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
             is.skip(f.getHeaderIndex());
             DomainController.chainDecompress(is, baos, f.getCompressionType().toString());
             baos.flush();
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            ppmt = new PPMTranslator(bais);
+            return bais;
         }
-        else {
-            InputStream is = f.getInputStream();
-            ppmt = new PPMTranslator(is);
-        }
-        
-        int w = ppmt.getWidth();
-        byte[] wa = toArray(w);
-        int h = ppmt.getHeight();
-        byte[] ha = toArray(h);
-        byte[] result = new byte[8 + (w*h*3)];
-        System.arraycopy(wa, 0, result, 0, 4);
-        System.arraycopy(ha, 0, result, 4, 4);
-        for (int i = 8; i < result.length; ++i)
-            result[i] = (byte)ppmt.getNextComponent(); // unsigned encoding
-        return result;
+        return f.getInputStream();
     }
 
 
@@ -244,14 +227,5 @@ public class PersistenceController {
             f.mkdir();
             traverseDecompress(is, folder, f.getCanonicalPath());
         }
-    }
-
-    private static byte[] toArray(int value) {
-        byte[] result = new byte[4];
-        result[0] = (byte)((value >> 24) & 0x000000FF);
-        result[1] = (byte)((value >> 16) & 0x000000FF);
-        result[2] = (byte)((value >> 8) & 0x000000FF);
-        result[3] = (byte)(value & 0x000000FF);
-        return result;
     }
 }
