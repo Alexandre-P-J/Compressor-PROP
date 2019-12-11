@@ -10,6 +10,8 @@ import java.io.File;
 public class Toolbar extends JPanel implements ActionListener {
     private final JButton fileButton;
     private final JButton compressButton;
+    private final JButton StatsButton;
+    private final JButton HelpButton;
     private final JFileChooser fileChooser;
     private final JFileChooser compressedSaveChooser;
     private final JFileChooser decompressedSaveChooser;
@@ -19,7 +21,10 @@ public class Toolbar extends JPanel implements ActionListener {
         setBorder(BorderFactory.createEtchedBorder());
         fileButton = new JButton("Open");
         compressButton = new JButton("Compress/Decompress");
+        StatsButton = new JButton("Statistics");
+        HelpButton = new JButton("Help");
         compressButton.setVisible(false);
+        StatsButton.setVisible(false);
 
         fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -36,11 +41,15 @@ public class Toolbar extends JPanel implements ActionListener {
 
         compressButton.addActionListener(this);
         fileButton.addActionListener(this);
+        StatsButton.addActionListener(this);
+        HelpButton.addActionListener(this);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         add(fileButton);
         add(compressButton);
+        add(StatsButton);
+        add(HelpButton);
     }
 
     public void actionPerformed(final ActionEvent e) {
@@ -81,6 +90,10 @@ public class Toolbar extends JPanel implements ActionListener {
                     }
                 }
             }
+        } else if (clicked == StatsButton) {
+
+        } else if (clicked == HelpButton) {
+
         }
     }
 }
