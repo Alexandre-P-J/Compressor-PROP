@@ -61,39 +61,33 @@ public class PersistenceController {
     }
 
     public static long getTotalTimeStat() {
-        if (totalStats.executionTime > 0)
-            return totalStats.executionTime;
-        return 0;
+        return totalStats.getExecutionTime();
     }
 
     public static long getTotalInputSizeStat() {
-        if (totalStats.inputSize > 0)
-            return totalStats.inputSize;
-        return 0;
+        return totalStats.getInputSize();
     }
 
     public static long getTotalOutputSizeStat() {
-        if (totalStats.outputSize > 0)
-            return totalStats.outputSize;
-        return 0;
+        return totalStats.getOutputSize();
     }
 
     public static long getFileTimeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
-        return stats.executionTime;
+        return stats.getExecutionTime();
     }
 
     public static long getFileInputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
-        return stats.inputSize;
+        return stats.getInputSize();
     }
 
     public static long getFileOutputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
-        return stats.outputSize;
+        return stats.getOutputSize();
     }
 
     public static boolean isFileImage(String path) throws Exception {
@@ -161,9 +155,9 @@ public class PersistenceController {
         OutputStream os = new BufferedOutputStream(out.getOutputStream());
         OutputStreamWatcher osw = new OutputStreamWatcher(os);
         headerTranslator.reserveHeader(osw, FileTree.getRoot());
-        totalStats.inputSize = 0;
-        totalStats.outputSize = osw.getWrittenBytes(); // header size
-        totalStats.executionTime = 0;
+        totalStats.setInputSize(0);
+        totalStats.setOutputSize(osw.getWrittenBytes()); // header size
+        totalStats.setExecutionTime(0);
         traverseCompress(os, FileTree.getRoot());
         os.flush();
         os.close();
@@ -186,14 +180,14 @@ public class PersistenceController {
             long timeStart = System.currentTimeMillis();
             DomainController.chainCompress(isw, osw, file.getCompressionType().toString(), file.getCompressionArgument());
             long timeEnd = System.currentTimeMillis();
-            stats.inputSize = isw.getReadBytes();
-            stats.outputSize = osw.getWrittenBytes();
-            stats.executionTime = timeEnd - timeStart;
+            stats.setInputSize(isw.getReadBytes());
+            stats.setOutputSize(osw.getWrittenBytes());
+            stats.setExecutionTime(timeEnd - timeStart);
             file.setStatistics(stats);
-            file.setHeaderIndex(totalStats.outputSize);
-            totalStats.outputSize += stats.outputSize;
-            totalStats.inputSize += stats.inputSize;
-            totalStats.executionTime += stats.executionTime;
+            file.setHeaderIndex(totalStats.getOutputSize());
+            totalStats.setOutputSize(totalStats.getOutputSize() + stats.getOutputSize());
+            totalStats.setInputSize(totalStats.getInputSize() + stats.getInputSize());
+            totalStats.setExecutionTime(totalStats.getExecutionTime() + stats.getExecutionTime());
             isw.close();
         }
         Folder[] folders = parentFolder.getFolders();
@@ -211,13 +205,13 @@ public class PersistenceController {
             long timeStart = System.currentTimeMillis();
             DomainController.chainDecompress(isw, osw, file.getCompressionType().toString());
             long timeEnd = System.currentTimeMillis();
-            stats.inputSize = isw.getReadBytes();
-            stats.outputSize = osw.getWrittenBytes();
-            stats.executionTime = timeEnd - timeStart;
+            stats.setInputSize(isw.getReadBytes());
+            stats.setOutputSize(osw.getWrittenBytes());
+            stats.setExecutionTime(timeEnd - timeStart);
             file.setStatistics(stats);
-            totalStats.outputSize += stats.outputSize;
-            totalStats.inputSize += stats.inputSize;
-            totalStats.executionTime += stats.executionTime;
+            totalStats.setOutputSize(totalStats.getOutputSize() + stats.getOutputSize());
+            totalStats.setInputSize(totalStats.getInputSize() + stats.getInputSize());
+            totalStats.setExecutionTime(totalStats.getExecutionTime() + stats.getExecutionTime());
             osw.flush();
             osw.close();
         }
