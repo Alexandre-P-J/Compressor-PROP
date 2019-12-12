@@ -257,6 +257,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                     frame.setSize(600, 850);
                     frame.add(new ShowText(PresentationController.getDocument(filePath)));
                 }
+                frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             } catch (Exception exc) {
                 JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
