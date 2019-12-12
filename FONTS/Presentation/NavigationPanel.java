@@ -83,6 +83,9 @@ public class NavigationPanel extends JPanel {
         for (int i = 0; i < FileNames.length; ++i) {
             model.addElement(FileNames[i]);
         }
+        for (NavigationClickObserver si : singleClickFolderSubscribers) {
+            si.SingleClick_Folder(currentPath);
+        }
     }
 
     private String pathReturn(String Path) {
