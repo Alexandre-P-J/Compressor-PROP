@@ -247,8 +247,18 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == displayButton) {
             try {
-                ShowFrame v2 = new ShowFrame(filePath);
-                v2.setVisible(true);
+                JFrame frame = new JFrame();
+                if(PresentationController.isFileImage(filePath)) {
+                    frame.setTitle("Image Viewer");
+                    frame.add(new ShowImage(filePath, frame));
+                }
+                else {
+                    frame.setTitle("Text Viewer");
+                    frame.setSize(600, 850);
+                    frame.add(new ShowText(PresentationController.getDocument(filePath)));
+                }
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
             } catch (Exception exc) {
                 JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
             }

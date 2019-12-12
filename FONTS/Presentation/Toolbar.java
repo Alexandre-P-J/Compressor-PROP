@@ -65,6 +65,7 @@ public class Toolbar extends JPanel implements ActionListener {
                     else {
                         compressButton.setText("Compress");
                     }
+                    StatsButton.setVisible(false);
                     compressButton.setVisible(true);
                 } catch (Exception exc) {
                     System.out.println(exc.getMessage());
@@ -76,6 +77,7 @@ public class Toolbar extends JPanel implements ActionListener {
                     File f = decompressedSaveChooser.getSelectedFile();
                     try {
                         PresentationController.decompressTo(f.getCanonicalPath());
+                        StatsButton.setVisible(true);
                     } catch (Exception exc) {
                         System.out.println(exc.getMessage());
                     }
@@ -85,16 +87,27 @@ public class Toolbar extends JPanel implements ActionListener {
                     File f = compressedSaveChooser.getSelectedFile();
                     try {
                         PresentationController.compressTo(f.getCanonicalPath());
+                        StatsButton.setVisible(true);
                     } catch (Exception exc) {
                         System.out.println(exc.getMessage());
                     }
                 }
             }
         } else if (clicked == StatsButton) { // invisible by default, should be visible after getting valid (non zero) total stats
-            System.out.println("SHOW TOTAL STATS IN JFRAME");
+            JFrame frame = new JFrame();
+            frame.setSize(535, 155);
+            frame.setTitle("Total Statistics");
+            frame.add(new ShowText(TotalStatistics.getStats()));
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
 
         } else if (clicked == HelpButton) {
-            System.out.println("SHOW HELP IN JFRAME");
+            JFrame frame = new JFrame();
+            frame.setTitle("Help");
+            frame.setSize(600, 850);
+            frame.add(new ShowText(Help.getHelp(), "text/html"));
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         }
     }
 }
