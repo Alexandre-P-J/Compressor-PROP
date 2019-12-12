@@ -59,10 +59,12 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         // Algorithm JComboBox
         algorithmCombo = new JComboBox();
         final DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
-        String[] Ctypes = PresentationController.getValidCompressionTypes();
-        for (String alg : Ctypes) {
-            comboModel.addElement(alg);
-        }
+        
+        // ARREGLA ESTO, LA FIRMA DE LA FUNCION HA CAMBIADO!
+        //String[] Ctypes = PresentationController.getValidCompressionTypes();
+        //for (String alg : Ctypes) {
+        //    comboModel.addElement(alg);
+        //}
         algorithmCombo.setModel(comboModel);
 
         // Dictionary size JSpinner

@@ -94,8 +94,8 @@ public class PresentationController {
         return DomainController.getFileOutputSizeStat(path);
     }
 
-    public static String[] getValidCompressionTypes() {
-        return DomainController.getValidCompressionTypes();
+    public static String[] getValidCompressionTypes(String path) throws Exception {
+        return DomainController.getValidCompressionTypes(path);
     }
 
     public static String[] getValidCompressionParameters(String compressionType) throws Exception {
