@@ -149,6 +149,21 @@ public class PersistenceController {
         return f.getInputStream();
     }
 
+    public static InputStream getImageAfterLossyCompression(String Path) throws Exception {    
+        if (isFileTreeCompressed()) {
+            return getImage(Path);
+        }
+        Archive f = Folder.getFile(FileTree.getRoot(), Path);
+        if (!f.isImage()) throw new Exception(Path+" Not an image!");
+        ByteArrayOutputStream baos0 = new ByteArrayOutputStream();
+        DomainController.chainCompress(f.getInputStream(), baos0, f.getCompressionType().toString(), f.getCompressionArgument());
+        ByteArrayInputStream bais1 = new ByteArrayInputStream(baos0.toByteArray());
+        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+        DomainController.chainDecompress(bais1, baos1, f.getCompressionType().toString());
+        ByteArrayInputStream bais2 = new ByteArrayInputStream(baos1.toByteArray());
+        return bais2;
+    }
+
 
     public static void compressFiletree(String outputPath) throws Exception {
         Archive out = new Archive(outputPath);
