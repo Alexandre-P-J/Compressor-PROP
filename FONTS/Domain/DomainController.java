@@ -49,11 +49,18 @@ public class DomainController {
     }
 
     /**
-     * Returns an array of all implemented compression algorithms
-     * @return a String[] containing the identifier of all implemented compression algorithms
+     * Returns an array of all implemented compression algorithms for the given file in the path
+     * @param path path of the file
+     * @return a string array containing valid compression types for the file in the path
+     * @throws Exception if the path does not point a file
      */
-    public static String[] getValidCompressionTypes() {
-        return new String[] {"LZW", "LZ78", "LZSS", "JPEG"};
+    public static String[] getValidCompressionTypes(String path) throws Exception {
+        if (isFileImage(path)) {
+            return new String[] {"JPEG"};
+        }
+        else {
+            return new String[] {"LZW", "LZ78", "LZSS"};
+        }
     }
 
     public static String[] getValidCompressionParameters(String compressionType) throws Exception {
@@ -145,15 +152,17 @@ public class DomainController {
         return PersistenceController.getDocument(Path);
     }
 
-    /**
-     * Returns a decompressed image from the compressed or not compressed filetree
-     * @param Path relative path to the image
-     * @return byte[] where 4 first bytes codify the width (int), the 4 next the height (int) and the rest of bytes
-     * is a sequence of RGBRGBRGB... values
-     * @throws Exception if i/o error, or the decompression fails
-     */
     public static byte[] getImage(String Path) throws Exception {
         PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImage(Path));
+        return presentationEncodeImage(ppmt);
+    }
+
+    public static byte[] getImageAfterLossyCompression(String Path) throws Exception {
+        PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImageAfterLossyCompression(Path));
+        return presentationEncodeImage(ppmt);
+    }
+
+    private static byte[] presentationEncodeImage(PPMTranslator ppmt) throws Exception {
         int w = ppmt.getWidth();
         byte[] wa = toArray(w);
         int h = ppmt.getHeight();
