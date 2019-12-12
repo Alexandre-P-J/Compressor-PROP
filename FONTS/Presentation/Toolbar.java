@@ -90,10 +90,11 @@ public class Toolbar extends JPanel implements ActionListener {
                     }
                 }
             }
-        } else if (clicked == StatsButton) {
+        } else if (clicked == StatsButton) { // invisible by default, should be visible after getting valid (non zero) total stats
+            System.out.println("SHOW TOTAL STATS IN JFRAME");
 
         } else if (clicked == HelpButton) {
-
+            System.out.println("SHOW HELP IN JFRAME");
         }
     }
 }
