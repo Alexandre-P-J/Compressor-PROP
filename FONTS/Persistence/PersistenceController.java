@@ -1,8 +1,6 @@
 package Persistence;
 
 import Domain.DomainController;
-import Domain.JPEG_Quality;
-import Domain.PPMTranslator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,39 +61,33 @@ public class PersistenceController {
     }
 
     public static long getTotalTimeStat() {
-        if (totalStats.executionTime > 0)
-            return totalStats.executionTime;
-        return 0;
+        return totalStats.getExecutionTime();
     }
 
     public static long getTotalInputSizeStat() {
-        if (totalStats.inputSize > 0)
-            return totalStats.inputSize;
-        return 0;
+        return totalStats.getInputSize();
     }
 
     public static long getTotalOutputSizeStat() {
-        if (totalStats.outputSize > 0)
-            return totalStats.outputSize;
-        return 0;
+        return totalStats.getOutputSize();
     }
 
     public static long getFileTimeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
-        return stats.executionTime;
+        return stats.getExecutionTime();
     }
 
     public static long getFileInputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
-        return stats.inputSize;
+        return stats.getInputSize();
     }
 
     public static long getFileOutputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
-        return stats.outputSize;
+        return stats.getOutputSize();
     }
 
     public static boolean isFileImage(String path) throws Exception {
@@ -142,34 +134,19 @@ public class PersistenceController {
         return new String(baos.toByteArray(), "UTF-8"); // UTF-8 Encoding
     }
 
-    public static byte[] getImage(String Path) throws Exception {
+    public static InputStream getImage(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
         if (!f.isImage()) throw new Exception(Path+" Not an image!");
-        PPMTranslator ppmt;
         if (isFileTreeCompressed()) {
             InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
             is.skip(f.getHeaderIndex());
             DomainController.chainDecompress(is, baos, f.getCompressionType().toString());
             baos.flush();
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            ppmt = new PPMTranslator(bais);
+            return bais;
         }
-        else {
-            InputStream is = f.getInputStream();
-            ppmt = new PPMTranslator(is);
-        }
-        
-        int w = ppmt.getWidth();
-        byte[] wa = toArray(w);
-        int h = ppmt.getHeight();
-        byte[] ha = toArray(h);
-        byte[] result = new byte[8 + (w*h*3)];
-        System.arraycopy(wa, 0, result, 0, 4);
-        System.arraycopy(ha, 0, result, 4, 4);
-        for (int i = 8; i < result.length; ++i)
-            result[i] = (byte)ppmt.getNextComponent(); // unsigned encoding
-        return result;
+        return f.getInputStream();
     }
 
 
@@ -178,9 +155,9 @@ public class PersistenceController {
         OutputStream os = new BufferedOutputStream(out.getOutputStream());
         OutputStreamWatcher osw = new OutputStreamWatcher(os);
         headerTranslator.reserveHeader(osw, FileTree.getRoot());
-        totalStats.inputSize = 0;
-        totalStats.outputSize = osw.getWrittenBytes(); // header size
-        totalStats.executionTime = 0;
+        totalStats.setInputSize(0);
+        totalStats.setOutputSize(osw.getWrittenBytes()); // header size
+        totalStats.setExecutionTime(0);
         traverseCompress(os, FileTree.getRoot());
         os.flush();
         os.close();
@@ -203,14 +180,14 @@ public class PersistenceController {
             long timeStart = System.currentTimeMillis();
             DomainController.chainCompress(isw, osw, file.getCompressionType().toString(), file.getCompressionArgument());
             long timeEnd = System.currentTimeMillis();
-            stats.inputSize = isw.getReadBytes();
-            stats.outputSize = osw.getWrittenBytes();
-            stats.executionTime = timeEnd - timeStart;
+            stats.setInputSize(isw.getReadBytes());
+            stats.setOutputSize(osw.getWrittenBytes());
+            stats.setExecutionTime(timeEnd - timeStart);
             file.setStatistics(stats);
-            file.setHeaderIndex(totalStats.outputSize);
-            totalStats.outputSize += stats.outputSize;
-            totalStats.inputSize += stats.inputSize;
-            totalStats.executionTime += stats.executionTime;
+            file.setHeaderIndex(totalStats.getOutputSize());
+            totalStats.setOutputSize(totalStats.getOutputSize() + stats.getOutputSize());
+            totalStats.setInputSize(totalStats.getInputSize() + stats.getInputSize());
+            totalStats.setExecutionTime(totalStats.getExecutionTime() + stats.getExecutionTime());
             isw.close();
         }
         Folder[] folders = parentFolder.getFolders();
@@ -228,13 +205,13 @@ public class PersistenceController {
             long timeStart = System.currentTimeMillis();
             DomainController.chainDecompress(isw, osw, file.getCompressionType().toString());
             long timeEnd = System.currentTimeMillis();
-            stats.inputSize = isw.getReadBytes();
-            stats.outputSize = osw.getWrittenBytes();
-            stats.executionTime = timeEnd - timeStart;
+            stats.setInputSize(isw.getReadBytes());
+            stats.setOutputSize(osw.getWrittenBytes());
+            stats.setExecutionTime(timeEnd - timeStart);
             file.setStatistics(stats);
-            totalStats.outputSize += stats.outputSize;
-            totalStats.inputSize += stats.inputSize;
-            totalStats.executionTime += stats.executionTime;
+            totalStats.setOutputSize(totalStats.getOutputSize() + stats.getOutputSize());
+            totalStats.setInputSize(totalStats.getInputSize() + stats.getInputSize());
+            totalStats.setExecutionTime(totalStats.getExecutionTime() + stats.getExecutionTime());
             osw.flush();
             osw.close();
         }
@@ -244,14 +221,5 @@ public class PersistenceController {
             f.mkdir();
             traverseDecompress(is, folder, f.getCanonicalPath());
         }
-    }
-
-    private static byte[] toArray(int value) {
-        byte[] result = new byte[4];
-        result[0] = (byte)((value >> 24) & 0x000000FF);
-        result[1] = (byte)((value >> 16) & 0x000000FF);
-        result[2] = (byte)((value >> 8) & 0x000000FF);
-        result[3] = (byte)(value & 0x000000FF);
-        return result;
     }
 }

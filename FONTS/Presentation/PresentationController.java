@@ -5,6 +5,7 @@ import javax.swing.SwingUtilities;
 
 public class PresentationController {
     private static NavigationPanel navigator;
+    private static Boolean isCompressing = null;
     // Singleton instance
     private static final PresentationController instance = new PresentationController();
 
@@ -27,9 +28,14 @@ public class PresentationController {
     }
 
     public static boolean readFileTree(String path) throws Exception {
-        boolean compressed = DomainController.readFileTree(path);
+        isCompressing = DomainController.readFileTree(path);
         navigator.refresh("");
-        return compressed;
+        return isCompressing;
+    }
+
+    // Ojo! si no esta comprimiendo/descomprimiendo por que no se ha seleccionado archivo, retorna null!
+    public static Boolean isCompressing() {
+        return isCompressing;
     }
 
     public static void compressTo(String OutputFilePath) throws Exception {

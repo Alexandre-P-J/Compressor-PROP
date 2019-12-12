@@ -153,7 +153,26 @@ public class DomainController {
      * @throws Exception if i/o error, or the decompression fails
      */
     public static byte[] getImage(String Path) throws Exception {
-        return PersistenceController.getImage(Path);
+        PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImage(Path));
+        int w = ppmt.getWidth();
+        byte[] wa = toArray(w);
+        int h = ppmt.getHeight();
+        byte[] ha = toArray(h);
+        byte[] result = new byte[8 + (w*h*3)];
+        System.arraycopy(wa, 0, result, 0, 4);
+        System.arraycopy(ha, 0, result, 4, 4);
+        for (int i = 8; i < result.length; ++i)
+            result[i] = (byte)ppmt.getNextComponent(); // unsigned encoding
+        return result;
+    }
+
+    private static byte[] toArray(int value) {
+        byte[] result = new byte[4];
+        result[0] = (byte)((value >> 24) & 0x000000FF);
+        result[1] = (byte)((value >> 16) & 0x000000FF);
+        result[2] = (byte)((value >> 8) & 0x000000FF);
+        result[3] = (byte)(value & 0x000000FF);
+        return result;
     }
 
     /**
