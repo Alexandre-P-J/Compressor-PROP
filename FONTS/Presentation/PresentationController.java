@@ -101,4 +101,15 @@ public class PresentationController {
     public static String[] getValidCompressionParameters(String compressionType) throws Exception {
         return DomainController.getValidCompressionParameters(compressionType);
     }
+
+    public static String getCompressionParameter(String path) throws Exception {
+        return DomainController.getCompressionParameter(path);
+    }
+
+    public static String getCompressionType(String path) throws Exception {
+        return DomainController.getCompressionType(path);
+    }
+
+
+
 }
