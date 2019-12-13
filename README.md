@@ -10,13 +10,23 @@
 ##### alexandre.perez.josende@est.fib.upc.edu
 
 ## Road to second assignment
-- [x] DomainController basico para hacer un placeholder de la ui decente
-- [ ] Serializado y Decodificacion del filetree
-- [ ] Acceso aleatorio usando skip(long)
-- [ ] Separar Domain de Persistance y refactor
-- [ ] UI placeholder
-- [ ] UI Features
-- [ ] Actualizar diagramas, manual, etc
+- [ ] Manual Documento
+- [ ] Manual Interno FONTS/Presentation/Help.java
+- [ ] Diagrama Persistencia
+- [ ] Diagrama Dominio
+- [ ] Diagrama Presentacion
+- [ ] Actualizar Casos de Uso
+- [ ] Actualizar Archivos index.txt
+- [ ] Acabar Documentacion
+- [ ] Verificar que no hace falta entregar todos los drivers otra vez
+
+## Extra Features!
+- [x] Algorithm parameters (Dictionary size, JPEG quality...) Available in UI
+- [x] Custom Gradle system. Pack project, run program, tests and more in only one simple comand on any supported platform
+- [x] Manual in app supporting HTML
+- [x] Statistics per file instead of only total statistics
+- [x] Random access to both compressed and decompressed data and fast Display functionality for ppm images and other files
+- [x] Simple but powerful UI design, following all design rules learnt in IDI
 
 ## How-to's:
 This will assume you dont have gradle, if you have gradle 6.0 installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
