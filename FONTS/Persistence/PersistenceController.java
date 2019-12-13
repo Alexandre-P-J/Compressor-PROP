@@ -51,8 +51,7 @@ public class PersistenceController {
     public static void setCompressionType(String path, String Type) throws Exception {
         if (isFileTreeCompressed()) throw new Exception("Cannot change compression algorithm of a compressed file!");
         Archive f = Folder.getFile(FileTree.getRoot(), path);
-        CompressionType cType = CompressionType.valueOf(Type);
-        f.setCompressionType(cType);
+        f.setCompressionType(Type);
     }
 
     public static String getCompressionType(String path) throws Exception {
@@ -111,6 +110,24 @@ public class PersistenceController {
     public static void setCompressionParameter(String path, String arg) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         f.setCompressionArgument(arg);
+    }
+
+    public static String getDefaultCompressionParameter(String type) throws Exception {
+        return DomainController.getDefaultCompressionParameter(type);
+    }
+
+    public static boolean isCompressionParameterValid(String arg, String type) throws Exception {
+        String[] args = DomainController.getValidCompressionParameters(type);
+        for (String valid : args) {
+            if (arg.equals(valid)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String getDefaultCompressionType(boolean isPPMImage) {
+        return DomainController.getDefaultCompressionType(isPPMImage);
     }
 
     public static String getDocument(String Path) throws Exception {

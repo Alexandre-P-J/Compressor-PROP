@@ -40,10 +40,12 @@ public class PresentationController {
 
     public static void compressTo(String OutputFilePath) throws Exception {
         DomainController.compressTo(OutputFilePath);
+        navigator.refresh();
     }
 
     public static void decompressTo(String OutputFolderPath) throws Exception {
         DomainController.decompressTo(OutputFolderPath);
+        navigator.refresh();
     }
 
     public static void setNavigator(NavigationPanel np) {

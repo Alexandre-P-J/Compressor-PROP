@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 public class Archive { // No quiero que se confunda o aparezcan errores debido a que ya existe java.io.File, Archive suena mal, no se me ocurre nada mejor
     private final String Path;
-    private CompressionType CType;
+    private String CType;
     private String compressionArg;
     private long index = -1; // offset from the start of the compressed file
     private Statistics stats;
@@ -18,13 +18,11 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
     Archive(String Path) {
         this.Path = Path;
         stats = new Statistics();
-        if (isImage()) {
-            CType = CompressionType.JPEG;
-            compressionArg = "DEFAULT";
-        }
-        else {
-            CType = CompressionType.LZW;
-            compressionArg = "12";
+        CType = PersistenceController.getDefaultCompressionType(isImage());
+        try {
+            compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
+        } catch (Exception e) {
+            compressionArg = null;
         }
     }
 
@@ -47,20 +45,26 @@ public class Archive { // No quiero que se confunda o aparezcan errores debido a
         return false;
     }
 
-    public void setCompressionType(CompressionType Type) throws Exception {
-        if (isImage() && (Type != CompressionType.JPEG)) 
+    public void setCompressionType(String Type) throws Exception {
+        if (isImage() && (!Type.equals("JPEG"))) 
             throw new Exception("Compression algorithm not compatible with images!");
-        if (!isImage() && (Type == CompressionType.JPEG))
+        if (!isImage() && Type.equals("JPEG"))
             throw new Exception("JPEG algorithm not compatible with documents!");
         CType = Type;
+        compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
     }
 
-    public CompressionType getCompressionType() {
+    public String getCompressionType() {
         return CType;
     }
 
-    public void setCompressionArgument(String arg) {
-        compressionArg = arg;
+    public void setCompressionArgument(String arg) throws Exception {
+        if (PersistenceController.isCompressionParameterValid(arg, CType)) {
+            compressionArg = arg;
+        }
+        else {
+            throw new Exception("Invalid compression argument!");
+        }
     }
 
     public String getCompressionArgument() {
