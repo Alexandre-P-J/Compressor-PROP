@@ -14,21 +14,45 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class PersistenceController {
-    // Singleton instance
+    /**
+     * Singleton instance
+     */
     private static final PersistenceController instance = new PersistenceController();
-    private static Folder FileTree; // must be the root of the filetree
+    /**
+     * FileTree root instance
+     */
+    private static Folder FileTree;
+    /**
+     * Total statistics of the last compression or decompression
+     */
     private static Statistics totalStats = new Statistics();
+    /**
+     * Header translator instance
+     */
     private static HeaderTranslator headerTranslator;
+    /**
+     * path of the opened filetree
+     */
     private static String openedPath;
 
-    // Private to avoid external use of the constructor
+    /**
+     * private constructor
+     */
     private PersistenceController() {}
 
-    // Singleton getter
+    /**
+     * singleton getter
+     * @return this singleton instance
+     */
     public static PersistenceController getInstance() {
         return instance;
     }
 
+    /**
+     * filetree reader
+     * @param path path to a filetree
+     * @throws IOException if error reading
+     */
     public static void readFileTree(String path) throws IOException {
         headerTranslator = new HeaderTranslator();
         totalStats = new Statistics();
@@ -36,86 +60,186 @@ public class PersistenceController {
         openedPath = path;
     }
 
+    /**
+     * returns if the read filetree is compressed
+     * @return true if the filetree is compressed, false otherwise
+     */
     public static Boolean isFileTreeCompressed() {
         return headerTranslator.fileTreeIsCompressed();
     }
 
+    /**
+     * Return filenames from the given relative path
+     * @param pathToParentFolder either "."/"" or "foo/bar.." (replacing ".." with the rest of the path)
+     * @return an array of filenames contained in the folder with path equal to path argument
+     * @throws Exception if path is invalid or filetree not initialized
+     */
     public static String[] getFileNames(String pathToParentFolder) throws Exception {
         return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFileNames();
     }
 
+    /**
+     * Return folder names from the given relative path
+     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
+     * @return an array of folder names contained in the folder with path equal to path argument
+     * @throws Exception if path is invalid or filetree not initialized
+     */
     public static String[] getFolderNames(String pathToParentFolder) throws Exception {
         return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFolderNames();
     }
 
+    /**
+     * Sets the compression type for the file in the given path
+     * @param path relative path to a file
+     * @param Type the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @throws Exception if the file does not exist, or the compression type does not support the file 
+     * or if changing the compression of an already compressed file, or the compression type does not exist
+     */
     public static void setCompressionType(String path, String Type) throws Exception {
         if (isFileTreeCompressed()) throw new Exception("Cannot change compression algorithm of a compressed file!");
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         f.setCompressionType(Type);
     }
 
+    /**
+     * Returns the current compression type for the file in the given path
+     * @param path relative path to a file
+     * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @throws Exception if the file does not exist
+     */
     public static String getCompressionType(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.getCompressionType().toString();
     }
 
+    /**
+     * Returns the total time of the last compress/decompress operation
+     * @return time in miliseconds
+     */
     public static long getTotalTimeStat() {
         return totalStats.getExecutionTime();
     }
 
+    /**
+     * Returns the total size of the input data from the last compress/decompress operation
+     * @return size in bytes
+     */
     public static long getTotalInputSizeStat() {
         return totalStats.getInputSize();
     }
 
+    /**
+     * Returns the total size of the output data from the last compress/decompress operation
+     * @return size in bytes
+     */
     public static long getTotalOutputSizeStat() {
         return totalStats.getOutputSize();
     }
 
+    /**
+     * Returns the time of the last compress/decompress operation for the file in the given path
+     * @param path relative path to a file
+     * @return time in miliseconds
+     * @throws Exception if the file does not exist
+     */
     public static long getFileTimeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
         return stats.getExecutionTime();
     }
 
+    /**
+     * Returns the input size of the last compress/decompress operation for the file in the given path
+     * @param path relative path to a file
+     * @return size in bytes
+     * @throws Exception if the file does not exist
+     */
     public static long getFileInputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
         return stats.getInputSize();
     }
 
+    /**
+     * Returns the output size of the last compress/decompress operation for the file in the given path
+     * @param path relative path to a file
+     * @return size in bytes
+     * @throws Exception if the file does not exist
+     */
     public static long getFileOutputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
         return stats.getOutputSize();
     }
 
+    /**
+     * Returns true if the file in the path is a ppm image
+     * @param path relative path to a file
+     * @return true if the file in the path is a ppm image, false otherwise
+     * @throws Exception if the path does not point a file
+     */
     public static boolean isFileImage(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.isImage();
     }
 
+    /**
+     * luminance table getter
+     * @param quality valid quality setting
+     * @return 8x8 matrix of integers, luminance table
+     */
     public static final int[][] getLuminanceTable(String quality) {
         return JPEG_Quality.valueOf(quality).getLuminanceTable();
     }
 
+    /**
+     * chrominance table getter
+     * @param quality valid quality setting
+     * @return 8x8 matrix of integers, chrominance table
+     */
     public static final int[][] getChrominanceTable(String quality) {
         return JPEG_Quality.valueOf(quality).getChrominanceTable();
     }
 
+    /**
+     * Returns the current compression parameter for the given file
+     * @param path relative path to a file
+     * @return String representing a valid compression parameter
+     * @throws Exception if the file does not exist
+     */
     public static String getCompressionParameter(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.getCompressionArgument();
     }
 
+    /**
+     * Sets the compression parameter for a file
+     * @param path relative path to a file
+     * @param arg valid compression parameter
+     * @throws Exception if the file does not exist
+     */
     public static void setCompressionParameter(String path, String arg) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         f.setCompressionArgument(arg);
     }
 
+    /**
+     * Gets the default compression parameter for the given compression type
+     * @param type either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @return the default parameter for the type
+     * @throws Exception if compressionType is not "LZW", "LZ78", "LZSS" or "JPEG"
+     */
     public static String getDefaultCompressionParameter(String type) throws Exception {
         return DomainController.getDefaultCompressionParameter(type);
     }
 
+    /**
+     * checks if the given parameter is valid for the compression type
+     * @param arg compression parameter
+     * @param type compression type
+     * @return true if its valid, false otherwise
+     * @throws Exception if compression type is not valid
+     */
     public static boolean isCompressionParameterValid(String arg, String type) throws Exception {
         String[] args = DomainController.getValidCompressionParameters(type);
         for (String valid : args) {
@@ -126,10 +250,21 @@ public class PersistenceController {
         return false;
     }
 
+    /**
+     * Gets the default compression type
+     * @param isPPMImage true if file is a ppm image
+     * @return the default compression type
+     */
     public static String getDefaultCompressionType(boolean isPPMImage) {
         return DomainController.getDefaultCompressionType(isPPMImage);
     }
 
+    /**
+     * Returns a decompressed document from the compressed or not compressed filetree
+     * @param Path relative path to the file
+     * @return String that contains the entire document in UTF-8
+     * @throws Exception if i/o error, or the decompression fails
+     */
     public static String getDocument(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
@@ -151,6 +286,12 @@ public class PersistenceController {
         return new String(baos.toByteArray(), "UTF-8"); // UTF-8 Encoding
     }
 
+    /**
+     * Returns an input stream representing the image from the path
+     * @param Path relative path to a ppm image
+     * @return input stream containing a valid ppm image
+     * @throws Exception if the image does not exist or is malformed
+     */
     public static InputStream getImage(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
@@ -166,6 +307,12 @@ public class PersistenceController {
         return f.getInputStream();
     }
 
+    /**
+     * Returns an InputStream representing the image from the path after being compressed with the current algorithm and argument
+     * @param Path relative path to a ppm image
+     * @return input stream containing a valid ppm image
+     * @throws Exception if the image does not exist or is malformed
+     */
     public static InputStream getImageAfterLossyCompression(String Path) throws Exception {    
         if (isFileTreeCompressed()) {
             return getImage(Path);
@@ -181,7 +328,11 @@ public class PersistenceController {
         return bais2;
     }
 
-
+    /**
+     * write the compressed header and compress every file of the filetree
+     * @param outputPath output path of the compressed file
+     * @throws Exception if io error
+     */
     public static void compressFiletree(String outputPath) throws Exception {
         Archive out = new Archive(outputPath);
         OutputStream os = new BufferedOutputStream(out.getOutputStream());
@@ -196,6 +347,11 @@ public class PersistenceController {
         headerTranslator.setHeaderValues(outputPath, FileTree.getRoot());
     }
 
+    /**
+     * Decompress entire filetree to a directory
+     * @param outputPath directory path of destination
+     * @throws Exception if io error
+     */
     public static void decompressFiletree(String outputPath) throws Exception {
         InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
         is.skip(headerTranslator.getReadHeaderSize());
@@ -203,6 +359,12 @@ public class PersistenceController {
         is.close();
     }
 
+    /**
+     * traverse the filetree compressing every file with its configuration
+     * @param os output stream pointing the compressed file
+     * @param parentFolder current parent folder of the traverse
+     * @throws Exception if io error
+     */
     private static void traverseCompress(OutputStream os, Folder parentFolder) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
@@ -228,6 +390,13 @@ public class PersistenceController {
         }
     }
     
+    /**
+     * traverse the filetree decompressing every file
+     * @param is input stream pointing a compressed file
+     * @param parentFolder current parent folder of the traverse
+     * @param path path to the current directory being decompressed
+     * @throws Exception if io error
+     */
     private static void traverseDecompress(InputStream is, Folder parentFolder, String path) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {

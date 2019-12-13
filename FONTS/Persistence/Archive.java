@@ -9,10 +9,25 @@ import java.io.FileOutputStream;
 import java.nio.file.Paths;
 
 public class Archive {
+    /**
+     * Path to the file
+     */
     private final String Path;
+    /**
+     * Compression algorithm
+     */
     private String CType;
+    /**
+     * Compression algorithm's extra parameter
+     */
     private String compressionArg;
-    private long index = -1; // offset from the start of the compressed file
+    /**
+     * Offset from the start of the compressed file
+     */
+    private long index = -1;
+    /**
+     * Statistics data
+     */
     private Statistics stats;
 
     /**
@@ -67,6 +82,11 @@ public class Archive {
         return false;
     }
 
+    /**
+     * Setter for the compression type
+     * @param Type Compression Type
+     * @throws Exception if the compression type can't be used for this file
+     */
     public void setCompressionType(String Type) throws Exception {
         if (isImage() && (!Type.equals("JPEG"))) 
             throw new Exception("Compression algorithm not compatible with images!");
@@ -76,10 +96,19 @@ public class Archive {
         compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
     }
 
+    /**
+     * Compression Type getter
+     * @return CType variable
+     */
     public String getCompressionType() {
         return CType;
     }
 
+    /**
+     * Compression argument setter
+     * @param arg compression argument
+     * @throws Exception if the argument is not valid for the current compression type
+     */
     public void setCompressionArgument(String arg) throws Exception {
         if (PersistenceController.isCompressionParameterValid(arg, CType)) {
             compressionArg = arg;
@@ -91,14 +120,15 @@ public class Archive {
 
     /**
      * CompressionArgument getter
-     * @return String representing a valid or invalid compression argument
+     * @return String representing a valid compression argument or null
      */
     public String getCompressionArgument() {
         return compressionArg;
     }
 
     /**
-     * Sets the header index
+     * header position setter
+     * @param position header offset position to the first byte of this file
      */
     public void setHeaderIndex(long position) {
         index = position;
@@ -106,7 +136,7 @@ public class Archive {
 
     /**
      * header index getter
-     * @return a long >= 0
+     * @return the offset from the header to the first byte of this file
      */
     public long getHeaderIndex() {
         return index;

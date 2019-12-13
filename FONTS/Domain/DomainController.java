@@ -6,18 +6,30 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DomainController {
-    // Singleton instance
+    /**
+     * Singleton instance
+     */
     private static final DomainController instance = new DomainController();
 
-    // Private to avoid external use of the constructor
+    /**
+     * private constructor
+     */
     private DomainController() {}
 
-    // Singleton getter
+    /**
+     * singleton instance getter
+     * @return singleton instance
+     */
     public static DomainController getInstance() {
         return instance;
     }
     
-    // lo llama presentation controller con el path obtenido despues de pulsar SELECT, retorna true si se ha seleccionado un archivo comprimido
+    /**
+     * loads a filetree and returns if was compressed
+     * @param path path to a filetree
+     * @return tru if it was a compressed file, false otherwise
+     * @throws IOException if io exception
+     */
     public static boolean readFileTree(String path) throws IOException {
         PersistenceController.readFileTree(path);
         return PersistenceController.isFileTreeCompressed();
@@ -25,7 +37,7 @@ public class DomainController {
 
     /**
      * Return filenames from the given relative path
-     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
+     * @param pathToParentFolder either "."/"" or "foo/bar.." (replacing ".." with the rest of the path)
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
@@ -88,6 +100,12 @@ public class DomainController {
         }
     }
 
+    /**
+     * Gets the default compression parameter for the given compression type
+     * @param compressionType either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @return the default parameter for the type
+     * @throws Exception if compressionType is not "LZW", "LZ78", "LZSS" or "JPEG"
+     */
     public static String getDefaultCompressionParameter(String compressionType) throws Exception {
         switch (compressionType) {
             case "LZW":
@@ -103,6 +121,11 @@ public class DomainController {
         }
     }
 
+    /**
+     * Gets the default compression type
+     * @param isPPMImage true if file is a ppm image
+     * @return the default compression type
+     */
     public static String getDefaultCompressionType(boolean isPPMImage) {
         if (isPPMImage) {
             return "JPEG";
@@ -305,6 +328,7 @@ public class DomainController {
      * @param is InputStream containing valid uncompressed data
      * @param os OutputStream will contain the compressed data from InputStream
      * @param compressionType String that specifies the compression algorithm, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @param arg0 String with an option for the compression type
      * @throws Exception if the compression fails or i/o error
      */
     public static void chainCompress(InputStream is, OutputStream os, String compressionType, String arg0) throws Exception {

@@ -84,14 +84,18 @@ public class Folder {
     }
 
     /**
-     * 
-     * @return
+     * Folders getter
+     * @return array of folders containing all the sub folders of this folder
      */
     public Folder[] getFolders() {
         Folder[] aux = new Folder[folders.size()];
         return folders.toArray(aux);
     }
 
+    /**
+     * Filename getter
+     * @return String[] containing all filenames of this folder
+     */
     public String[] getFileNames() {
         String[] aux = new String[files.size()];
         for (int i = 0; i < files.size(); ++i) {
@@ -100,6 +104,10 @@ public class Folder {
         return aux;
     }
 
+    /**
+     * Folder names getter
+     * @return String[] containing all subfolder names of this folder
+     */
     public String[] getFolderNames() {
         String[] aux = new String[folders.size()];
         for (int i = 0; i < folders.size(); ++i) {
@@ -108,7 +116,13 @@ public class Folder {
         return aux;
     }
 
-    // start is not included in the path, hence the path must be relative to start
+    /**
+     * Folder getter
+     * @param start root of the filetree that will be traversed
+     * @param pathToFolder relative path to a folder from start
+     * @return a folder instance
+     * @throws Exception if the folder does not exist in the path or the path is invalid
+     */
     public static Folder getFolder(Folder start, String pathToFolder) throws Exception {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String steps[] = Paths.get(pathToFolder).toString().split(pattern);
@@ -134,7 +148,13 @@ public class Folder {
         return aux;
     }
 
-    // start is not included in the path, hence the path must be relative to start
+    /**
+     * File getter
+     * @param start root of the filetree that will be traversed
+     * @param pathToFile relative path to an Archive from start
+     * @return Archive instance
+     * @throws Exception if the Archive does not exist in the path or the path is invalid
+     */
     public static Archive getFile(Folder start, String pathToFile) throws Exception {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String steps[] = Paths.get(pathToFile).toString().split(pattern);
@@ -163,6 +183,10 @@ public class Folder {
         throw new Exception(steps[end] + " does not exist at " + pathToFile);
     }
 
+    /**
+     * Gets the path from the root to this folder
+     * @return String[] of folder names representing a path
+     */
     public String[] getPath() {
         Vector<String> v = new Vector<String>();
         Folder aux = this;

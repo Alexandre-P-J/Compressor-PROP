@@ -1,8 +1,17 @@
 package Persistence;
 
 public class Statistics {
+    /**
+     * execution time in ms statistic
+     */
     private long executionTime = 0;
+    /**
+     * input size in bytes statistic
+     */
     private long inputSize = 0;
+    /**
+     * output size in bytes statistic
+     */
     private long outputSize = 0;
 
     /**

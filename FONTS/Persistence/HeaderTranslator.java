@@ -9,17 +9,37 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
 public class HeaderTranslator {
+    /**
+     * boolean that tells if the read filetree is compressed or not
+     */
     private Boolean compressedFileTree = null;
+    /**
+     * size of the header
+     */
     private long headerSize = 0;
 
+    /**
+     * returns if the filetree is compressed
+     * @return true if its compressed, false otherwise
+     */
     public Boolean fileTreeIsCompressed() {
         return compressedFileTree;
     }
 
+    /**
+     * header size getter
+     * @return header size
+     */
     public long getReadHeaderSize() {
         return headerSize;
     }
 
+    /**
+     * reads the filetree in the path
+     * @param path canonical system path
+     * @return root folder of the read path
+     * @throws IOException if io error
+     */
     public Folder readFileTree(String path) throws IOException {
         Folder FileTree;
         try {
@@ -37,6 +57,12 @@ public class HeaderTranslator {
         return FileTree;
     }
 
+    /**
+     * reads a compressed file tree
+     * @param is input stream containing the compressed file tree
+     * @param parentFolder parent folder of the given file tree
+     * @throws Exception if i/o exception
+     */
     private void readCompressedFileTree(InputStream is, Folder parentFolder) throws Exception {
         int next = is.read();
         while ((next > 0) && (next <= 4)) {
@@ -67,6 +93,12 @@ public class HeaderTranslator {
         else throw new Exception("Invalid file type");
     }
 
+    /**
+     * reads a not compressed file tree
+     * @param node file or folder inside parentFolder
+     * @param parentFolder folder object, parent of node
+     * @throws IOException if io exception
+     */
     private void readUncompressedFileTree(File node, Folder parentFolder) throws IOException {
         if (node.isFile())
             parentFolder.addFile(new Archive(node.getCanonicalPath()));
@@ -78,11 +110,23 @@ public class HeaderTranslator {
         }
     }
     
+    /**
+     * writes the compressed file header with some uninitialized parameters
+     * @param os output stream where the header will be written
+     * @param parentFolder root of the hierarchy that will be written into the header
+     * @throws Exception if io error
+     */
     public void reserveHeader(OutputStream os, Folder parentFolder) throws Exception {
         reserve(os, parentFolder);
         os.flush();
     }
     
+    /**
+     * reserves the space needed to codify a folder in the header
+     * @param os output stream where the header will be written
+     * @param parentFolder folder that will be traversed
+     * @throws Exception if io error
+     */
     private void reserve(OutputStream os, Folder parentFolder) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
@@ -99,6 +143,12 @@ public class HeaderTranslator {
         os.write(0x05);
     }
 
+    /**
+     * reserves the space in the header for a file
+     * @param os output stream where the header will be written
+     * @param file file that will be encoded in the header
+     * @throws Exception if io error
+     */
     private void reserveFileHeader(OutputStream os, Archive file) throws Exception {
         byte type = 0;
         switch (file.getCompressionType()) {
@@ -126,14 +176,24 @@ public class HeaderTranslator {
         os.write(name);
     }
     
-
+    /**
+     * initializes header values in a valid uninitialized header
+     * @param path path to the compressed file
+     * @param parentFolder root folder encoded in the header
+     * @throws Exception if io error
+     */
     public void setHeaderValues(String path, Folder parentFolder) throws Exception {
         RandomAccessFile raf = new RandomAccessFile(path, "rw");
         setHeader(raf, parentFolder);
         raf.close();
     }
 
-
+    /**
+     * initializes header values in a valid uninitialized header
+     * @param header compressed file
+     * @param parentFolder root folder encoded in the header
+     * @throws Exception if io error
+     */
     private void setHeader(RandomAccessFile header, Folder parentFolder) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
@@ -150,9 +210,11 @@ public class HeaderTranslator {
         header.skipBytes(1);
     }
     
-
-    
-
+    /**
+     * encodes 8 bytes into a long variable
+     * @param bytes array of length 8
+     * @return long value
+     */
     private long toLong(byte[] bytes) {
         long result = 0;
         result |= (long)(bytes[0]) << 56;
@@ -166,6 +228,11 @@ public class HeaderTranslator {
         return result;
     }
 
+    /**
+     * encodes a long into 8 bytes
+     * @param value any long value
+     * @return array of 8 bytes
+     */
     private byte[] toArray(long value) {
         byte[] result = new byte[8];
         result[0] = (byte)((value >> 56) & 0x00000000000000FFL);
