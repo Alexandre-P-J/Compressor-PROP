@@ -67,16 +67,8 @@ public class Archive {
         return false;
     }
 
-<<<<<<< HEAD
-    /**
-     * CompressionType setter
-     */
-    public void setCompressionType(CompressionType Type) throws Exception {
-        if (isImage() && (Type != CompressionType.JPEG)) 
-=======
     public void setCompressionType(String Type) throws Exception {
         if (isImage() && (!Type.equals("JPEG"))) 
->>>>>>> Feature/Interface
             throw new Exception("Compression algorithm not compatible with images!");
         if (!isImage() && Type.equals("JPEG"))
             throw new Exception("JPEG algorithm not compatible with documents!");
@@ -84,22 +76,6 @@ public class Archive {
         compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
     }
 
-<<<<<<< HEAD
-    /**
-     * CompressionType getter
-     * @return enum CompressionType
-     */
-    public CompressionType getCompressionType() {
-        return CType;
-    }
-
-    /**
-     * CompressionArgument setter
-     * @param arg new compression argument
-     */
-    public void setCompressionArgument(String arg) {
-        compressionArg = arg;
-=======
     public String getCompressionType() {
         return CType;
     }
@@ -111,7 +87,6 @@ public class Archive {
         else {
             throw new Exception("Invalid compression argument!");
         }
->>>>>>> Feature/Interface
     }
 
     /**
