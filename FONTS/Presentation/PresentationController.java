@@ -112,6 +112,14 @@ public class PresentationController {
         return DomainController.getCompressionType(path);
     }
 
+    public static void setCompressionType(String path, String Type) throws Exception {
+        DomainController.setCompressionType(path, Type);
+    }
+
+    public static void setCompressionParameter(String path, String arg) throws Exception {
+        DomainController.setCompressionParameter(path, arg);
+    }
+
 
 
 }
