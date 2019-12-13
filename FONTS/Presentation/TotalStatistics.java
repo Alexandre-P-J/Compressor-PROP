@@ -14,6 +14,9 @@ public class TotalStatistics {
         }
     }
 
+    /**
+     * Indicates read, written, elapsed time, compression ratio, compression per second from the total statistics files
+     */
     private static String compressionStats() {
         long in = PresentationController.getTotalInputSizeStat();
         long out = PresentationController.getTotalOutputSizeStat();
@@ -28,6 +31,9 @@ public class TotalStatistics {
         return stats;
     }
 
+    /**
+     * Indicates read, written, elapsed time, decompression ratio, decompression per second from the total statistics files
+     */
     private static String decompressionStats() {
         long in = PresentationController.getTotalInputSizeStat();
         long out = PresentationController.getTotalOutputSizeStat();
@@ -41,6 +47,12 @@ public class TotalStatistics {
         return stats;
     }
 
+    /**
+     * Byte converter to facilitate vision
+     * @param bytes bytes to deal with
+     * @param decimals parameter to decide whether to use decimals, true to use it, false otherwise
+     * @return the respective bytes conversion to GB, MB, KB, B  
+     */
     public static String bytesToHumanLegible(long bytes) {
         if (bytes >= 1073741824) {
             return String.format("%.2f", bytes/1073741824.0) + " GB";
@@ -53,6 +65,11 @@ public class TotalStatistics {
             return String.valueOf(bytes) + " Bytes";
     }
 
+    /**
+     * Milliseconds conversion to facilitate vision
+     * @param ms milliseconds to deal with
+     * @return the respective ms conversion to hours, minutes, seconds and milliseconds
+     */
     public static String milisToHumanLegible(long ms) {
         if (ms >= 3600000) {
             return String.format("%.2f", ms/3600000.0) + " Hours";

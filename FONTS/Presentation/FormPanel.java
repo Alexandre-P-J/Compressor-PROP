@@ -6,18 +6,70 @@ import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
 
 public class FormPanel extends JPanel implements ActionListener, NavigationClickObserver {
-
+    /**
+     * Algorithm title 
+     */
+    private JLabel titleAlgorithm;
+    /**
+     * Parameters title
+     */
     private JLabel titleParameters;
-    private JLabel in, out, time, ratio, bps;
-
-    private DefaultComboBoxModel algorithmModel, parameterModel;
-    private final JComboBox algorithmSelection, parameterSelection;
+    /**
+     * File input size
+     */
+    private JLabel in;
+    /**
+     * File output size
+     */
+    private JLabel out;
+    /**
+     * File elapsed time
+     */
+    private JLabel time; 
+    /**
+     * File compression/decompression ratio
+     */
+    private JLabel ratio;
+    /**
+     * File compression/decompression per second
+     */
+    private JLabel bps;
+    /**
+     * Algorithm model
+     */
+    private DefaultComboBoxModel algorithmModel;
+    /**
+     * Parameter model
+     */
+    private DefaultComboBoxModel parameterModel;
+    /**
+     * Algorithm selector
+     */
+    private final JComboBox algorithmSelection;
+    /**
+     * Parameter selector
+     */
+    private final JComboBox parameterSelection;
+    /**
+     * Button file view 
+     */
     private JButton displayButton;
+    /**
+     * Button after image compression view
+     */
+    private JButton compareButton;
+    /**
+     * File path
+     */
     private String filePath;
 
+    /**
+     * Default panel constructor 
+     * creates a panel with compression properties, listeners and inicializations for the interface
+     * structured with GridBag Layout
+     */
     public FormPanel() {
 
         setVisible(false);
@@ -27,8 +79,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         dim.width = 250;
         setPreferredSize(dim);
 
-        // Titles
-        titleParameters = new JLabel("Parameters: ");
+        // Titles inicialization
+        titleParameters = new JLabel("Parameter: ");
+        titleAlgorithm = new JLabel("Algorithm: ");
         in = new JLabel("-");
         out = new JLabel("-");
         time = new JLabel("-");
@@ -39,33 +92,42 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         algorithmSelection = new JComboBox();
         algorithmModel = new DefaultComboBoxModel();
         algorithmSelection.setModel(algorithmModel);
+        algorithmSelection.setPreferredSize(new Dimension(105,25));
 
         // Parameters selection inicialization
         parameterSelection = new JComboBox();
         parameterModel = new DefaultComboBoxModel();
         parameterSelection.setModel(parameterModel);
+        parameterSelection.setPreferredSize(new Dimension(105,25));
 
         // Visualization Button
         displayButton = new JButton("Dispaly");
+        compareButton = new JButton("Lossy");
 
         // Listeners
         algorithmSelection.addActionListener(this);
         parameterSelection.addActionListener(this);
         displayButton.addActionListener(this);
+        compareButton.addActionListener(this);
 
         // Layout GridBag
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Compressor properties"));
         layoutComponents();
     }
 
+    /**
+     * Invoked when the button or selector action occurs.
+     * @param e action event
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
+        // Image/Text Viewer
         if (e.getSource() == displayButton) {
             try {
                 JFrame frame = new JFrame();
                 if(PresentationController.isFileImage(filePath)) {
                     frame.setTitle("Image Viewer");
-                    frame.add(new ShowImage(filePath, frame));
+                    frame.add(new ShowImage(filePath, frame, false));
                 }
                 else {
                     frame.setTitle("Text Viewer");
@@ -78,6 +140,21 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                 JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
             }
         }
+        // Specific button to see the image after lossy compressing and to compare
+        if (e.getSource() == compareButton) {
+            try {
+                JFrame frame = new JFrame();
+                if (PresentationController.isFileImage(filePath)) {
+                    frame.setTitle("Lossy Image Viewer");
+                    frame.add(new ShowImage(filePath, frame, true));
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                }
+            } catch (Exception exc) {
+                JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
+            }
+        }
+        // Algorithm selector
         if (e.getSource() == algorithmSelection) {
             if (algorithmSelection.getItemCount() > 0) {
                 String algorithm = algorithmSelection.getSelectedItem().toString();
@@ -89,6 +166,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                 }
             }                     
         }
+        // Paramatere selector
         if (e.getSource() == parameterSelection) {
             if (parameterSelection.getItemCount() > 0) {
                 String algorithm = algorithmSelection.getSelectedItem().toString();
@@ -104,31 +182,70 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         }
     }
 
+    /**
+     * Invoked when a single file clik action occurs.
+     * @param path file path selected
+     */
     @Override
     public void SingleClick_File(String path) {
         setVisible(true);
 
         filePath = path;
 
+        // Refresh
         refreshAlgortihmSelection(path);
         refreshParameterSelection(path);
 
         if (PresentationController.isCompressed()) {
+            // Decompression mode
+            algorithmSelection.setEnabled(false);
+            parameterSelection.setEnabled(false);
+            titleAlgorithm.setEnabled(false);
+            titleParameters.setEnabled(false);
+            compareButton.setVisible(false);
+            // Statistics decompression
             stats(path, true);
-            // View mode
-            algorithmSelection.setEditable(false);
-            parameterSelection.setEditable(false);
         }
-        else stats(path, false);
+        else {
+            // Compression mode
+            algorithmSelection.setEnabled(true);
+            parameterSelection.setEnabled(true);
+            titleAlgorithm.setEnabled(true);
+            titleParameters.setEnabled(true);
+            try {
+                if (PresentationController.isFileImage(path)) {
+                    compareButton.setVisible(true);
+                    // Button takes the role of original image view button 
+                    displayButton.setText("Original");
+                }
+                else {
+                    compareButton.setVisible(false);
+                    displayButton.setText("Display");
+                }
+            } catch (Exception exc) {
+                System.out.println(exc.getMessage());
+            }
+            // Statistics compression
+            stats(path, false);
+        }
     }
 
+    /**
+     * Invoked when a single folder clik action occurs.
+     * @param path folder path selected
+     */
     @Override
     public void SingleClick_Folder(String path) {
         setVisible(false);
-
+        displayButton.setText("Dispaly");
     }
 
+    /**
+     * Refresh algorithm slector
+     * @param path file path selected
+     */
     private void refreshAlgortihmSelection(String path) {
+        algorithmSelection.removeActionListener(this);
         algorithmModel.removeAllElements();
         try {
             setSelection(algorithmSelection, algorithmModel, PresentationController.getValidCompressionTypes(path));
@@ -136,21 +253,33 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         } catch (Exception exc) {
             System.out.println(exc.getMessage());
         }
+        algorithmSelection.addActionListener(this);
     }
 
+    /**
+     * Refresh parameter selector
+     * @param path file path selected
+     */
     private void refreshParameterSelection(String path) {
+        parameterSelection.removeActionListener(this);
         parameterModel.removeAllElements();
         try {
             String algorithm = PresentationController.getCompressionType(path);
             // Image
             if (PresentationController.isFileImage(path)) {
                 setSelection(parameterSelection, parameterModel, PresentationController.getValidCompressionParameters(algorithm));
-                parameterSelection.setSelectedItem(PresentationController.getCompressionParameter(path));
+                String arg = PresentationController.getCompressionParameter(path);
+                if (arg != null) {
+                    parameterSelection.setSelectedItem(PresentationController.getCompressionParameter(path));
+                }
             }
             // TextFile
             else {
                 setSelection(parameterSelection, parameterModel, getDictBytesToHumanLegible(PresentationController.getValidCompressionParameters(algorithm)));
-                parameterSelection.setSelectedItem(getDictBytesToHumanLegible(PresentationController.getCompressionParameter(path)));
+                String arg = PresentationController.getCompressionParameter(path);
+                if (arg != null) {
+                    parameterSelection.setSelectedItem(getDictBytesToHumanLegible(arg));
+                }
             }
             // Disable if it hasn't parameters
             if (parameterSelection.getItemCount() == 0) { 
@@ -159,45 +288,33 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                 parameterSelection.setEnabled(false);
                 titleParameters.setEnabled(false);  
             }
+            else {
+                parameterSelection.setEnabled(true);
+                titleParameters.setEnabled(true);
+            }
         } catch (Exception exc) {
             System.out.println(exc.getMessage());
         }
+        parameterSelection.addActionListener(this);
     }
 
+    /**
+     * Add the elements in the respective selector
+     * @param comboBox the selector to add elements
+     * @param model the model used
+     * @param list elements tu put in the selector
+     */
     private void setSelection(JComboBox comboBox,DefaultComboBoxModel model, String[] list) {
         for(String value : list) 
             model.addElement(value);
         comboBox.setModel(model);
     }
 
-    private String[] getDictBytesToHumanLegible(String[] exponents) {
-        String[] bytes = new String[exponents.length];
-        for (int i = 0; i < exponents.length; ++i) 
-            bytes[i] = bytesToHumanLegible((long)Math.pow(2,Long.parseLong(exponents[i])), false);
-        return bytes;
-    }
-
-    private String getDictBytesToHumanLegible(String exponent) {
-        return bytesToHumanLegible((long)Math.pow(2,Long.parseLong(exponent)), false);
-    }
-
-    private static String bytesToHumanLegible(long bytes, boolean decimals) {
-        String format = "";
-        if (decimals) format = "%.2f";
-        else format = "%.0f";
-
-        if (bytes >= 1073741824) 
-            return String.format(format, bytes/1073741824.0) + " GB";
-        
-        else if (bytes >= 1048576)
-            return String.format(format, bytes/1048576.0) + " MB";
-        
-        else if (bytes >= 1024) 
-            return String.format(format, bytes/1024.0) + " KB";
-
-        else return String.valueOf(bytes) + " B";
-    }
-
+    /**
+     * Indicates input/output size, time, compression/decompression ratio, compression/decompression per second from the statistics file
+     * @param file path to do the individual statistics
+     * @param isCompressed indicates the mode, true indicates decompressed mode, false indicates compressed mode 
+     */
     private void stats(String file, boolean isCompressed) {
         try {
             long auxIn = PresentationController.getFileInputSizeStat(file);
@@ -232,6 +349,55 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         }
     }
 
+    /**
+     * Get the size of the dictionaries from the indicated exponents (2^exponent), being legible to human
+     * @param exponents indicates the 2^exponent to the dictionaries size
+     * @return get the size of the dictionaries to the respective exponents in a legible way
+     */
+    private static String[] getDictBytesToHumanLegible(String[] exponents) {
+        String[] bytes = new String[exponents.length];
+        for (int i = 0; i < exponents.length; ++i) 
+            bytes[i] = bytesToHumanLegible((long)Math.pow(2,Long.parseLong(exponents[i])), false);
+        return bytes;
+    }
+
+    /**
+     * Get the size of the dictionary from the indicated exponent (2^exponent), being legible to human
+     * @param exponent indicates the 2^exponent to the dictionary size
+     * @return get the size of the dictionary in a legible way
+     */
+    private static String getDictBytesToHumanLegible(String exponent) {
+        return bytesToHumanLegible((long)Math.pow(2,Long.parseLong(exponent)), false);
+    }
+
+    /**
+     * Byte converter to facilitate vision
+     * @param bytes bytes to deal with
+     * @param decimals parameter to decide whether to use decimals, true to use it, false otherwise
+     * @return the respective bytes conversion to GB, MB, KB, B  
+     */
+    private static String bytesToHumanLegible(long bytes, boolean decimals) {
+        String format = "";
+        if (decimals) format = "%.2f";
+        else format = "%.0f";
+
+        if (bytes >= 1073741824) 
+            return String.format(format, bytes/1073741824.0) + " GB";
+        
+        else if (bytes >= 1048576)
+            return String.format(format, bytes/1048576.0) + " MB";
+        
+        else if (bytes >= 1024) 
+            return String.format(format, bytes/1024.0) + " KB";
+
+        else return String.valueOf(bytes) + " B";
+    }
+
+    /**
+     * Milliseconds conversion to facilitate vision
+     * @param ms milliseconds to deal with
+     * @return the respective ms conversion to hours, minutes, seconds and milliseconds
+     */
     public static String milisToHumanLegible(long ms) {
         if (ms >= 3600000) {
             return String.format("%.2f", ms/3600000.0) + " h";
@@ -244,6 +410,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
             return String.valueOf(ms) + " ms";
     }
 
+    /**
+     *  GridBag Layout structured with two columns and ten rows
+     */
     private void layoutComponents() {
 
         setLayout(new GridBagLayout());
@@ -257,7 +426,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         bag.gridy = 0;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
-        add(new JLabel("Algorithm: "), bag);
+        add(titleAlgorithm, bag);
 
         bag.gridx = 1;
         bag.anchor = GridBagConstraints.LINE_START;
@@ -279,25 +448,33 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         // Third row visualization
         bag.gridx = 0;
         bag.gridy = 2;
-        bag.anchor = GridBagConstraints.LINE_END;
+        bag.anchor = GridBagConstraints.LINE_START;
         bag.insets = new Insets(0, 0, 0, 5);
         add(new JLabel("Visualization: "), bag);
 
-        bag.gridx = 1;
-        bag.anchor = GridBagConstraints.LINE_START;
-        bag.insets = new Insets(0, 0, 0, 0);
+        // Forth display buttons
+        bag.gridy = 3;
+        bag.fill = GridBagConstraints.HORIZONTAL;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 10, 0, 12);
         add(displayButton, bag);
 
-        // Fourth row individual statistic
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 18, 0, 22);
+        add(compareButton, bag);
+
+        // Fifth row individual statistic
         bag.gridx = 0;
-        bag.gridy = 3;
+        bag.gridy = 4;
+        bag.fill = GridBagConstraints.NONE;
         bag.anchor = GridBagConstraints.LINE_START;
         bag.insets = new Insets(0, 0, 0, 0);
         add(new JLabel("Statistics: "), bag);
 
-        // Fifth row input size
+        // Sixth row input size
         bag.gridx = 0;
-        bag.gridy = 4;
+        bag.gridy = 5;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
         add(new JLabel("Read: "), bag);
@@ -307,9 +484,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         bag.insets = new Insets(0, 0, 0, 0);
         add(in, bag);
 
-        // Sixth row output size
+        // Seventh row output size
         bag.gridx = 0;
-        bag.gridy = 5;
+        bag.gridy = 6;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
         add(new JLabel("Written: "), bag);
@@ -319,9 +496,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         bag.insets = new Insets(0, 0, 0, 0);
         add(out, bag);
 
-        // Seven row ratio
+        // Eighth row compression/decompression ratio
         bag.gridx = 0;
-        bag.gridy = 6;
+        bag.gridy = 7;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
         add(new JLabel("Ratio: "), bag);
@@ -331,9 +508,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         bag.insets = new Insets(0, 0, 0, 0);
         add(ratio, bag);
 
-        // Eight row elapsed time
+        // Nineth row elapsed time
         bag.gridx = 0;
-        bag.gridy = 7;
+        bag.gridy = 8;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
         add(new JLabel("Elapsed Time: "), bag);
@@ -343,9 +520,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         bag.insets = new Insets(0, 0, 0, 0);
         add(time, bag);
 
-        // Nineth row Compression Per Second
+        // Tenth row compression/decompression per second
         bag.gridx = 0;
-        bag.gridy = 8;
+        bag.gridy = 9;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
         add(new JLabel("Bps: "), bag);

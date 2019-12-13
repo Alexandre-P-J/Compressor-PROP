@@ -5,24 +5,45 @@ import java.awt.*;
 import javax.swing.*;
 
 public class ShowImage extends JPanel {
-
+    /**
+     * Byte array with the information composition of the image 
+     * where the first 4 bytes indicates the width and the next 4 bytes indicates the height
+     */
     private byte[] byte_array;
+    /**
+     * Image width
+     */
     protected int width = 0;
+    /**
+     * Height width
+     */
     protected int height = 0;
+    /**
+     * The frame to place the panel
+     */
     private JFrame frame;
 
-
-    public ShowImage(String path, JFrame frame) {
+    /**
+     * Panel display image constructor
+     * @param path path from the image
+     * @param frame frame to place the panel to show the image
+     * @param lossy true to have the image after lossy compression, false the original
+     */
+    public ShowImage(String path, JFrame frame, boolean lossy) {
         this.frame = frame;
         try {
-            byte_array = PresentationController.getImage(path);
+            if (lossy)  byte_array = PresentationController.getImageAfterLossyCompression(path);
+            else byte_array = PresentationController.getImage(path);
         } catch (Exception e) {
             System.out.println("Unreachable Folder/File");
         }
         setLayout(new BorderLayout());
     }
 
-    // Paint image
+    /**
+     * Paint the image pixel by pixel in the respective panel frame
+     * @param g grafics tool to paint
+     */
     @Override
     public void paint(Graphics g) {
         super.paintComponent(g);

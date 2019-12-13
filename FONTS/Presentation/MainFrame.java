@@ -5,11 +5,22 @@ import java.awt.*;
 import javax.swing.JFrame;
 
 public class MainFrame extends JFrame {
-
+    /**
+     * Navigation panel
+     */
     private final NavigationPanel navigation;
+    /**
+     * toolbar panel
+     */
     private final Toolbar toolbar;
+    /**
+     * Compression properties panel
+     */
     private FormPanel formPanel;
 
+    /**
+     * Main and default frame constructor 
+     */
     public MainFrame() {
         setTitle("El Compressor");
 
