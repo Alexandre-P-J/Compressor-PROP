@@ -83,6 +83,28 @@ public class DomainController {
         }
     }
 
+    public static String getDefaultCompressionParameter(String compressionType) throws Exception {
+        switch (compressionType) {
+            case "LZW":
+                return "12";
+            case "LZ78":
+                return "12";
+            case "LZSS":
+                return null;
+            case "JPEG":
+                return "DEFAULT";
+            default:
+                throw new Exception("Invalid Compression Type!");
+        }
+    }
+
+    public static String getDefaultCompressionType(boolean isPPMImage) {
+        if (isPPMImage) {
+            return "JPEG";
+        }
+        return "LZW";
+    }
+
     /**
      * Returns true if the file in the path is a ppm image
      * @param path relative path to a file
