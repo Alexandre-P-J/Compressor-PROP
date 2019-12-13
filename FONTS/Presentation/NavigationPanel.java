@@ -12,7 +12,7 @@ public class NavigationPanel extends JPanel {
     private String currentPath;
     private String[] FileNames = new String[0];
     private String[] FolderNames = new String[0];
-    private static final String returnSymbol = String.valueOf("\u2b9c") + " ..";
+    private static String returnSymbol;
     private static String folderSymbol;
     private DefaultListModel<String> model = new DefaultListModel<>();
     private Vector<NavigationClickObserver> singleClickFileSubscribers = new Vector<NavigationClickObserver>();
@@ -21,6 +21,7 @@ public class NavigationPanel extends JPanel {
     public NavigationPanel() {
         JList<String> jlist = new JList<>(model);
         folderSymbol = getCompatibleFolderSymbol(jlist.getFont()) + " ";
+        returnSymbol = getCompatibleReturnSymbol(jlist.getFont()) + " ..";
         setLayout(new BorderLayout());
         setVisible(true);
         add(new JScrollPane(jlist), BorderLayout.CENTER);
@@ -31,39 +32,43 @@ public class NavigationPanel extends JPanel {
                 if (mouseEvent.getClickCount() % 2 == 0) { // double click
                     int index = theList.locationToIndex(mouseEvent.getPoint());
                     if (index >= 0) {
-                        Object o = theList.getModel().getElementAt(index);
-                        if (Arrays.asList(FolderNames).contains(o.toString())) {
-                            try {
-                                refresh(pathTraverse(o.toString().substring(folderSymbol.length())));
-                            } catch (Exception e) {
-                                System.out.println("Unreachable Folder");
-                            }
-                        } else if (returnSymbol.equals(o.toString())) {
-                            try {
-                                refresh(pathReturn(currentPath));
-                            } catch (Exception e) {
-                                System.out.println("Unreachable Folder");
-                            }
-                        }
+                        Object obj = theList.getModel().getElementAt(index);
+                        onDoubleClick(obj);
                     }
                 } else if (mouseEvent.getClickCount() == 1) { // single click
                     int index = theList.locationToIndex(mouseEvent.getPoint());
                     if (index >= 0) {
-                        Object o = theList.getModel().getElementAt(index);
-                        if (Arrays.asList(FileNames).contains(o.toString())) {
-                            for (NavigationClickObserver si : singleClickFileSubscribers) {
-                                si.SingleClick_File(pathTraverse(o.toString()));
-                            }
-                        } else {
-                            for (NavigationClickObserver si : singleClickFolderSubscribers) {
-                                si.SingleClick_Folder(pathTraverse(o.toString()));
-                            }
-                        }
+                        Object obj = theList.getModel().getElementAt(index);
+                        onSingleClick(obj);
                     }
                 }
             }
         };
         jlist.addMouseListener(mouseListener);
+    }
+
+    private void onDoubleClick(Object target) {
+        try {
+            if (Arrays.asList(FolderNames).contains(target.toString())) {
+                refresh(pathTraverse(target.toString().substring(folderSymbol.length())));
+            } else if (returnSymbol.equals(target.toString())) {
+                refresh(pathReturn(currentPath));
+            }
+        } catch (Exception e) {
+            System.out.println("Unreachable Folder");
+        }
+    }
+
+    private void onSingleClick(Object target) {
+        if (Arrays.asList(FileNames).contains(target.toString())) {
+            for (NavigationClickObserver si : singleClickFileSubscribers) {
+                si.SingleClick_File(pathTraverse(target.toString()));
+            }
+        } else {
+            for (NavigationClickObserver si : singleClickFolderSubscribers) {
+                si.SingleClick_Folder(pathTraverse(target.toString()));
+            }
+        }
     }
 
     public void refresh(String Path) throws Exception {
@@ -123,6 +128,16 @@ public class NavigationPanel extends JPanel {
             }
         }
         return "[FOLDER]";
+    }
+
+    private String getCompatibleReturnSymbol(Font f) {
+        int[] symbols = { 0x2B9C };
+        for (int sym : symbols) {
+            if (f.canDisplay(sym)) {
+                return String.valueOf(Character.toChars(sym));
+            }
+        }
+        return "[BACK]";
     }
 
     public void subscribeClickFile(NavigationClickObserver si) {
