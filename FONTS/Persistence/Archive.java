@@ -9,8 +9,8 @@ import java.io.FileOutputStream;
 import java.nio.file.Paths;
 
 public class Archive {
-    private String Path;
-    private CompressionType CType;
+    private final String Path;
+    private String CType;
     private String compressionArg;
     private long index = -1; // offset from the start of the compressed file
     private Statistics stats;
@@ -22,13 +22,11 @@ public class Archive {
     Archive(String Path) {
         this.Path = Path;
         stats = new Statistics();
-        if (isImage()) {
-            CType = CompressionType.JPEG;
-            compressionArg = "DEFAULT";
-        }
-        else {
-            CType = CompressionType.LZW;
-            compressionArg = "12";
+        CType = PersistenceController.getDefaultCompressionType(isImage());
+        try {
+            compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
+        } catch (Exception e) {
+            compressionArg = null;
         }
     }
 
@@ -69,17 +67,24 @@ public class Archive {
         return false;
     }
 
+<<<<<<< HEAD
     /**
      * CompressionType setter
      */
     public void setCompressionType(CompressionType Type) throws Exception {
         if (isImage() && (Type != CompressionType.JPEG)) 
+=======
+    public void setCompressionType(String Type) throws Exception {
+        if (isImage() && (!Type.equals("JPEG"))) 
+>>>>>>> Feature/Interface
             throw new Exception("Compression algorithm not compatible with images!");
-        if (!isImage() && (Type == CompressionType.JPEG))
+        if (!isImage() && Type.equals("JPEG"))
             throw new Exception("JPEG algorithm not compatible with documents!");
         CType = Type;
+        compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
     }
 
+<<<<<<< HEAD
     /**
      * CompressionType getter
      * @return enum CompressionType
@@ -94,6 +99,19 @@ public class Archive {
      */
     public void setCompressionArgument(String arg) {
         compressionArg = arg;
+=======
+    public String getCompressionType() {
+        return CType;
+    }
+
+    public void setCompressionArgument(String arg) throws Exception {
+        if (PersistenceController.isCompressionParameterValid(arg, CType)) {
+            compressionArg = arg;
+        }
+        else {
+            throw new Exception("Invalid compression argument!");
+        }
+>>>>>>> Feature/Interface
     }
 
     /**

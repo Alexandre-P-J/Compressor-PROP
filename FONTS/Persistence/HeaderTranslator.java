@@ -102,16 +102,16 @@ public class HeaderTranslator {
     private void reserveFileHeader(OutputStream os, Archive file) throws Exception {
         byte type = 0;
         switch (file.getCompressionType()) {
-            case LZW:
+            case "LZW":
                 type = 0x01;
                 break;
-            case LZ78:
+            case "LZ78":
                 type = 0x02;
                 break;
-            case LZSS:
+            case "LZSS":
                 type = 0x03;
                 break;
-            case JPEG:
+            case "JPEG":
                 type = 0x04;
                 break;
             default:
