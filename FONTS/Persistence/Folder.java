@@ -5,16 +5,32 @@ import java.util.regex.Pattern;
 import java.nio.file.Paths;
 
 public class Folder {
+    /**
+     * Vector of files representing the files in this folder
+     */
     private Vector<Archive> files = new Vector<Archive>();
+    /**
+     * Vector of folders representing the folders in this folder
+     */
     private Vector<Folder> folders = new Vector<Folder>();
+    /**
+     * name of this folder
+     */
     private String name;
+    /**
+     * parent folder or null if this folder represents the root of a hierarchy
+     */
     private final Folder parent;
+    /**
+     * root instance of the hierarchy this folder is member
+     */
     private Folder root = null;
 
     /**
-     * DO NOT ADD FILES OR FOLDERS WITH EXISTING NAMES IN this FOLDER (pending documentation)
+     * Constructor
+     * @param name name of the created folder
+     * @param parent instance of the parent folder of the created folder or null if its the root
      */
-
     Folder(String name, Folder parent) {
         this.name = name;
         this.parent = parent;
@@ -26,34 +42,51 @@ public class Folder {
         }
     }
 
+    /**
+     * Folder parent getter
+     * @return instance of the parent folder
+     */
     public Folder getParent() {
         return parent;
     }
 
+    /**
+     * Root folder getter
+     * @return an intance of the centinel root folder
+     */
     public Folder getRoot() {
         return root;
     }
 
-    /*// Returns first valid folder, null if hyerarchy is empty or represented by an unique file at root
-    public Folder getFirstFolder() {
-        if (!root.folders.isEmpty()) // if isn't empty then only has 1 folder (invariant)
-            return root.folders.get(0);
-        return null;
-    }*/
-
+    /**
+     * Folder name getter
+     * @return the name of this folder
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Add a file into this folder
+     * @param file valid instance of a file
+     */
     public void addFile(Archive file) {
         files.add(file);
     }
 
+    /**
+     * Files getter
+     * @return an array containing all the files in this folder
+     */
     public Archive[] getFiles() {
         Archive[] aux = new Archive[files.size()];
         return files.toArray(aux);
     }
 
+    /**
+     * 
+     * @return
+     */
     public Folder[] getFolders() {
         Folder[] aux = new Folder[folders.size()];
         return folders.toArray(aux);

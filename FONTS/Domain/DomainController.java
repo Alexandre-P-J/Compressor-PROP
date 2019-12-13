@@ -1,6 +1,5 @@
 package Domain;
 
-import Presentation.PresentationController;
 import Persistence.PersistenceController;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,6 +62,12 @@ public class DomainController {
         }
     }
 
+    /**
+     * Returns the valid compression arguments or presets for a given compression type
+     * @param compressionType String, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @return a String[] with all valid options for the given compressionType
+     * @throws Exception if compressionType is not implemented
+     */
     public static String[] getValidCompressionParameters(String compressionType) throws Exception {
         switch (compressionType) {
             case "LZW":
@@ -114,10 +119,22 @@ public class DomainController {
         return PersistenceController.getCompressionType(path);
     }
 
+    /**
+     * Returns the current compression parameter for the given file
+     * @param path relative path to a file
+     * @return String representing a valid compression parameter
+     * @throws Exception if the file does not exist
+     */
     public static String getCompressionParameter(String path) throws Exception {
         return PersistenceController.getCompressionParameter(path);
     }
 
+    /**
+     * Sets the compression parameter for a file
+     * @param path relative path to a file
+     * @param arg valid compression parameter
+     * @throws Exception if the file does not exist
+     */
     public static void setCompressionParameter(String path, String arg) throws Exception {
         PersistenceController.setCompressionParameter(path, arg);
     }
@@ -152,16 +169,34 @@ public class DomainController {
         return PersistenceController.getDocument(Path);
     }
 
+    /**
+     * Returns a byte array representing the image from the path
+     * @param Path relative path to a ppm image
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the image does not exist or is malformed
+     */
     public static byte[] getImage(String Path) throws Exception {
         PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImage(Path));
         return presentationEncodeImage(ppmt);
     }
 
+    /**
+     * Returns a byte array representing the image from the path after being compressed with the current algorithm and argument
+     * @param Path relative path to a ppm image
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the image does not exist or is malformed
+     */
     public static byte[] getImageAfterLossyCompression(String Path) throws Exception {
         PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImageAfterLossyCompression(Path));
         return presentationEncodeImage(ppmt);
     }
 
+    /**
+     * Creates a byte array representing an image from a PPMTranslator
+     * @param ppmt Initialized PPMTranslator for reading
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the ppmt input source is malformed
+     */
     private static byte[] presentationEncodeImage(PPMTranslator ppmt) throws Exception {
         int w = ppmt.getWidth();
         byte[] wa = toArray(w);
@@ -175,6 +210,11 @@ public class DomainController {
         return result;
     }
 
+    /**
+     * Encodes an integer into 4 bytes
+     * @param value any integer
+     * @return byte[4] containing the bytes from value from hight to low bits
+     */
     private static byte[] toArray(int value) {
         byte[] result = new byte[4];
         result[0] = (byte)((value >> 24) & 0x000000FF);
