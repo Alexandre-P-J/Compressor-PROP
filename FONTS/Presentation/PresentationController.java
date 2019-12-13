@@ -1,6 +1,9 @@
 package Presentation;
 
 import Domain.DomainController;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class PresentationController {
@@ -155,6 +158,7 @@ public class PresentationController {
     public static void compressTo(String OutputFilePath) throws Exception {
         DomainController.compressTo(OutputFilePath);
         navigator.refresh();
+        JOptionPane.showMessageDialog(new JFrame(), "Compression Finished!");
     }
 
     /**
@@ -165,6 +169,7 @@ public class PresentationController {
     public static void decompressTo(String OutputFolderPath) throws Exception {
         DomainController.decompressTo(OutputFolderPath);
         navigator.refresh();
+        JOptionPane.showMessageDialog(new JFrame(), "Decompression Finished!");
     }
 
     /**
