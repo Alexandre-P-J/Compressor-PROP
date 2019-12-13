@@ -6,6 +6,10 @@ import javax.swing.*;
 
 public class ShowText extends JPanel {
 
+    /**
+     * Panel display text constructor using textArea
+     * @param text file text
+     */
     public ShowText(String text) {
         JTextArea textArea = new JTextArea();
         textArea.setFont(textArea.getFont().deriveFont(14.f));
@@ -19,6 +23,11 @@ public class ShowText extends JPanel {
         add(sp, BorderLayout.CENTER);
     }
 
+    /**
+     * Panel display text constructor using textPane
+     * @param text file text
+     * @param textType
+     */
     public ShowText(String text, String textType) {
         JTextPane textPane = new JTextPane();
         textPane.setFont(textPane.getFont().deriveFont(14.f));

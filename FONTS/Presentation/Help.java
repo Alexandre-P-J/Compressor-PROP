@@ -1,6 +1,9 @@
 package Presentation;
 
 public class Help {
+    /**
+     * User manual
+     */
     private static String Help = 
         "<html>"+
         "<body>"+
