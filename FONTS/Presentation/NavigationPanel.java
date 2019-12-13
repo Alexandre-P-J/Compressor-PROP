@@ -88,6 +88,10 @@ public class NavigationPanel extends JPanel {
         }
     }
 
+    public void refresh() throws Exception {
+        refresh(currentPath);
+    }
+
     private String pathReturn(String Path) {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String steps[] = Path.split(pattern);
