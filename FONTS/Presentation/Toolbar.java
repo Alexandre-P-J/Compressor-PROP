@@ -10,6 +10,8 @@ import java.io.File;
 public class Toolbar extends JPanel implements ActionListener {
     private final JButton fileButton;
     private final JButton compressButton;
+    private final JButton StatsButton;
+    private final JButton HelpButton;
     private final JFileChooser fileChooser;
     private final JFileChooser compressedSaveChooser;
     private final JFileChooser decompressedSaveChooser;
@@ -19,7 +21,10 @@ public class Toolbar extends JPanel implements ActionListener {
         setBorder(BorderFactory.createEtchedBorder());
         fileButton = new JButton("Open");
         compressButton = new JButton("Compress/Decompress");
+        StatsButton = new JButton("Statistics");
+        HelpButton = new JButton("Help");
         compressButton.setVisible(false);
+        StatsButton.setVisible(false);
 
         fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -36,11 +41,15 @@ public class Toolbar extends JPanel implements ActionListener {
 
         compressButton.addActionListener(this);
         fileButton.addActionListener(this);
+        StatsButton.addActionListener(this);
+        HelpButton.addActionListener(this);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         add(fileButton);
         add(compressButton);
+        add(StatsButton);
+        add(HelpButton);
     }
 
     public void actionPerformed(final ActionEvent e) {
@@ -56,6 +65,7 @@ public class Toolbar extends JPanel implements ActionListener {
                     else {
                         compressButton.setText("Compress");
                     }
+                    StatsButton.setVisible(false);
                     compressButton.setVisible(true);
                 } catch (Exception exc) {
                     System.out.println(exc.getMessage());
@@ -67,6 +77,7 @@ public class Toolbar extends JPanel implements ActionListener {
                     File f = decompressedSaveChooser.getSelectedFile();
                     try {
                         PresentationController.decompressTo(f.getCanonicalPath());
+                        StatsButton.setVisible(true);
                     } catch (Exception exc) {
                         System.out.println(exc.getMessage());
                     }
@@ -76,11 +87,27 @@ public class Toolbar extends JPanel implements ActionListener {
                     File f = compressedSaveChooser.getSelectedFile();
                     try {
                         PresentationController.compressTo(f.getCanonicalPath());
+                        StatsButton.setVisible(true);
                     } catch (Exception exc) {
                         System.out.println(exc.getMessage());
                     }
                 }
             }
+        } else if (clicked == StatsButton) { // invisible by default, should be visible after getting valid (non zero) total stats
+            JFrame frame = new JFrame();
+            frame.setSize(535, 155);
+            frame.setTitle("Total Statistics");
+            frame.add(new ShowText(TotalStatistics.getStats()));
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+
+        } else if (clicked == HelpButton) {
+            JFrame frame = new JFrame();
+            frame.setTitle("Help");
+            frame.setSize(600, 850);
+            frame.add(new ShowText(Help.getHelp(), "text/html"));
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         }
     }
 }

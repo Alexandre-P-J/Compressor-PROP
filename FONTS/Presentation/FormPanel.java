@@ -8,296 +8,528 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class FormPanel extends JPanel implements ActionListener, NavigationClickObserver {
-
-    // Dani
-    /*
-    private final JLabel TitTam, TitTamO, TitTemps, TitTamInTotal, TitTamOutTotal, TitTempsTotal;
-    private JLabel TamField, TamOField, TempsField, TamInTotal, TamOutTotal, TempsTotal;
-    private long MidaInput, MidaOutput, TempsFile, MidaInputTotal, MidaOutputTotal, TotalTime;
-    private DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
-    */
-    private final JLabel titleDictSize, titleVisualization, titleStatistics;
-    private JTextField statistics;
+    /**
+     * Algorithm title 
+     */
+    private JLabel titleAlgorithm;
+    /**
+     * Parameters title
+     */
+    private JLabel titleParameters;
+    /**
+     * File input size
+     */
+    private JLabel in;
+    /**
+     * File output size
+     */
+    private JLabel out;
+    /**
+     * File elapsed time
+     */
+    private JLabel time; 
+    /**
+     * File compression/decompression ratio
+     */
+    private JLabel ratio;
+    /**
+     * File compression/decompression per second
+     */
+    private JLabel bps;
+    /**
+     * Algorithm model
+     */
+    private DefaultComboBoxModel algorithmModel;
+    /**
+     * Parameter model
+     */
+    private DefaultComboBoxModel parameterModel;
+    /**
+     * Algorithm selector
+     */
+    private final JComboBox algorithmSelection;
+    /**
+     * Parameter selector
+     */
+    private final JComboBox parameterSelection;
+    /**
+     * Button file view 
+     */
     private JButton displayButton;
-    private JSpinner dictSize;
-    private final JComboBox algorithmCombo;
+    /**
+     * Button after image compression view
+     */
+    private JButton compareButton;
+    /**
+     * File path
+     */
     private String filePath;
 
+    /**
+     * Default panel constructor 
+     * creates a panel with compression properties, listeners and inicializations for the interface
+     * structured with GridBag Layout
+     */
     public FormPanel() {
+
         setVisible(false);
-        // Inicializations Dani
-        /*
-        MidaInput = 0;
-        TitTam = new JLabel("Tama\u00f1o ultimo archivo: ");
-        TitTamO = new JLabel("Tama\u00f1o archivo output: ");
-        TitTemps = new JLabel("Ultim temps: ");
-        TitTamInTotal = new JLabel("Tama\u00f1o total Input: ");
-        TitTamOutTotal = new JLabel("Tama\u00f1o total Output: ");
-        TitTempsTotal = new JLabel("Temps total: ");
-        TamField = new JLabel("");
-        TamOField = new JLabel("");
-        TempsField = new JLabel("");
-        TamInTotal = new JLabel("");
-        TamOutTotal = new JLabel("");
-        TempsTotal = new JLabel("");
-        String str = Long.toString(MidaInput); //????
-        String[] algoritmes = PresentationController.getValidCompressionTypes();
-
-        algorithmCombo = new JComboBox();
-        
-        for (int i = 0; i < algoritmes.length; ++i) {
-            comboModel.addElement(algoritmes[i]);
-        }
-        algorithmCombo.setModel(comboModel);
-        */
-
+                
         // Dimensions
         final Dimension dim = getPreferredSize();
         dim.width = 250;
         setPreferredSize(dim);
 
-        // Algorithm JComboBox
-        algorithmCombo = new JComboBox();
-        final DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
-        String[] Ctypes = PresentationController.getValidCompressionTypes();
-        for (String alg : Ctypes) {
-            comboModel.addElement(alg);
-        }
-        algorithmCombo.setModel(comboModel);
+        // Titles inicialization
+        titleParameters = new JLabel("Parameter: ");
+        titleAlgorithm = new JLabel("Algorithm: ");
+        in = new JLabel("-");
+        out = new JLabel("-");
+        time = new JLabel("-");
+        ratio = new JLabel("-");
+        bps = new JLabel("-");
 
-        // Dictionary size JSpinner
-        titleDictSize = new JLabel("Dictionary size: ");
-        dictSize = new JSpinner(new SpinnerNumberModel(12, 0, 31, 1));
-        dictSize.setPreferredSize(new Dimension(40, 20));
+        // Algorithm selection inicialization
+        algorithmSelection = new JComboBox();
+        algorithmModel = new DefaultComboBoxModel();
+        algorithmSelection.setModel(algorithmModel);
+        algorithmSelection.setPreferredSize(new Dimension(105,25));
 
-        // Visualization image Button
-        titleVisualization = new JLabel("Visualization: ");
-        displayButton = new JButton("Display");
+        // Parameters selection inicialization
+        parameterSelection = new JComboBox();
+        parameterModel = new DefaultComboBoxModel();
+        parameterSelection.setModel(parameterModel);
+        parameterSelection.setPreferredSize(new Dimension(105,25));
 
-        // Statistics compression values
-        titleStatistics = new JLabel("Statistics: ");
-        statistics = new JTextField("Soy las estadisticas");
-        statistics.setEditable(false);
-        statistics.setBorder(BorderFactory.createEmptyBorder());
+        // Visualization Button
+        displayButton = new JButton("Dispaly");
+        compareButton = new JButton("Lossy");
+
+        // Listeners
+        algorithmSelection.addActionListener(this);
+        parameterSelection.addActionListener(this);
+        displayButton.addActionListener(this);
+        compareButton.addActionListener(this);
 
         // Layout GridBag
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Compressor properties"));
         layoutComponents();
-
-        displayButton.addActionListener(this);
     }
 
-    public void layoutComponents() {
-        setLayout(new GridBagLayout());
-        final GridBagConstraints constr = new GridBagConstraints();
-
-        // First Row
-        constr.gridx = 0;
-        constr.gridy = 0;
-        constr.anchor = GridBagConstraints.LINE_END;
-        constr.insets = new Insets(10, 0, 0, 5);
-        add(new JLabel("Algorithm: "), constr);
-
-        constr.gridx = 1;
-        constr.gridy = 0;
-        constr.anchor = GridBagConstraints.LINE_START;
-        constr.insets = new Insets(10, 0, 0, 0);
-        add(algorithmCombo, constr);
-
-        // Second row
-        constr.gridx = 0;
-        constr.gridy = 1;
-        constr.anchor = GridBagConstraints.LINE_END;
-        constr.insets = new Insets(10, 0, 0, 5);
-        add(titleDictSize, constr);
-
-        constr.gridx = 1;
-        constr.anchor = GridBagConstraints.LINE_START;
-        constr.insets = new Insets(10, 0, 0, 0);
-        add(dictSize, constr);
-
-        // Third row
-        constr.gridx = 0;
-        constr.gridy = 2;
-        constr.anchor = GridBagConstraints.LINE_END;
-        constr.insets = new Insets(25, 5, 0, 0);
-        add(titleVisualization, constr);
-
-        // Fourth row
-        constr.gridx = 1;
-        constr.gridy = 3;
-        constr.anchor = GridBagConstraints.LINE_START;
-        constr.insets = new Insets(10, 0, 0, 0);
-        add(displayButton, constr);
-
-        // Fifth row
-        constr.gridx = 0;
-        constr.gridy = 4;
-        constr.anchor = GridBagConstraints.LINE_START;
-        constr.insets = new Insets(25, 5, 0, 0);
-        ;
-        add(titleStatistics, constr);
-
-        // Sixth row
-        constr.gridx = 1;
-        constr.gridy = 5;
-        constr.anchor = GridBagConstraints.LINE_END;
-        constr.insets = new Insets(10, 0, 0, 0);
-        add(statistics, constr);
-
-        //////////////////////////////////////
-        /*
-            //TamañoUltimFileInput
-            constr.gridx = 0;
-            constr.gridy = 0;
-            constr.fill = GridBagConstraints.NONE;
-            constr.anchor = GridBagConstraints.LINE_END;
-            constr.insets = new Insets(0,0,0,5);
-            add(TitTam, constr);
-
-            constr.gridx = 1;
-            constr.gridy = 0;
-            constr.anchor = GridBagConstraints.LINE_START;
-            constr.insets = new Insets(0,0,0,0);
-            add(TamField, constr);
-
-            constr.gridy++;
-
-            //TamañoUltimFileOutput
-            constr.gridx = 0;
-
-            constr.fill = GridBagConstraints.NONE;
-            constr.anchor = GridBagConstraints.LINE_END;
-            constr.insets = new Insets(0,0,0,5);
-            add(TitTamO, constr);
-
-
-            constr.gridx = 1;
-            constr.anchor = GridBagConstraints.LINE_START;
-            constr.insets = new Insets(0,0,0,0);
-            add(TamOField, constr);
-
-            constr.gridy++;
-
-            //TamañoUltimTemps
-            constr.gridx = 0;
-
-            constr.fill = GridBagConstraints.NONE;
-            constr.anchor = GridBagConstraints.LINE_END;
-            constr.insets = new Insets(0,0,0,5);
-            add(TitTemps, constr);
-
-            constr.gridx = 1;
-            constr.anchor = GridBagConstraints.LINE_START;
-            constr.insets = new Insets(0,0,0,0);
-            add(TempsField, constr);
-
-            constr.gridy++;
-
-             //TamañoInputTotal
-            constr.gridx = 0;
-
-            constr.fill = GridBagConstraints.NONE;
-            constr.anchor = GridBagConstraints.LINE_END;
-            constr.insets = new Insets(0,0,0,5);
-            add(TitTamInTotal, constr);
-
-            constr.gridx = 1;
-            constr.anchor = GridBagConstraints.LINE_START;
-            constr.insets = new Insets(0,0,0,0);
-            add(TamInTotal, constr);
-
-            constr.gridy++; 
-
-            //TamañoOutputTotal
-            constr.gridx = 0;
-
-            constr.fill = GridBagConstraints.NONE;
-            constr.anchor = GridBagConstraints.LINE_END;
-            constr.insets = new Insets(0,0,0,5);
-            add(TitTamOutTotal, constr);
-
-            constr.gridx = 1;
-            constr.anchor = GridBagConstraints.LINE_START;
-            constr.insets = new Insets(0,0,0,0);
-            add(TamOutTotal, constr);
-
-            constr.gridy++;
-
-            //TempsTotal
-            constr.gridx = 0;
-
-            constr.fill = GridBagConstraints.NONE;
-            constr.anchor = GridBagConstraints.LINE_END;
-            constr.insets = new Insets(0,0,0,5);
-            add(TitTempsTotal, constr);
-
-            constr.gridx = 1;
-            constr.anchor = GridBagConstraints.LINE_START;
-            constr.insets = new Insets(0,0,0,0);
-            add(TempsTotal, constr);
-
-            constr.gridy++; 
-            */
-    }
-
+    /**
+     * Invoked when the button or selector action occurs.
+     * @param e action event
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
+        // Image/Text Viewer
         if (e.getSource() == displayButton) {
             try {
-                ShowFrame v2 = new ShowFrame(filePath);
-                v2.setVisible(true);
+                JFrame frame = new JFrame();
+                if(PresentationController.isFileImage(filePath)) {
+                    frame.setTitle("Image Viewer");
+                    frame.add(new ShowImage(filePath, frame, false));
+                }
+                else {
+                    frame.setTitle("Text Viewer");
+                    frame.setSize(600, 850);
+                    frame.add(new ShowText(PresentationController.getDocument(filePath)));
+                }
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
             } catch (Exception exc) {
                 JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
             }
         }
+        // Specific button to see the image after lossy compressing and to compare
+        if (e.getSource() == compareButton) {
+            try {
+                JFrame frame = new JFrame();
+                if (PresentationController.isFileImage(filePath)) {
+                    frame.setTitle("Lossy Image Viewer");
+                    frame.add(new ShowImage(filePath, frame, true));
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+                }
+            } catch (Exception exc) {
+                JOptionPane.showMessageDialog(this, "Unselected File", "Error", 0);
+            }
+        }
+        // Algorithm selector
+        if (e.getSource() == algorithmSelection) {
+            if (algorithmSelection.getItemCount() > 0) {
+                String algorithm = algorithmSelection.getSelectedItem().toString();
+                try {
+                    PresentationController.setCompressionType(filePath, algorithm);
+                    refreshParameterSelection(filePath);
+                } catch (Exception exc) {
+                    System.out.println(exc.getMessage());
+                }
+            }                     
+        }
+        // Paramatere selector
+        if (e.getSource() == parameterSelection) {
+            if (parameterSelection.getItemCount() > 0) {
+                String algorithm = algorithmSelection.getSelectedItem().toString();
+                int indexParameter = parameterSelection.getSelectedIndex();
+                try {
+                    String[] parameterList = PresentationController.getValidCompressionParameters(algorithm);
+                    PresentationController.setCompressionParameter(filePath, parameterList[indexParameter]);
+                    refreshParameterSelection(filePath);
+                } catch (Exception exc) {
+                    System.out.println(exc.getMessage());
+                }
+            }
+        }
     }
 
-    public void SingleClick_File(String context) {
+    /**
+     * Invoked when a single file clik action occurs.
+     * @param path file path selected
+     */
+    @Override
+    public void SingleClick_File(String path) {
         setVisible(true);
-        filePath = context;
-        /*
+
+        filePath = path;
+
+        // Refresh
+        refreshAlgortihmSelection(path);
+        refreshParameterSelection(path);
+
+        if (PresentationController.isCompressed()) {
+            // Decompression mode
+            algorithmSelection.setEnabled(false);
+            parameterSelection.setEnabled(false);
+            titleAlgorithm.setEnabled(false);
+            titleParameters.setEnabled(false);
+            compareButton.setVisible(false);
+            // Statistics decompression
+            stats(path, true);
+        }
+        else {
+            // Compression mode
+            algorithmSelection.setEnabled(true);
+            parameterSelection.setEnabled(true);
+            titleAlgorithm.setEnabled(true);
+            titleParameters.setEnabled(true);
+            try {
+                if (PresentationController.isFileImage(path)) {
+                    compareButton.setVisible(true);
+                    // Button takes the role of original image view button 
+                    displayButton.setText("Original");
+                }
+                else {
+                    compareButton.setVisible(false);
+                    displayButton.setText("Display");
+                }
+            } catch (Exception exc) {
+                System.out.println(exc.getMessage());
+            }
+            // Statistics compression
+            stats(path, false);
+        }
+    }
+
+    /**
+     * Invoked when a single folder clik action occurs.
+     * @param path folder path selected
+     */
+    @Override
+    public void SingleClick_Folder(String path) {
+        setVisible(false);
+        displayButton.setText("Dispaly");
+    }
+
+    /**
+     * Refresh algorithm slector
+     * @param path file path selected
+     */
+    private void refreshAlgortihmSelection(String path) {
+        algorithmSelection.removeActionListener(this);
+        algorithmModel.removeAllElements();
         try {
-            if (PresentationController.isFileImage(context)) {
-                comboModel.removeAllElements();
-                comboModel.addElement("JPEG");
+            setSelection(algorithmSelection, algorithmModel, PresentationController.getValidCompressionTypes(path));
+            algorithmSelection.setSelectedItem(PresentationController.getCompressionType(path));
+        } catch (Exception exc) {
+            System.out.println(exc.getMessage());
+        }
+        algorithmSelection.addActionListener(this);
+    }
+
+    /**
+     * Refresh parameter selector
+     * @param path file path selected
+     */
+    private void refreshParameterSelection(String path) {
+        parameterSelection.removeActionListener(this);
+        parameterModel.removeAllElements();
+        try {
+            String algorithm = PresentationController.getCompressionType(path);
+            // Image
+            if (PresentationController.isFileImage(path)) {
+                setSelection(parameterSelection, parameterModel, PresentationController.getValidCompressionParameters(algorithm));
+                String arg = PresentationController.getCompressionParameter(path);
+                if (arg != null) {
+                    parameterSelection.setSelectedItem(PresentationController.getCompressionParameter(path));
+                }
+            }
+            // TextFile
+            else {
+                setSelection(parameterSelection, parameterModel, getDictBytesToHumanLegible(PresentationController.getValidCompressionParameters(algorithm)));
+                String arg = PresentationController.getCompressionParameter(path);
+                if (arg != null) {
+                    parameterSelection.setSelectedItem(getDictBytesToHumanLegible(arg));
+                }
+            }
+            // Disable if it hasn't parameters
+            if (parameterSelection.getItemCount() == 0) { 
+                parameterModel.addElement("-");
+                parameterSelection.setModel(parameterModel);
+                parameterSelection.setEnabled(false);
+                titleParameters.setEnabled(false);  
             }
             else {
-                comboModel.removeElement("JPEG");
+                parameterSelection.setEnabled(true);
+                titleParameters.setEnabled(true);
             }
-            algorithmCombo.setModel(comboModel);
+        } catch (Exception exc) {
+            System.out.println(exc.getMessage());
         }
-        catch (Exception e) {
-                System.out.println(e.getMessage());
-        }
-        stats(context);
-        */
+        parameterSelection.addActionListener(this);
     }
 
-    public void SingleClick_Folder(String context) {
-        setVisible(false);
-    }  
+    /**
+     * Add the elements in the respective selector
+     * @param comboBox the selector to add elements
+     * @param model the model used
+     * @param list elements tu put in the selector
+     */
+    private void setSelection(JComboBox comboBox,DefaultComboBoxModel model, String[] list) {
+        for(String value : list) 
+            model.addElement(value);
+        comboBox.setModel(model);
+    }
 
-    /*
-    public void stats(String file) {
+    /**
+     * Indicates input/output size, time, compression/decompression ratio, compression/decompression per second from the statistics file
+     * @param file path to do the individual statistics
+     * @param isCompressed indicates the mode, true indicates decompressed mode, false indicates compressed mode 
+     */
+    private void stats(String file, boolean isCompressed) {
         try {
-            MidaInput = PresentationController.getFileInputSizeStat(file);
-            MidaOutput = PresentationController.getFileOutputSizeStat(file);
-            TempsFile = PresentationController.getFileTimeStat(file);
-            MidaInputTotal = PresentationController.getTotalInputSizeStat();
-            MidaOutputTotal = PresentationController.getTotalOutputSizeStat();
-            TotalTime = PresentationController.getTotalTimeStat();
-            TamField.setText(String.valueOf(MidaInput));
-            TamOField.setText(String.valueOf(MidaOutput));
-            TempsField.setText(String.valueOf(TempsFile));
-            TamInTotal.setText(String.valueOf(MidaInputTotal));
-            TamOutTotal.setText(String.valueOf(MidaOutputTotal));
-            TempsTotal.setText(String.valueOf(TotalTime));
+            long auxIn = PresentationController.getFileInputSizeStat(file);
+            long auxOut = PresentationController.getFileOutputSizeStat(file);
+            long auxTime = PresentationController.getFileTimeStat(file);
+
+            // Hasn't started
+            if(auxIn == 0 && auxOut == 0 && auxTime == 0) {
+                in.setText("-");
+                out.setText("-");
+                time.setText("-");
+                bps.setText("-");
+                ratio.setText("-");
+            }
+            else {
+                in.setText(bytesToHumanLegible(auxIn, true));
+                out.setText(bytesToHumanLegible(auxOut, true));
+                time.setText(milisToHumanLegible(auxTime));
+    
+                if(!isCompressed) {
+                    bps.setText(bytesToHumanLegible((long)((double)(auxIn-auxOut)/((double)(auxTime)/1000.0)), true));
+                    ratio.setText(String.format("%.2f", (double)auxIn/(double)auxOut));
+                }
+                else {
+                    bps.setText(bytesToHumanLegible((long)((double)(auxOut-auxIn)/((double)(auxTime)/1000.0)), true));
+                    ratio.setText(String.format("%.2f", (double)auxOut/(double)auxIn));
+                }
+            }
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-    */
 
+    /**
+     * Get the size of the dictionaries from the indicated exponents (2^exponent), being legible to human
+     * @param exponents indicates the 2^exponent to the dictionaries size
+     * @return get the size of the dictionaries to the respective exponents in a legible way
+     */
+    private static String[] getDictBytesToHumanLegible(String[] exponents) {
+        String[] bytes = new String[exponents.length];
+        for (int i = 0; i < exponents.length; ++i) 
+            bytes[i] = bytesToHumanLegible((long)Math.pow(2,Long.parseLong(exponents[i])), false);
+        return bytes;
+    }
+
+    /**
+     * Get the size of the dictionary from the indicated exponent (2^exponent), being legible to human
+     * @param exponent indicates the 2^exponent to the dictionary size
+     * @return get the size of the dictionary in a legible way
+     */
+    private static String getDictBytesToHumanLegible(String exponent) {
+        return bytesToHumanLegible((long)Math.pow(2,Long.parseLong(exponent)), false);
+    }
+
+    /**
+     * Byte converter to facilitate vision
+     * @param bytes bytes to deal with
+     * @param decimals parameter to decide whether to use decimals, true to use it, false otherwise
+     * @return the respective bytes conversion to GB, MB, KB, B  
+     */
+    private static String bytesToHumanLegible(long bytes, boolean decimals) {
+        String format = "";
+        if (decimals) format = "%.2f";
+        else format = "%.0f";
+
+        if (bytes >= 1073741824) 
+            return String.format(format, bytes/1073741824.0) + " GB";
+        
+        else if (bytes >= 1048576)
+            return String.format(format, bytes/1048576.0) + " MB";
+        
+        else if (bytes >= 1024) 
+            return String.format(format, bytes/1024.0) + " KB";
+
+        else return String.valueOf(bytes) + " B";
+    }
+
+    /**
+     * Milliseconds conversion to facilitate vision
+     * @param ms milliseconds to deal with
+     * @return the respective ms conversion to hours, minutes, seconds and milliseconds
+     */
+    public static String milisToHumanLegible(long ms) {
+        if (ms >= 3600000) {
+            return String.format("%.2f", ms/3600000.0) + " h";
+        }
+        else if (ms >= 60000)
+            return String.format("%.2f", ms/60000.0) + " min";
+        else if (ms >= 1000)
+            return String.format("%.2f", ms/1000.0) + " sec";
+        else
+            return String.valueOf(ms) + " ms";
+    }
+
+    /**
+     *  GridBag Layout structured with two columns and ten rows
+     */
+    private void layoutComponents() {
+
+        setLayout(new GridBagLayout());
+        final GridBagConstraints bag = new GridBagConstraints();
+
+        // First row algorithm
+        bag.weightx = 1;
+        bag.weighty = 0.1;
+
+        bag.gridx = 0;
+        bag.gridy = 0;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(titleAlgorithm, bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(algorithmSelection, bag);
+
+        // Second row parameter
+        bag.gridx = 0;
+        bag.gridy = 1;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(titleParameters, bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(parameterSelection, bag);
+
+        // Third row visualization
+        bag.gridx = 0;
+        bag.gridy = 2;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(new JLabel("Visualization: "), bag);
+
+        // Forth display buttons
+        bag.gridy = 3;
+        bag.fill = GridBagConstraints.HORIZONTAL;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 10, 0, 12);
+        add(displayButton, bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 18, 0, 22);
+        add(compareButton, bag);
+
+        // Fifth row individual statistic
+        bag.gridx = 0;
+        bag.gridy = 4;
+        bag.fill = GridBagConstraints.NONE;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(new JLabel("Statistics: "), bag);
+
+        // Sixth row input size
+        bag.gridx = 0;
+        bag.gridy = 5;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(new JLabel("Read: "), bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(in, bag);
+
+        // Seventh row output size
+        bag.gridx = 0;
+        bag.gridy = 6;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(new JLabel("Written: "), bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(out, bag);
+
+        // Eighth row compression/decompression ratio
+        bag.gridx = 0;
+        bag.gridy = 7;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(new JLabel("Ratio: "), bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(ratio, bag);
+
+        // Nineth row elapsed time
+        bag.gridx = 0;
+        bag.gridy = 8;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(new JLabel("Elapsed Time: "), bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(time, bag);
+
+        // Tenth row compression/decompression per second
+        bag.gridx = 0;
+        bag.gridy = 9;
+        bag.anchor = GridBagConstraints.LINE_END;
+        bag.insets = new Insets(0, 0, 0, 5);
+        add(new JLabel("Bps: "), bag);
+
+        bag.gridx = 1;
+        bag.anchor = GridBagConstraints.LINE_START;
+        bag.insets = new Insets(0, 0, 0, 0);
+        add(bps, bag);
+    } 
 }

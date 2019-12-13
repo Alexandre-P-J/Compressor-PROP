@@ -121,12 +121,4 @@ public class BitInputStream extends FilterInputStream {
 		}
 		return result & 0xFF;
 	}
-
-	public void skipEnd() throws IOException {
-		if (bitManager.atTheEnd()) {
-			int i = readNextByte();
-			if (i >= 0)
-				bitManager.setNext(i);
-		}
-	}
 }
