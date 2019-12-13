@@ -1,24 +1,35 @@
 package Domain;
 
-import Presentation.PresentationController;
 import Persistence.PersistenceController;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DomainController {
-    // Singleton instance
+    /**
+     * Singleton instance
+     */
     private static final DomainController instance = new DomainController();
 
-    // Private to avoid external use of the constructor
+    /**
+     * private constructor
+     */
     private DomainController() {}
 
-    // Singleton getter
+    /**
+     * singleton instance getter
+     * @return singleton instance
+     */
     public static DomainController getInstance() {
         return instance;
     }
     
-    // lo llama presentation controller con el path obtenido despues de pulsar SELECT, retorna true si se ha seleccionado un archivo comprimido
+    /**
+     * loads a filetree and returns if was compressed
+     * @param path path to a filetree
+     * @return tru if it was a compressed file, false otherwise
+     * @throws IOException if io exception
+     */
     public static boolean readFileTree(String path) throws IOException {
         PersistenceController.readFileTree(path);
         return PersistenceController.isFileTreeCompressed();
@@ -26,7 +37,7 @@ public class DomainController {
 
     /**
      * Return filenames from the given relative path
-     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
+     * @param pathToParentFolder either "."/"" or "foo/bar.." (replacing ".." with the rest of the path)
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
@@ -63,6 +74,12 @@ public class DomainController {
         }
     }
 
+    /**
+     * Returns the valid compression arguments or presets for a given compression type
+     * @param compressionType String, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @return a String[] with all valid options for the given compressionType
+     * @throws Exception if compressionType is not implemented
+     */
     public static String[] getValidCompressionParameters(String compressionType) throws Exception {
         switch (compressionType) {
             case "LZW":
@@ -83,6 +100,12 @@ public class DomainController {
         }
     }
 
+    /**
+     * Gets the default compression parameter for the given compression type
+     * @param compressionType either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @return the default parameter for the type
+     * @throws Exception if compressionType is not "LZW", "LZ78", "LZSS" or "JPEG"
+     */
     public static String getDefaultCompressionParameter(String compressionType) throws Exception {
         switch (compressionType) {
             case "LZW":
@@ -98,6 +121,11 @@ public class DomainController {
         }
     }
 
+    /**
+     * Gets the default compression type
+     * @param isPPMImage true if file is a ppm image
+     * @return the default compression type
+     */
     public static String getDefaultCompressionType(boolean isPPMImage) {
         if (isPPMImage) {
             return "JPEG";
@@ -136,10 +164,22 @@ public class DomainController {
         return PersistenceController.getCompressionType(path);
     }
 
+    /**
+     * Returns the current compression parameter for the given file
+     * @param path relative path to a file
+     * @return String representing a valid compression parameter
+     * @throws Exception if the file does not exist
+     */
     public static String getCompressionParameter(String path) throws Exception {
         return PersistenceController.getCompressionParameter(path);
     }
 
+    /**
+     * Sets the compression parameter for a file
+     * @param path relative path to a file
+     * @param arg valid compression parameter
+     * @throws Exception if the file does not exist
+     */
     public static void setCompressionParameter(String path, String arg) throws Exception {
         PersistenceController.setCompressionParameter(path, arg);
     }
@@ -174,16 +214,34 @@ public class DomainController {
         return PersistenceController.getDocument(Path);
     }
 
+    /**
+     * Returns a byte array representing the image from the path
+     * @param Path relative path to a ppm image
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the image does not exist or is malformed
+     */
     public static byte[] getImage(String Path) throws Exception {
         PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImage(Path));
         return presentationEncodeImage(ppmt);
     }
 
+    /**
+     * Returns a byte array representing the image from the path after being compressed with the current algorithm and argument
+     * @param Path relative path to a ppm image
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the image does not exist or is malformed
+     */
     public static byte[] getImageAfterLossyCompression(String Path) throws Exception {
         PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImageAfterLossyCompression(Path));
         return presentationEncodeImage(ppmt);
     }
 
+    /**
+     * Creates a byte array representing an image from a PPMTranslator
+     * @param ppmt Initialized PPMTranslator for reading
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the ppmt input source is malformed
+     */
     private static byte[] presentationEncodeImage(PPMTranslator ppmt) throws Exception {
         int w = ppmt.getWidth();
         byte[] wa = toArray(w);
@@ -197,6 +255,11 @@ public class DomainController {
         return result;
     }
 
+    /**
+     * Encodes an integer into 4 bytes
+     * @param value any integer
+     * @return byte[4] containing the bytes from value from hight to low bits
+     */
     private static byte[] toArray(int value) {
         byte[] result = new byte[4];
         result[0] = (byte)((value >> 24) & 0x000000FF);
@@ -265,6 +328,7 @@ public class DomainController {
      * @param is InputStream containing valid uncompressed data
      * @param os OutputStream will contain the compressed data from InputStream
      * @param compressionType String that specifies the compression algorithm, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @param arg0 String with an option for the compression type
      * @throws Exception if the compression fails or i/o error
      */
     public static void chainCompress(InputStream is, OutputStream os, String compressionType, String arg0) throws Exception {
