@@ -129,6 +129,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
     }
 
     private void refreshAlgortihmSelection(String path) {
+        algorithmSelection.removeActionListener(this);
         algorithmModel.removeAllElements();
         try {
             setSelection(algorithmSelection, algorithmModel, PresentationController.getValidCompressionTypes(path));
@@ -136,21 +137,29 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         } catch (Exception exc) {
             System.out.println(exc.getMessage());
         }
+        algorithmSelection.addActionListener(this);
     }
 
     private void refreshParameterSelection(String path) {
+        parameterSelection.removeActionListener(this);
         parameterModel.removeAllElements();
         try {
             String algorithm = PresentationController.getCompressionType(path);
             // Image
             if (PresentationController.isFileImage(path)) {
                 setSelection(parameterSelection, parameterModel, PresentationController.getValidCompressionParameters(algorithm));
-                parameterSelection.setSelectedItem(PresentationController.getCompressionParameter(path));
+                String arg = PresentationController.getCompressionParameter(path);
+                if (arg != null) {
+                    parameterSelection.setSelectedItem(PresentationController.getCompressionParameter(path));
+                }
             }
             // TextFile
             else {
                 setSelection(parameterSelection, parameterModel, getDictBytesToHumanLegible(PresentationController.getValidCompressionParameters(algorithm)));
-                parameterSelection.setSelectedItem(getDictBytesToHumanLegible(PresentationController.getCompressionParameter(path)));
+                String arg = PresentationController.getCompressionParameter(path);
+                if (arg != null) {
+                    parameterSelection.setSelectedItem(getDictBytesToHumanLegible(arg));
+                }
             }
             // Disable if it hasn't parameters
             if (parameterSelection.getItemCount() == 0) { 
@@ -159,9 +168,14 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                 parameterSelection.setEnabled(false);
                 titleParameters.setEnabled(false);  
             }
+            else {
+                parameterSelection.setEnabled(true);
+                titleParameters.setEnabled(true);
+            }
         } catch (Exception exc) {
             System.out.println(exc.getMessage());
         }
+        parameterSelection.addActionListener(this);
     }
 
     private void setSelection(JComboBox comboBox,DefaultComboBoxModel model, String[] list) {
