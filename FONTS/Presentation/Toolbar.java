@@ -7,18 +7,47 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class Toolbar extends JPanel implements ActionListener {
+public class Toolbar extends JPanel implements ActionListener {    
+    /**
+     * File button
+     */
     private final JButton fileButton;
+    /**
+     * Compress button
+     */
     private final JButton compressButton;
+    /**
+     * Total statistics button
+     */
     private final JButton StatsButton;
+    /**
+     * Help button, display user manual
+     */
     private final JButton HelpButton;
+    /**
+     * File chooser
+     */
     private final JFileChooser fileChooser;
+    /**
+     * Compressed save file chooser
+     */
     private final JFileChooser compressedSaveChooser;
+    /**
+     * Decompressed save file chooser
+     */
     private final JFileChooser decompressedSaveChooser;
+    /**
+     * Indicates if it is compressed
+     */
     private boolean compressed;
 
+    /**
+     * Default toolbar panel constructor 
+     * creates a superior panel with  the open, compressed/decompressed, statics, help manual buttons
+     */
     public Toolbar() {
         setBorder(BorderFactory.createEtchedBorder());
+        // Inicializations
         fileButton = new JButton("Open");
         compressButton = new JButton("Compress/Decompress");
         StatsButton = new JButton("Statistics");
@@ -39,6 +68,7 @@ public class Toolbar extends JPanel implements ActionListener {
         decompressedSaveChooser.setDialogTitle("Save Into");
         decompressedSaveChooser.setApproveButtonText("Save");
 
+        // Listeners
         compressButton.addActionListener(this);
         fileButton.addActionListener(this);
         StatsButton.addActionListener(this);
@@ -52,6 +82,10 @@ public class Toolbar extends JPanel implements ActionListener {
         add(HelpButton);
     }
 
+    /**
+     * Invoked when the open, compress, stats, help button action occurs
+     * @param e action event
+     */
     public void actionPerformed(final ActionEvent e) {
         final JButton clicked = (JButton) e.getSource();
 
@@ -93,7 +127,8 @@ public class Toolbar extends JPanel implements ActionListener {
                     }
                 }
             }
-        } else if (clicked == StatsButton) { // invisible by default, should be visible after getting valid (non zero) total stats
+        } // invisible by default, should be visible after getting valid (non zero) total stats
+        else if (clicked == StatsButton) { 
             JFrame frame = new JFrame();
             frame.setSize(535, 155);
             frame.setTitle("Total Statistics");

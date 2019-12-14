@@ -9,15 +9,43 @@ import javax.swing.*;
 import java.awt.Font;
 
 public class NavigationPanel extends JPanel {
+    /**
+     * Current path
+     */
     private String currentPath;
+    /**
+     * File name
+     */
     private String[] FileNames = new String[0];
+    /**
+     * Folder name
+     */
     private String[] FolderNames = new String[0];
+    /**
+     * Return symbol
+     */
     private static String returnSymbol;
+    /**
+     * Folder symbol
+     */
     private static String folderSymbol;
+    /**
+     * List model
+     */
     private DefaultListModel<String> model = new DefaultListModel<>();
+    /**
+     * 
+     */
     private Vector<NavigationClickObserver> singleClickFileSubscribers = new Vector<NavigationClickObserver>();
+    /**
+     * 
+     */
     private Vector<NavigationClickObserver> singleClickFolderSubscribers = new Vector<NavigationClickObserver>();
 
+    /**
+     * Default navigation panel constructor 
+     * creates a navigation panel to interact with folders and files
+     */
     public NavigationPanel() {
         JList<String> jlist = new JList<>(model);
         folderSymbol = getCompatibleFolderSymbol(jlist.getFont()) + " ";
@@ -47,6 +75,10 @@ public class NavigationPanel extends JPanel {
         jlist.addMouseListener(mouseListener);
     }
 
+    /**
+     * 
+     * @param target double click objective received
+     */
     private void onDoubleClick(Object target) {
         try {
             if (Arrays.asList(FolderNames).contains(target.toString())) {
@@ -59,6 +91,10 @@ public class NavigationPanel extends JPanel {
         }
     }
 
+    /**
+     * 
+     * @param target single click objective received
+     */
     private void onSingleClick(Object target) {
         if (Arrays.asList(FileNames).contains(target.toString())) {
             for (NavigationClickObserver si : singleClickFileSubscribers) {
@@ -71,6 +107,11 @@ public class NavigationPanel extends JPanel {
         }
     }
 
+    /**
+     * 
+     * @param Path relative path to a file
+     * @throws Exception if the path file does not exist
+     */
     public void refresh(String Path) throws Exception {
         currentPath = Path;
         FileNames = PresentationController.getInstance().getFileNames(Path);
@@ -93,10 +134,19 @@ public class NavigationPanel extends JPanel {
         }
     }
 
+    /**
+     * Refresh current path
+     * @throws Exception if the file does not exist
+     */
     public void refresh() throws Exception {
         refresh(currentPath);
     }
 
+    /**
+     * 
+     * @param Path relative path to a file
+     * @return
+     */
     private String pathReturn(String Path) {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
         String steps[] = Path.split(pattern);
@@ -110,16 +160,29 @@ public class NavigationPanel extends JPanel {
         return result + steps[steps.length - 2];
     }
 
+    /**
+     * 
+     * @param Folder
+     * @return
+     */
     private String pathTraverse(String Folder) {
         if (currentPath.length() == 0)
             return Folder;
         return currentPath + System.getProperty("file.separator") + Folder;
     }
 
+    /**
+     * Remove all elemnts of the file model
+     */
     private void clean() {
         model.removeAllElements();
     }
 
+    /**
+     * Check and obtain the compatible folder symnbol
+     * @param f the type of font
+     * @return the folder symbol
+     */
     private String getCompatibleFolderSymbol(Font f) {
         int[] symbols = { 0x1F5C1, 0x1F5C0, 0x1F5BF, 0x1F4C1, 0x1F4C2 };
         for (int sym : symbols) {
@@ -130,6 +193,11 @@ public class NavigationPanel extends JPanel {
         return "[FOLDER]";
     }
 
+    /**
+     * 
+     * @param f
+     * @return
+     */
     private String getCompatibleReturnSymbol(Font f) {
         int[] symbols = { 0x2B9C };
         for (int sym : symbols) {
@@ -140,10 +208,18 @@ public class NavigationPanel extends JPanel {
         return "[BACK]";
     }
 
+    /**
+     * 
+     * @param si
+     */
     public void subscribeClickFile(NavigationClickObserver si) {
         singleClickFileSubscribers.add(si);
     }
 
+    /**
+     * 
+     * @param si
+     */
     public void subscribeClickFolder(NavigationClickObserver si) {
         singleClickFolderSubscribers.add(si);
     }
