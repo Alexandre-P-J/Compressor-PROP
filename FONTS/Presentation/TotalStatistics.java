@@ -21,13 +21,16 @@ public class TotalStatistics {
         long in = PresentationController.getInstance().getTotalInputSizeStat();
         long out = PresentationController.getInstance().getTotalOutputSizeStat();
         long time = PresentationController.getInstance().getTotalTimeStat();
+        if (time < 1) {
+            time = 1; // 1ms precision
+        }
         String stats = "";
         stats = stats + String.format("Compression Ratio: %s (Bigger is better, lower than 1 is bad)\n", String.format("%.2f",(double)(in)/(double)(out)));
         stats = stats + String.format("Space Savings: %s (Bigger is better)\n", String.format("%.2f", 1-((double)(out)/(double)(in))));
         stats = stats + String.format("Read: %s\n", bytesToHumanLegible(in));
         stats = stats + String.format("Written: %s\n", bytesToHumanLegible(out));
         stats = stats + String.format("Elapsed Time: %s\n", milisToHumanLegible(time));
-        stats = stats + String.format("Compression per Second: %s\n", bytesToHumanLegible((long)((double)(in-out)/((double)(time)/1000.0))));
+        stats = stats + String.format("Compression per Second: %s\n", bytesToHumanLegible((long)((double)(in)/((double)(time/1000.0)))));
         return stats;
     }
 
@@ -38,12 +41,15 @@ public class TotalStatistics {
         long in = PresentationController.getInstance().getTotalInputSizeStat();
         long out = PresentationController.getInstance().getTotalOutputSizeStat();
         long time = PresentationController.getInstance().getTotalTimeStat();
+        if (time < 1) {
+            time = 1; // 1ms precision
+        }
         String stats = "";
         stats = stats + String.format("Decompression Ratio: %s (Inverse of compression ratio, Lower is better)\n", String.format("%.2f",(double)(in)/(double)(out)));
         stats = stats + String.format("Read: %s\n", bytesToHumanLegible(in));
         stats = stats + String.format("Written: %s\n", bytesToHumanLegible(out));
         stats = stats + String.format("Elapsed Time: %s\n", milisToHumanLegible(time));
-        stats = stats + String.format("Decompression per Second: %s\n", bytesToHumanLegible((long)((double)(out-in)/((double)(time)/1000.0))));
+        stats = stats + String.format("Decompression per Second: %s\n", bytesToHumanLegible((long)((double)(out)/((double)(time/1000.0)))));
         return stats;
     }
 

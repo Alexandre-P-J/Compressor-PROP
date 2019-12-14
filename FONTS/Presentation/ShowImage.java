@@ -34,6 +34,9 @@ public class ShowImage extends JPanel {
         try {
             if (lossy)  byte_array = PresentationController.getInstance().getImageAfterLossyCompression(path);
             else byte_array = PresentationController.getInstance().getImage(path);
+            width = byte_array[3] & 0xFF | (byte_array[2] & 0xFF) << 8 | (byte_array[1] & 0xFF) << 16 | (byte_array[0] & 0xFF) << 24;
+            height = byte_array[7] & 0xFF | (byte_array[6] & 0xFF) << 8 | (byte_array[5] & 0xFF) << 16 | (byte_array[4] & 0xFF) << 24;
+            frame.setSize(width, height);
         } catch (Exception e) {
             System.out.println("Unreachable Folder/File");
         }
@@ -47,11 +50,6 @@ public class ShowImage extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paintComponent(g);
-    
-        width = byte_array[3] & 0xFF | (byte_array[2] & 0xFF) << 8 | (byte_array[1] & 0xFF) << 16 | (byte_array[0] & 0xFF) << 24;
-        height = byte_array[7] & 0xFF | (byte_array[6] & 0xFF) << 8 | (byte_array[5] & 0xFF) << 16 | (byte_array[4] & 0xFF) << 24;
-
-        frame.setSize(width, height);
 
         int i = 0;
         int j = 0;
