@@ -59,7 +59,7 @@ public class Toolbar extends JPanel implements ActionListener {
             if (fileChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
                 File f = fileChooser.getSelectedFile();
                 try {
-                    compressed = PresentationController.readFileTree(f.getCanonicalPath());
+                    compressed = PresentationController.getInstance().readFileTree(f.getCanonicalPath());
                     if (compressed)
                         compressButton.setText("Decompress");
                     else {
@@ -76,7 +76,7 @@ public class Toolbar extends JPanel implements ActionListener {
                 if (decompressedSaveChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
                     File f = decompressedSaveChooser.getSelectedFile();
                     try {
-                        PresentationController.decompressTo(f.getCanonicalPath());
+                        PresentationController.getInstance().decompressTo(f.getCanonicalPath());
                         StatsButton.setVisible(true);
                     } catch (Exception exc) {
                         System.out.println(exc.getMessage());
@@ -86,7 +86,7 @@ public class Toolbar extends JPanel implements ActionListener {
                 if (compressedSaveChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
                     File f = compressedSaveChooser.getSelectedFile();
                     try {
-                        PresentationController.compressTo(f.getCanonicalPath());
+                        PresentationController.getInstance().compressTo(f.getCanonicalPath());
                         StatsButton.setVisible(true);
                     } catch (Exception exc) {
                         System.out.println(exc.getMessage());

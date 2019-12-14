@@ -73,8 +73,8 @@ public class NavigationPanel extends JPanel {
 
     public void refresh(String Path) throws Exception {
         currentPath = Path;
-        FileNames = PresentationController.getFileNames(Path);
-        FolderNames = PresentationController.getFolderNames(Path);
+        FileNames = PresentationController.getInstance().getFileNames(Path);
+        FolderNames = PresentationController.getInstance().getFolderNames(Path);
         clean();
         if (!pathReturn(Path).equals(Path)) {
             model.addElement(returnSymbol);

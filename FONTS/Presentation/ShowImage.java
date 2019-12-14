@@ -32,8 +32,8 @@ public class ShowImage extends JPanel {
     public ShowImage(String path, JFrame frame, boolean lossy) {
         this.frame = frame;
         try {
-            if (lossy)  byte_array = PresentationController.getImageAfterLossyCompression(path);
-            else byte_array = PresentationController.getImage(path);
+            if (lossy)  byte_array = PresentationController.getInstance().getImageAfterLossyCompression(path);
+            else byte_array = PresentationController.getInstance().getImage(path);
         } catch (Exception e) {
             System.out.println("Unreachable Folder/File");
         }

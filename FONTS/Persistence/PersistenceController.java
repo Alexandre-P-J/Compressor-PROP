@@ -21,19 +21,19 @@ public class PersistenceController {
     /**
      * FileTree root instance
      */
-    private static Folder FileTree;
+    private Folder FileTree;
     /**
      * Total statistics of the last compression or decompression
      */
-    private static Statistics totalStats = new Statistics();
+    private Statistics totalStats = new Statistics();
     /**
      * Header translator instance
      */
-    private static HeaderTranslator headerTranslator;
+    private HeaderTranslator headerTranslator;
     /**
      * path of the opened filetree
      */
-    private static String openedPath;
+    private String openedPath;
 
     /**
      * private constructor
@@ -53,7 +53,7 @@ public class PersistenceController {
      * @param path path to a filetree
      * @throws IOException if error reading
      */
-    public static void readFileTree(String path) throws IOException {
+    public void readFileTree(String path) throws IOException {
         headerTranslator = new HeaderTranslator();
         totalStats = new Statistics();
         FileTree = headerTranslator.readFileTree(path);
@@ -64,7 +64,7 @@ public class PersistenceController {
      * returns if the read filetree is compressed
      * @return true if the filetree is compressed, false otherwise
      */
-    public static Boolean isFileTreeCompressed() {
+    public Boolean isFileTreeCompressed() {
         return headerTranslator.fileTreeIsCompressed();
     }
 
@@ -74,7 +74,7 @@ public class PersistenceController {
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static String[] getFileNames(String pathToParentFolder) throws Exception {
+    public String[] getFileNames(String pathToParentFolder) throws Exception {
         return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFileNames();
     }
 
@@ -84,7 +84,7 @@ public class PersistenceController {
      * @return an array of folder names contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static String[] getFolderNames(String pathToParentFolder) throws Exception {
+    public String[] getFolderNames(String pathToParentFolder) throws Exception {
         return Folder.getFolder(FileTree.getRoot(), pathToParentFolder).getFolderNames();
     }
 
@@ -95,8 +95,10 @@ public class PersistenceController {
      * @throws Exception if the file does not exist, or the compression type does not support the file 
      * or if changing the compression of an already compressed file, or the compression type does not exist
      */
-    public static void setCompressionType(String path, String Type) throws Exception {
-        if (isFileTreeCompressed()) throw new Exception("Cannot change compression algorithm of a compressed file!");
+    public void setCompressionType(String path, String Type) throws Exception {
+        if (isFileTreeCompressed()) {
+            throw new Exception("Cannot change compression algorithm of a compressed file!");
+        }
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         f.setCompressionType(Type);
     }
@@ -107,7 +109,7 @@ public class PersistenceController {
      * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @throws Exception if the file does not exist
      */
-    public static String getCompressionType(String path) throws Exception {
+    public String getCompressionType(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.getCompressionType().toString();
     }
@@ -116,7 +118,7 @@ public class PersistenceController {
      * Returns the total time of the last compress/decompress operation
      * @return time in miliseconds
      */
-    public static long getTotalTimeStat() {
+    public long getTotalTimeStat() {
         return totalStats.getExecutionTime();
     }
 
@@ -124,7 +126,7 @@ public class PersistenceController {
      * Returns the total size of the input data from the last compress/decompress operation
      * @return size in bytes
      */
-    public static long getTotalInputSizeStat() {
+    public long getTotalInputSizeStat() {
         return totalStats.getInputSize();
     }
 
@@ -132,7 +134,7 @@ public class PersistenceController {
      * Returns the total size of the output data from the last compress/decompress operation
      * @return size in bytes
      */
-    public static long getTotalOutputSizeStat() {
+    public long getTotalOutputSizeStat() {
         return totalStats.getOutputSize();
     }
 
@@ -142,7 +144,7 @@ public class PersistenceController {
      * @return time in miliseconds
      * @throws Exception if the file does not exist
      */
-    public static long getFileTimeStat(String path) throws Exception {
+    public long getFileTimeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
         return stats.getExecutionTime();
@@ -154,7 +156,7 @@ public class PersistenceController {
      * @return size in bytes
      * @throws Exception if the file does not exist
      */
-    public static long getFileInputSizeStat(String path) throws Exception {
+    public long getFileInputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
         return stats.getInputSize();
@@ -166,7 +168,7 @@ public class PersistenceController {
      * @return size in bytes
      * @throws Exception if the file does not exist
      */
-    public static long getFileOutputSizeStat(String path) throws Exception {
+    public long getFileOutputSizeStat(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         Statistics stats = f.getStatistics();
         return stats.getOutputSize();
@@ -178,7 +180,7 @@ public class PersistenceController {
      * @return true if the file in the path is a ppm image, false otherwise
      * @throws Exception if the path does not point a file
      */
-    public static boolean isFileImage(String path) throws Exception {
+    public boolean isFileImage(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.isImage();
     }
@@ -188,7 +190,7 @@ public class PersistenceController {
      * @param quality valid quality setting
      * @return 8x8 matrix of integers, luminance table
      */
-    public static final int[][] getLuminanceTable(String quality) {
+    public final int[][] getLuminanceTable(String quality) {
         return JPEG_Quality.valueOf(quality).getLuminanceTable();
     }
 
@@ -197,7 +199,7 @@ public class PersistenceController {
      * @param quality valid quality setting
      * @return 8x8 matrix of integers, chrominance table
      */
-    public static final int[][] getChrominanceTable(String quality) {
+    public final int[][] getChrominanceTable(String quality) {
         return JPEG_Quality.valueOf(quality).getChrominanceTable();
     }
 
@@ -207,7 +209,7 @@ public class PersistenceController {
      * @return String representing a valid compression parameter
      * @throws Exception if the file does not exist
      */
-    public static String getCompressionParameter(String path) throws Exception {
+    public String getCompressionParameter(String path) throws Exception {
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         return f.getCompressionArgument();
     }
@@ -216,9 +218,12 @@ public class PersistenceController {
      * Sets the compression parameter for a file
      * @param path relative path to a file
      * @param arg valid compression parameter
-     * @throws Exception if the file does not exist
+     * @throws Exception if the file does not exist or trying to change parameter of a compressed file
      */
-    public static void setCompressionParameter(String path, String arg) throws Exception {
+    public void setCompressionParameter(String path, String arg) throws Exception {
+        if (isFileTreeCompressed()) {
+            throw new Exception("Cannot change compression parameter of a compressed file!");
+        }
         Archive f = Folder.getFile(FileTree.getRoot(), path);
         f.setCompressionArgument(arg);
     }
@@ -229,8 +234,8 @@ public class PersistenceController {
      * @return the default parameter for the type
      * @throws Exception if compressionType is not "LZW", "LZ78", "LZSS" or "JPEG"
      */
-    public static String getDefaultCompressionParameter(String type) throws Exception {
-        return DomainController.getDefaultCompressionParameter(type);
+    public String getDefaultCompressionParameter(String type) throws Exception {
+        return DomainController.getInstance().getDefaultCompressionParameter(type);
     }
 
     /**
@@ -240,8 +245,8 @@ public class PersistenceController {
      * @return true if its valid, false otherwise
      * @throws Exception if compression type is not valid
      */
-    public static boolean isCompressionParameterValid(String arg, String type) throws Exception {
-        String[] args = DomainController.getValidCompressionParameters(type);
+    public boolean isCompressionParameterValid(String arg, String type) throws Exception {
+        String[] args = DomainController.getInstance().getValidCompressionParameters(type);
         for (String valid : args) {
             if (arg.equals(valid)) {
                 return true;
@@ -255,8 +260,8 @@ public class PersistenceController {
      * @param isPPMImage true if file is a ppm image
      * @return the default compression type
      */
-    public static String getDefaultCompressionType(boolean isPPMImage) {
-        return DomainController.getDefaultCompressionType(isPPMImage);
+    public String getDefaultCompressionType(boolean isPPMImage) {
+        return DomainController.getInstance().getDefaultCompressionType(isPPMImage);
     }
 
     /**
@@ -265,15 +270,13 @@ public class PersistenceController {
      * @return String that contains the entire document in UTF-8
      * @throws Exception if i/o error, or the decompression fails
      */
-    public static String getDocument(String Path) throws Exception {
+    public String getDocument(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
         if (isFileTreeCompressed()) {
             InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
-            System.out.println(headerTranslator.getReadHeaderSize());
-            System.out.println(f.getHeaderIndex());
             is.skip(f.getHeaderIndex());
-            DomainController.chainDecompress(is, baos, f.getCompressionType().toString());
+            DomainController.getInstance().chainDecompress(is, baos, f.getCompressionType().toString());
         }
         else {
             InputStream is = f.getInputStream();
@@ -292,14 +295,14 @@ public class PersistenceController {
      * @return input stream containing a valid ppm image
      * @throws Exception if the image does not exist or is malformed
      */
-    public static InputStream getImage(String Path) throws Exception {
+    public InputStream getImage(String Path) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
         if (!f.isImage()) throw new Exception(Path+" Not an image!");
         if (isFileTreeCompressed()) {
             InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
             is.skip(f.getHeaderIndex());
-            DomainController.chainDecompress(is, baos, f.getCompressionType().toString());
+            DomainController.getInstance().chainDecompress(is, baos, f.getCompressionType().toString());
             baos.flush();
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             return bais;
@@ -313,17 +316,17 @@ public class PersistenceController {
      * @return input stream containing a valid ppm image
      * @throws Exception if the image does not exist or is malformed
      */
-    public static InputStream getImageAfterLossyCompression(String Path) throws Exception {    
+    public InputStream getImageAfterLossyCompression(String Path) throws Exception {    
         if (isFileTreeCompressed()) {
             return getImage(Path);
         }
         Archive f = Folder.getFile(FileTree.getRoot(), Path);
         if (!f.isImage()) throw new Exception(Path+" Not an image!");
         ByteArrayOutputStream baos0 = new ByteArrayOutputStream();
-        DomainController.chainCompress(f.getInputStream(), baos0, f.getCompressionType().toString(), f.getCompressionArgument());
+        DomainController.getInstance().chainCompress(f.getInputStream(), baos0, f.getCompressionType().toString(), f.getCompressionArgument());
         ByteArrayInputStream bais1 = new ByteArrayInputStream(baos0.toByteArray());
         ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-        DomainController.chainDecompress(bais1, baos1, f.getCompressionType().toString());
+        DomainController.getInstance().chainDecompress(bais1, baos1, f.getCompressionType().toString());
         ByteArrayInputStream bais2 = new ByteArrayInputStream(baos1.toByteArray());
         return bais2;
     }
@@ -333,7 +336,7 @@ public class PersistenceController {
      * @param outputPath output path of the compressed file
      * @throws Exception if io error
      */
-    public static void compressFiletree(String outputPath) throws Exception {
+    public void compressFiletree(String outputPath) throws Exception {
         Archive out = new Archive(outputPath);
         OutputStream os = new BufferedOutputStream(out.getOutputStream());
         OutputStreamWatcher osw = new OutputStreamWatcher(os);
@@ -352,7 +355,7 @@ public class PersistenceController {
      * @param outputPath directory path of destination
      * @throws Exception if io error
      */
-    public static void decompressFiletree(String outputPath) throws Exception {
+    public void decompressFiletree(String outputPath) throws Exception {
         InputStream is = new BufferedInputStream(new FileInputStream(openedPath));
         is.skip(headerTranslator.getReadHeaderSize());
         traverseDecompress(is, FileTree.getRoot(), outputPath);
@@ -365,14 +368,14 @@ public class PersistenceController {
      * @param parentFolder current parent folder of the traverse
      * @throws Exception if io error
      */
-    private static void traverseCompress(OutputStream os, Folder parentFolder) throws Exception {
+    private void traverseCompress(OutputStream os, Folder parentFolder) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
             Statistics stats = new Statistics();
             InputStreamWatcher isw = new InputStreamWatcher(file.getInputStream());
             OutputStreamWatcher osw = new OutputStreamWatcher(os);
             long timeStart = System.currentTimeMillis();
-            DomainController.chainCompress(isw, osw, file.getCompressionType().toString(), file.getCompressionArgument());
+            DomainController.getInstance().chainCompress(isw, osw, file.getCompressionType().toString(), file.getCompressionArgument());
             long timeEnd = System.currentTimeMillis();
             stats.setInputSize(isw.getReadBytes());
             stats.setOutputSize(osw.getWrittenBytes());
@@ -397,14 +400,14 @@ public class PersistenceController {
      * @param path path to the current directory being decompressed
      * @throws Exception if io error
      */
-    private static void traverseDecompress(InputStream is, Folder parentFolder, String path) throws Exception {
+    private void traverseDecompress(InputStream is, Folder parentFolder, String path) throws Exception {
         Archive[] files = parentFolder.getFiles();
         for (Archive file : files) {
             Statistics stats = new Statistics();
             InputStreamWatcher isw = new InputStreamWatcher(is);
             OutputStreamWatcher osw = new OutputStreamWatcher(new BufferedOutputStream(new FileOutputStream(path+System.getProperty("file.separator")+file.getFilename())));
             long timeStart = System.currentTimeMillis();
-            DomainController.chainDecompress(isw, osw, file.getCompressionType().toString());
+            DomainController.getInstance().chainDecompress(isw, osw, file.getCompressionType().toString());
             long timeEnd = System.currentTimeMillis();
             stats.setInputSize(isw.getReadBytes());
             stats.setOutputSize(osw.getWrittenBytes());

@@ -30,9 +30,9 @@ public class DomainController {
      * @return tru if it was a compressed file, false otherwise
      * @throws IOException if io exception
      */
-    public static boolean readFileTree(String path) throws IOException {
-        PersistenceController.readFileTree(path);
-        return PersistenceController.isFileTreeCompressed();
+    public boolean readFileTree(String path) throws IOException {
+        PersistenceController.getInstance().readFileTree(path);
+        return PersistenceController.getInstance().isFileTreeCompressed();
     }
 
     /**
@@ -41,10 +41,10 @@ public class DomainController {
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static String[] getFileNames(String pathToParentFolder) throws Exception {
+    public String[] getFileNames(String pathToParentFolder) throws Exception {
         if (pathToParentFolder.length() == 0)
             pathToParentFolder = ".";
-        return PersistenceController.getFileNames(pathToParentFolder);
+        return PersistenceController.getInstance().getFileNames(pathToParentFolder);
     }
 
     /**
@@ -53,10 +53,10 @@ public class DomainController {
      * @return an array of folder names contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static String[] getFolderNames(String pathToParentFolder) throws Exception {
+    public String[] getFolderNames(String pathToParentFolder) throws Exception {
         if (pathToParentFolder.length() == 0)
             pathToParentFolder = ".";
-        return PersistenceController.getFolderNames(pathToParentFolder);
+        return PersistenceController.getInstance().getFolderNames(pathToParentFolder);
     }
 
     /**
@@ -65,7 +65,7 @@ public class DomainController {
      * @return a string array containing valid compression types for the file in the path
      * @throws Exception if the path does not point a file
      */
-    public static String[] getValidCompressionTypes(String path) throws Exception {
+    public String[] getValidCompressionTypes(String path) throws Exception {
         if (isFileImage(path)) {
             return new String[] {"JPEG"};
         }
@@ -80,7 +80,7 @@ public class DomainController {
      * @return a String[] with all valid options for the given compressionType
      * @throws Exception if compressionType is not implemented
      */
-    public static String[] getValidCompressionParameters(String compressionType) throws Exception {
+    public String[] getValidCompressionParameters(String compressionType) throws Exception {
         switch (compressionType) {
             case "LZW":
                 return new String[] {"8", "9", "10", "11", "12", "13", "14", "15", 
@@ -106,7 +106,7 @@ public class DomainController {
      * @return the default parameter for the type
      * @throws Exception if compressionType is not "LZW", "LZ78", "LZSS" or "JPEG"
      */
-    public static String getDefaultCompressionParameter(String compressionType) throws Exception {
+    public String getDefaultCompressionParameter(String compressionType) throws Exception {
         switch (compressionType) {
             case "LZW":
                 return "12";
@@ -126,7 +126,7 @@ public class DomainController {
      * @param isPPMImage true if file is a ppm image
      * @return the default compression type
      */
-    public static String getDefaultCompressionType(boolean isPPMImage) {
+    public String getDefaultCompressionType(boolean isPPMImage) {
         if (isPPMImage) {
             return "JPEG";
         }
@@ -139,8 +139,8 @@ public class DomainController {
      * @return true if the file in the path is a ppm image, false otherwise
      * @throws Exception if the path does not point a file
      */
-    public static boolean isFileImage(String path) throws Exception {
-        return PersistenceController.isFileImage(path);
+    public boolean isFileImage(String path) throws Exception {
+        return PersistenceController.getInstance().isFileImage(path);
     }
 
     /**
@@ -150,8 +150,8 @@ public class DomainController {
      * @throws Exception if the file does not exist, or the compression type does not support the file 
      * or if changing the compression of an already compressed file, or the compression type does not exist
      */
-    public static void setCompressionType(String path, String Type) throws Exception {
-        PersistenceController.setCompressionType(path, Type);
+    public void setCompressionType(String path, String Type) throws Exception {
+        PersistenceController.getInstance().setCompressionType(path, Type);
     }
 
     /**
@@ -160,8 +160,8 @@ public class DomainController {
      * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @throws Exception if the file does not exist
      */
-    public static String getCompressionType(String path) throws Exception {
-        return PersistenceController.getCompressionType(path);
+    public String getCompressionType(String path) throws Exception {
+        return PersistenceController.getInstance().getCompressionType(path);
     }
 
     /**
@@ -170,8 +170,8 @@ public class DomainController {
      * @return String representing a valid compression parameter
      * @throws Exception if the file does not exist
      */
-    public static String getCompressionParameter(String path) throws Exception {
-        return PersistenceController.getCompressionParameter(path);
+    public String getCompressionParameter(String path) throws Exception {
+        return PersistenceController.getInstance().getCompressionParameter(path);
     }
 
     /**
@@ -180,8 +180,8 @@ public class DomainController {
      * @param arg valid compression parameter
      * @throws Exception if the file does not exist
      */
-    public static void setCompressionParameter(String path, String arg) throws Exception {
-        PersistenceController.setCompressionParameter(path, arg);
+    public void setCompressionParameter(String path, String arg) throws Exception {
+        PersistenceController.getInstance().setCompressionParameter(path, arg);
     }
 
     /**
@@ -189,9 +189,9 @@ public class DomainController {
      * @param OutputFilePath Path to the resulting compressed file
      * @throws Exception if any of the compressions fails or invalid OutputFilePath
      */
-    public static void compressTo(String OutputFilePath) throws Exception {
+    public void compressTo(String OutputFilePath) throws Exception {
         // traverses the filetree calling chainCompress on each file
-        PersistenceController.compressFiletree(OutputFilePath);
+        PersistenceController.getInstance().compressFiletree(OutputFilePath);
     }
 
     /**
@@ -199,9 +199,9 @@ public class DomainController {
      * @param OutputFolderPath Path to the folder to save the decompressed data
      * @throws Exception if any of the decompressions fails, or invalid OutputFolderPath
      */
-    public static void decompressTo(String OutputFolderPath) throws Exception {
+    public void decompressTo(String OutputFolderPath) throws Exception {
         // traverses the filetree calling chainDecompress on each file
-        PersistenceController.decompressFiletree(OutputFolderPath);
+        PersistenceController.getInstance().decompressFiletree(OutputFolderPath);
     }
 
     /**
@@ -210,8 +210,8 @@ public class DomainController {
      * @return String that contains the entire document in UTF-8
      * @throws Exception if i/o error, or the decompression fails
      */
-    public static String getDocument(String Path) throws Exception {
-        return PersistenceController.getDocument(Path);
+    public String getDocument(String Path) throws Exception {
+        return PersistenceController.getInstance().getDocument(Path);
     }
 
     /**
@@ -220,8 +220,8 @@ public class DomainController {
      * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
      * @throws Exception if the image does not exist or is malformed
      */
-    public static byte[] getImage(String Path) throws Exception {
-        PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImage(Path));
+    public byte[] getImage(String Path) throws Exception {
+        PPMTranslator ppmt = new PPMTranslator(PersistenceController.getInstance().getImage(Path));
         return presentationEncodeImage(ppmt);
     }
 
@@ -231,8 +231,8 @@ public class DomainController {
      * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
      * @throws Exception if the image does not exist or is malformed
      */
-    public static byte[] getImageAfterLossyCompression(String Path) throws Exception {
-        PPMTranslator ppmt = new PPMTranslator(PersistenceController.getImageAfterLossyCompression(Path));
+    public byte[] getImageAfterLossyCompression(String Path) throws Exception {
+        PPMTranslator ppmt = new PPMTranslator(PersistenceController.getInstance().getImageAfterLossyCompression(Path));
         return presentationEncodeImage(ppmt);
     }
 
@@ -242,7 +242,7 @@ public class DomainController {
      * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
      * @throws Exception if the ppmt input source is malformed
      */
-    private static byte[] presentationEncodeImage(PPMTranslator ppmt) throws Exception {
+    private byte[] presentationEncodeImage(PPMTranslator ppmt) throws Exception {
         int w = ppmt.getWidth();
         byte[] wa = toArray(w);
         int h = ppmt.getHeight();
@@ -260,7 +260,7 @@ public class DomainController {
      * @param value any integer
      * @return byte[4] containing the bytes from value from hight to low bits
      */
-    private static byte[] toArray(int value) {
+    private byte[] toArray(int value) {
         byte[] result = new byte[4];
         result[0] = (byte)((value >> 24) & 0x000000FF);
         result[1] = (byte)((value >> 16) & 0x000000FF);
@@ -273,24 +273,24 @@ public class DomainController {
      * Returns the total time of the last compress/decompress operation
      * @return time in miliseconds
      */
-    public static long getTotalTimeStat() {
-        return PersistenceController.getTotalTimeStat();
+    public long getTotalTimeStat() {
+        return PersistenceController.getInstance().getTotalTimeStat();
     }
 
     /**
      * Returns the total size of the input data from the last compress/decompress operation
      * @return size in bytes
      */
-    public static long getTotalInputSizeStat() {
-        return PersistenceController.getTotalInputSizeStat();
+    public long getTotalInputSizeStat() {
+        return PersistenceController.getInstance().getTotalInputSizeStat();
     }
 
     /**
      * Returns the total size of the output data from the last compress/decompress operation
      * @return size in bytes
      */
-    public static long getTotalOutputSizeStat() {
-        return PersistenceController.getTotalOutputSizeStat();
+    public long getTotalOutputSizeStat() {
+        return PersistenceController.getInstance().getTotalOutputSizeStat();
     }
 
     /**
@@ -299,8 +299,8 @@ public class DomainController {
      * @return time in miliseconds
      * @throws Exception if the file does not exist
      */
-    public static long getFileTimeStat(String path) throws Exception {
-        return PersistenceController.getFileTimeStat(path);
+    public long getFileTimeStat(String path) throws Exception {
+        return PersistenceController.getInstance().getFileTimeStat(path);
     }
 
     /**
@@ -309,8 +309,8 @@ public class DomainController {
      * @return size in bytes
      * @throws Exception if the file does not exist
      */
-    public static long getFileInputSizeStat(String path) throws Exception {
-        return PersistenceController.getFileInputSizeStat(path);
+    public long getFileInputSizeStat(String path) throws Exception {
+        return PersistenceController.getInstance().getFileInputSizeStat(path);
     }
 
     /**
@@ -319,8 +319,8 @@ public class DomainController {
      * @return size in bytes
      * @throws Exception if the file does not exist
      */
-    public static long getFileOutputSizeStat(String path) throws Exception {
-        return PersistenceController.getFileOutputSizeStat(path);
+    public long getFileOutputSizeStat(String path) throws Exception {
+        return PersistenceController.getInstance().getFileOutputSizeStat(path);
     }
 
     /**
@@ -331,7 +331,7 @@ public class DomainController {
      * @param arg0 String with an option for the compression type
      * @throws Exception if the compression fails or i/o error
      */
-    public static void chainCompress(InputStream is, OutputStream os, String compressionType, String arg0) throws Exception {
+    public void chainCompress(InputStream is, OutputStream os, String compressionType, String arg0) throws Exception {
         Algorithm alg;
         switch (compressionType) {
             case "LZW":
@@ -349,7 +349,7 @@ public class DomainController {
                 break;
             case "JPEG":
                 JPEG jpeg = new JPEG(new Huffman());
-                jpeg.setQuantizationTables(PersistenceController.getLuminanceTable(arg0), PersistenceController.getChrominanceTable(arg0));
+                jpeg.setQuantizationTables(PersistenceController.getInstance().getLuminanceTable(arg0), PersistenceController.getInstance().getChrominanceTable(arg0));
                 alg = jpeg;
                 break;
             default:
@@ -365,7 +365,7 @@ public class DomainController {
      * @param compressionType String that specifies the compression algorithm, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @throws Exception if the decompression fails or i/o error
      */
-    public static void chainDecompress(InputStream is, OutputStream os, String compressionType) throws Exception {
+    public void chainDecompress(InputStream is, OutputStream os, String compressionType) throws Exception {
         Algorithm alg;
         switch (compressionType) {
             case "LZW":

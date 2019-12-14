@@ -74,6 +74,7 @@ public class HeaderTranslator {
             is.read(buf1);
             String name = new String(buf1, "UTF-8");
             Archive file = new Archive(parentFolder.getPath() + System.getProperty("file.separator") + name);
+            file.setCompressionType(decodeCompressionType((byte)next));
             file.setHeaderIndex(index);
             parentFolder.addFile(file);
             next = is.read();
@@ -150,23 +151,7 @@ public class HeaderTranslator {
      * @throws Exception if io error
      */
     private void reserveFileHeader(OutputStream os, Archive file) throws Exception {
-        byte type = 0;
-        switch (file.getCompressionType()) {
-            case "LZW":
-                type = 0x01;
-                break;
-            case "LZ78":
-                type = 0x02;
-                break;
-            case "LZSS":
-                type = 0x03;
-                break;
-            case "JPEG":
-                type = 0x04;
-                break;
-            default:
-                throw new Exception("Invalid compression type");
-        }
+        byte type = encodeCompressionType(file.getCompressionType());
         os.write(type);
         for (int i = 0; i < 8; ++i) {
             os.write(0);
@@ -174,6 +159,48 @@ public class HeaderTranslator {
         byte[] name = file.getFilename().getBytes("UTF-8");
         os.write(name.length);
         os.write(name);
+    }
+
+    /**
+     * decodes the compression type from a byte
+     * @param b valid encode
+     * @return compression type string
+     * @throws Exception if b does not encode any compression algorithm
+     */
+    String decodeCompressionType(byte b) throws Exception {
+        switch (b) {
+            case 0x01:
+                return "LZW";
+            case 0x02:
+                return "LZ78";
+            case 0x03:
+                return "LZSS";
+            case 0x04:
+                return "JPEG";
+            default:
+                throw new Exception("Invalid compression type");
+        }
+    }
+
+    /**
+     * encodes the compression type to a byte
+     * @param compression compression type
+     * @return encoded byte
+     * @throws Exception if compression its not a valid compression type
+     */
+    byte encodeCompressionType(String compression) throws Exception {
+        switch (compression) {
+            case "LZW":
+                return 0x01;
+            case "LZ78":
+                return 0x02;
+            case "LZSS":
+                return 0x03;
+            case "JPEG":
+                return 0x04;
+            default:
+                throw new Exception("Invalid compression type");
+        }
     }
     
     /**
