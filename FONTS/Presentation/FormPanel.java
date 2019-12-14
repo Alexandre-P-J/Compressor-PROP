@@ -35,7 +35,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
     /**
      * File compression/decompression per second
      */
-    private JLabel bps;
+    private JLabel speed;
     /**
      * Algorithm model
      */
@@ -86,7 +86,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         out = new JLabel("-");
         time = new JLabel("-");
         ratio = new JLabel("-");
-        bps = new JLabel("-");
+        speed = new JLabel("-");
 
         // Algorithm selection inicialization
         algorithmSelection = new JComboBox();
@@ -324,24 +324,29 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
             long auxTime = PresentationController.getInstance().getFileTimeStat(file);
 
             // Hasn't started
-            if(auxIn == 0 && auxOut == 0 && auxTime == 0) {
+            if(auxIn+auxOut+auxTime == 0) {
                 in.setText("-");
                 out.setText("-");
                 time.setText("-");
-                bps.setText("-");
+                speed.setText("-");
                 ratio.setText("-");
             }
             else {
                 in.setText(bytesToHumanLegible(auxIn, true));
                 out.setText(bytesToHumanLegible(auxOut, true));
-                time.setText(milisToHumanLegible(auxTime));
-    
+                if (auxTime < 1) {
+                    auxTime = 1; // 1ms precision
+                    time.setText("< 1ms");
+                }
+                else {
+                    time.setText(milisToHumanLegible(auxTime));
+                }
                 if(!isCompressed) {
-                    bps.setText(bytesToHumanLegible((long)((double)(auxIn-auxOut)/((double)(auxTime)/1000.0)), true));
+                    speed.setText(bytesToHumanLegible((long)((double)(auxIn)/((double)(auxTime/1000.0))), true)+"/s");
                     ratio.setText(String.format("%.2f", (double)auxIn/(double)auxOut));
                 }
                 else {
-                        bps.setText(bytesToHumanLegible((long)((double)(auxOut-auxIn)/((double)(auxTime)/1000.0)), true));
+                        speed.setText(bytesToHumanLegible((long)((double)(auxOut)/((double)(auxTime/1000.0))), true)+"/s");
                         ratio.setText(String.format("%.2f", (double)auxOut/(double)auxIn));
                 }
             }
@@ -527,11 +532,11 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         bag.gridy = 9;
         bag.anchor = GridBagConstraints.LINE_END;
         bag.insets = new Insets(0, 0, 0, 5);
-        add(new JLabel("Bps: "), bag);
+        add(new JLabel("Speed: "), bag);
 
         bag.gridx = 1;
         bag.anchor = GridBagConstraints.LINE_START;
         bag.insets = new Insets(0, 0, 0, 0);
-        add(bps, bag);
+        add(speed, bag);
     } 
 }
