@@ -6,7 +6,7 @@ public class TotalStatistics {
      * @return the stats
      */
     public static String getStats() {
-        if (PresentationController.isCompressed()) {
+        if (PresentationController.getInstance().isCompressed()) {
             return decompressionStats();
         }
         else {
@@ -18,9 +18,9 @@ public class TotalStatistics {
      * Indicates read, written, elapsed time, compression ratio, compression per second from the total statistics files
      */
     private static String compressionStats() {
-        long in = PresentationController.getTotalInputSizeStat();
-        long out = PresentationController.getTotalOutputSizeStat();
-        long time = PresentationController.getTotalTimeStat();
+        long in = PresentationController.getInstance().getTotalInputSizeStat();
+        long out = PresentationController.getInstance().getTotalOutputSizeStat();
+        long time = PresentationController.getInstance().getTotalTimeStat();
         String stats = "";
         stats = stats + String.format("Compression Ratio: %s (Bigger is better, lower than 1 is bad)\n", String.format("%.2f",(double)(in)/(double)(out)));
         stats = stats + String.format("Space Savings: %s (Bigger is better)\n", String.format("%.2f", 1-((double)(out)/(double)(in))));
@@ -35,9 +35,9 @@ public class TotalStatistics {
      * Indicates read, written, elapsed time, decompression ratio, decompression per second from the total statistics files
      */
     private static String decompressionStats() {
-        long in = PresentationController.getTotalInputSizeStat();
-        long out = PresentationController.getTotalOutputSizeStat();
-        long time = PresentationController.getTotalTimeStat();
+        long in = PresentationController.getInstance().getTotalInputSizeStat();
+        long out = PresentationController.getInstance().getTotalOutputSizeStat();
+        long time = PresentationController.getInstance().getTotalTimeStat();
         String stats = "";
         stats = stats + String.format("Decompression Ratio: %s (Inverse of compression ratio, Lower is better)\n", String.format("%.2f",(double)(in)/(double)(out)));
         stats = stats + String.format("Read: %s\n", bytesToHumanLegible(in));

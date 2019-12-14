@@ -37,9 +37,9 @@ public class Archive {
     Archive(String Path) {
         this.Path = Path;
         stats = new Statistics();
-        CType = PersistenceController.getDefaultCompressionType(isImage());
+        CType = PersistenceController.getInstance().getDefaultCompressionType(isImage());
         try {
-            compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
+            compressionArg = PersistenceController.getInstance().getDefaultCompressionParameter(CType);
         } catch (Exception e) {
             compressionArg = null;
         }
@@ -93,7 +93,7 @@ public class Archive {
         if (!isImage() && Type.equals("JPEG"))
             throw new Exception("JPEG algorithm not compatible with documents!");
         CType = Type;
-        compressionArg = PersistenceController.getDefaultCompressionParameter(CType);
+        compressionArg = PersistenceController.getInstance().getDefaultCompressionParameter(CType);
     }
 
     /**
@@ -110,7 +110,7 @@ public class Archive {
      * @throws Exception if the argument is not valid for the current compression type
      */
     public void setCompressionArgument(String arg) throws Exception {
-        if (PersistenceController.isCompressionParameterValid(arg, CType)) {
+        if (PersistenceController.getInstance().isCompressionParameterValid(arg, CType)) {
             compressionArg = arg;
         }
         else {

@@ -29,7 +29,7 @@ public class MainFrame extends JFrame {
         toolbar = new Toolbar();
         navigation = new NavigationPanel();
         formPanel = new FormPanel();
-        PresentationController.setNavigator(navigation);
+        PresentationController.getInstance().setNavigator(navigation);
         navigation.subscribeClickFile(formPanel); // receive file selection signals
         navigation.subscribeClickFolder(formPanel); // receive folder selection signals
 

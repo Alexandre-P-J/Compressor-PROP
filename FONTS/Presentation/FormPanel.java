@@ -125,14 +125,14 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         if (e.getSource() == displayButton) {
             try {
                 JFrame frame = new JFrame();
-                if(PresentationController.isFileImage(filePath)) {
+                if(PresentationController.getInstance().isFileImage(filePath)) {
                     frame.setTitle("Image Viewer");
                     frame.add(new ShowImage(filePath, frame, false));
                 }
                 else {
                     frame.setTitle("Text Viewer");
                     frame.setSize(600, 850);
-                    frame.add(new ShowText(PresentationController.getDocument(filePath)));
+                    frame.add(new ShowText(PresentationController.getInstance().getDocument(filePath)));
                 }
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
@@ -144,7 +144,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         if (e.getSource() == compareButton) {
             try {
                 JFrame frame = new JFrame();
-                if (PresentationController.isFileImage(filePath)) {
+                if (PresentationController.getInstance().isFileImage(filePath)) {
                     frame.setTitle("Lossy Image Viewer");
                     frame.add(new ShowImage(filePath, frame, true));
                     frame.setLocationRelativeTo(null);
@@ -159,7 +159,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
             if (algorithmSelection.getItemCount() > 0) {
                 String algorithm = algorithmSelection.getSelectedItem().toString();
                 try {
-                    PresentationController.setCompressionType(filePath, algorithm);
+                    PresentationController.getInstance().setCompressionType(filePath, algorithm);
                     refreshParameterSelection(filePath);
                 } catch (Exception exc) {
                     System.out.println(exc.getMessage());
@@ -172,8 +172,8 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                 String algorithm = algorithmSelection.getSelectedItem().toString();
                 int indexParameter = parameterSelection.getSelectedIndex();
                 try {
-                    String[] parameterList = PresentationController.getValidCompressionParameters(algorithm);
-                    PresentationController.setCompressionParameter(filePath, parameterList[indexParameter]);
+                    String[] parameterList = PresentationController.getInstance().getValidCompressionParameters(algorithm);
+                    PresentationController.getInstance().setCompressionParameter(filePath, parameterList[indexParameter]);
                     refreshParameterSelection(filePath);
                 } catch (Exception exc) {
                     System.out.println(exc.getMessage());
@@ -196,7 +196,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         refreshAlgortihmSelection(path);
         refreshParameterSelection(path);
 
-        if (PresentationController.isCompressed()) {
+        if (PresentationController.getInstance().isCompressed()) {
             // Decompression mode
             algorithmSelection.setEnabled(false);
             parameterSelection.setEnabled(false);
@@ -213,7 +213,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
             titleAlgorithm.setEnabled(true);
             titleParameters.setEnabled(true);
             try {
-                if (PresentationController.isFileImage(path)) {
+                if (PresentationController.getInstance().isFileImage(path)) {
                     compareButton.setVisible(true);
                     // Button takes the role of original image view button 
                     displayButton.setText("Original");
@@ -248,8 +248,8 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         algorithmSelection.removeActionListener(this);
         algorithmModel.removeAllElements();
         try {
-            setSelection(algorithmSelection, algorithmModel, PresentationController.getValidCompressionTypes(path));
-            algorithmSelection.setSelectedItem(PresentationController.getCompressionType(path));
+            setSelection(algorithmSelection, algorithmModel, PresentationController.getInstance().getValidCompressionTypes(path));
+            algorithmSelection.setSelectedItem(PresentationController.getInstance().getCompressionType(path));
         } catch (Exception exc) {
             System.out.println(exc.getMessage());
         }
@@ -264,19 +264,19 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         parameterSelection.removeActionListener(this);
         parameterModel.removeAllElements();
         try {
-            String algorithm = PresentationController.getCompressionType(path);
+            String algorithm = PresentationController.getInstance().getCompressionType(path);
             // Image
-            if (PresentationController.isFileImage(path)) {
-                setSelection(parameterSelection, parameterModel, PresentationController.getValidCompressionParameters(algorithm));
-                String arg = PresentationController.getCompressionParameter(path);
+            if (PresentationController.getInstance().isFileImage(path)) {
+                setSelection(parameterSelection, parameterModel, PresentationController.getInstance().getValidCompressionParameters(algorithm));
+                String arg = PresentationController.getInstance().getCompressionParameter(path);
                 if (arg != null) {
-                    parameterSelection.setSelectedItem(PresentationController.getCompressionParameter(path));
+                    parameterSelection.setSelectedItem(PresentationController.getInstance().getCompressionParameter(path));
                 }
             }
             // TextFile
             else {
-                setSelection(parameterSelection, parameterModel, getDictBytesToHumanLegible(PresentationController.getValidCompressionParameters(algorithm)));
-                String arg = PresentationController.getCompressionParameter(path);
+                setSelection(parameterSelection, parameterModel, getDictBytesToHumanLegible(PresentationController.getInstance().getValidCompressionParameters(algorithm)));
+                String arg = PresentationController.getInstance().getCompressionParameter(path);
                 if (arg != null) {
                     parameterSelection.setSelectedItem(getDictBytesToHumanLegible(arg));
                 }
@@ -317,9 +317,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
      */
     private void stats(String file, boolean isCompressed) {
         try {
-            long auxIn = PresentationController.getFileInputSizeStat(file);
-            long auxOut = PresentationController.getFileOutputSizeStat(file);
-            long auxTime = PresentationController.getFileTimeStat(file);
+            long auxIn = PresentationController.getInstance().getFileInputSizeStat(file);
+            long auxOut = PresentationController.getInstance().getFileOutputSizeStat(file);
+            long auxTime = PresentationController.getInstance().getFileTimeStat(file);
 
             // Hasn't started
             if(auxIn == 0 && auxOut == 0 && auxTime == 0) {

@@ -10,11 +10,11 @@ public class PresentationController {
     /**
      * Navegation panel
      */
-    private static NavigationPanel navigator;
+    private NavigationPanel navigator;
     /**
      * Indicates if it is compressed
      */
-    private static Boolean isCompressed = null;
+    private Boolean isCompressed = null;
     /**
      * Singleton instance
      */
@@ -38,7 +38,7 @@ public class PresentationController {
     /**
      * Display the UI
      */
-    public static void DisplayUI() {
+    public void DisplayUI() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -53,8 +53,8 @@ public class PresentationController {
      * @return if is ti compressed
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static boolean readFileTree(String path) throws Exception {
-        isCompressed = DomainController.readFileTree(path);
+    public boolean readFileTree(String path) throws Exception {
+        isCompressed = DomainController.getInstance().readFileTree(path);
         navigator.refresh("");
         return isCompressed;
     }
@@ -65,8 +65,8 @@ public class PresentationController {
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static String[] getFileNames(String path) throws Exception {
-        return DomainController.getFileNames(path);
+    public String[] getFileNames(String path) throws Exception {
+        return DomainController.getInstance().getFileNames(path);
     }
 
     /**
@@ -75,8 +75,8 @@ public class PresentationController {
      * @return an array of folder names contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
-    public static String[] getFolderNames(String path) throws Exception {
-        return DomainController.getFolderNames(path);
+    public String[] getFolderNames(String path) throws Exception {
+        return DomainController.getInstance().getFolderNames(path);
     }
 
     /**
@@ -85,8 +85,8 @@ public class PresentationController {
      * @return a string array containing valid compression types for the file in the path
      * @throws Exception if the path does not point a file
      */
-    public static String[] getValidCompressionTypes(String path) throws Exception {
-        return DomainController.getValidCompressionTypes(path);
+    public String[] getValidCompressionTypes(String path) throws Exception {
+        return DomainController.getInstance().getValidCompressionTypes(path);
     }
 
     /**
@@ -95,8 +95,8 @@ public class PresentationController {
      * @return a string array containing valid parameters types for the file in the path
      * @throws Exceptionif the path does not point a file
      */
-    public static String[] getValidCompressionParameters(String compressionType) throws Exception {
-        return DomainController.getValidCompressionParameters(compressionType);
+    public String[] getValidCompressionParameters(String compressionType) throws Exception {
+        return DomainController.getInstance().getValidCompressionParameters(compressionType);
     }
 
     /**
@@ -105,8 +105,8 @@ public class PresentationController {
      * @return true if the file in the path is a ppm image, false otherwise
      * @throws Exception if the path does not point a file
      */
-    public static boolean isFileImage(String path) throws Exception {
-        return DomainController.isFileImage(path);
+    public boolean isFileImage(String path) throws Exception {
+        return DomainController.getInstance().isFileImage(path);
     }
 
     /**
@@ -116,8 +116,8 @@ public class PresentationController {
      * @throws Exception if the file does not exist, or the compression type does not support the file 
      * or if changing the compression of an already compressed file, or the compression type does not exist
      */
-    public static void setCompressionType(String path, String Type) throws Exception {
-        DomainController.setCompressionType(path, Type);
+    public void setCompressionType(String path, String Type) throws Exception {
+        DomainController.getInstance().setCompressionType(path, Type);
     }
 
     /**
@@ -126,8 +126,8 @@ public class PresentationController {
      * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @throws Exception if the file does not exist
      */
-    public static String getCompressionType(String path) throws Exception {
-        return DomainController.getCompressionType(path);
+    public String getCompressionType(String path) throws Exception {
+        return DomainController.getInstance().getCompressionType(path);
     }
 
     /**
@@ -136,8 +136,8 @@ public class PresentationController {
      * @return the paramater selected
      * @throws Exception if the file does not exist
      */
-    public static String getCompressionParameter(String path) throws Exception {
-        return DomainController.getCompressionParameter(path);
+    public String getCompressionParameter(String path) throws Exception {
+        return DomainController.getInstance().getCompressionParameter(path);
     }
 
     /**
@@ -146,8 +146,8 @@ public class PresentationController {
      * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @throws Exception if the file does not exist
      */
-    public static void setCompressionParameter(String path, String arg) throws Exception {
-        DomainController.setCompressionParameter(path, arg);
+    public void setCompressionParameter(String path, String arg) throws Exception {
+        DomainController.getInstance().setCompressionParameter(path, arg);
     }
 
     /**
@@ -155,8 +155,8 @@ public class PresentationController {
      * @param OutputFilePath Path to the resulting compressed file
      * @throws Exception if any of the compressions fails or invalid OutputFilePath
      */
-    public static void compressTo(String OutputFilePath) throws Exception {
-        DomainController.compressTo(OutputFilePath);
+    public void compressTo(String OutputFilePath) throws Exception {
+        DomainController.getInstance().compressTo(OutputFilePath);
         navigator.refresh();
         JOptionPane.showMessageDialog(new JFrame(), "Compression Finished!");
     }
@@ -166,8 +166,8 @@ public class PresentationController {
      * @param OutputFolderPath Path to the folder to save the decompressed data
      * @throws Exception if any of the decompressions fails, or invalid OutputFolderPath
      */
-    public static void decompressTo(String OutputFolderPath) throws Exception {
-        DomainController.decompressTo(OutputFolderPath);
+    public void decompressTo(String OutputFolderPath) throws Exception {
+        DomainController.getInstance().decompressTo(OutputFolderPath);
         navigator.refresh();
         JOptionPane.showMessageDialog(new JFrame(), "Decompression Finished!");
     }
@@ -178,8 +178,8 @@ public class PresentationController {
      * @return String that contains the entire document in UTF-8
      * @throws Exception if i/o error, or the decompression fails
      */
-    public static String getDocument(String path) throws Exception {
-        return DomainController.getDocument(path);
+    public String getDocument(String path) throws Exception {
+        return DomainController.getInstance().getDocument(path);
     }
 
     /**
@@ -188,8 +188,8 @@ public class PresentationController {
      * @return
      * @throws Exception
      */
-    public static byte[] getImage(String path) throws Exception {
-        return DomainController.getImage(path);
+    public byte[] getImage(String path) throws Exception {
+        return DomainController.getInstance().getImage(path);
     }
 
     /**
@@ -198,12 +198,12 @@ public class PresentationController {
      * @return
      * @throws Exception
      */
-    public static byte[] getImageAfterLossyCompression(String path) throws Exception {
-        return DomainController.getImageAfterLossyCompression(path);
+    public byte[] getImageAfterLossyCompression(String path) throws Exception {
+        return DomainController.getInstance().getImageAfterLossyCompression(path);
     }
 
     // Ojo! si no esta comprimiendo/descomprimiendo por que no se ha seleccionado archivo, retorna null!
-    public static Boolean isCompressed() {
+    public Boolean isCompressed() {
         return isCompressed;
     }
 
@@ -211,7 +211,7 @@ public class PresentationController {
      * Sets the navigator
      * @param np the navigation panel
      */
-    public static void setNavigator(NavigationPanel np) {
+    public void setNavigator(NavigationPanel np) {
         navigator = np;
     }
 
@@ -219,24 +219,24 @@ public class PresentationController {
      * Returns the total time of the last compress/decompress operation
      * @return time in miliseconds
      */
-    public static long getTotalTimeStat() {
-        return DomainController.getTotalTimeStat();
+    public long getTotalTimeStat() {
+        return DomainController.getInstance().getTotalTimeStat();
     }
 
     /**
      * Returns the total size of the input data from the last compress/decompress operation
      * @return size in bytes
      */
-    public static long getTotalInputSizeStat() {
-        return DomainController.getTotalInputSizeStat();
+    public long getTotalInputSizeStat() {
+        return DomainController.getInstance().getTotalInputSizeStat();
     }
 
     /**
      * Returns the total size of the output data from the last compress/decompress operation
      * @return size in bytes
      */
-    public static long getTotalOutputSizeStat() {
-        return DomainController.getTotalOutputSizeStat();
+    public long getTotalOutputSizeStat() {
+        return DomainController.getInstance().getTotalOutputSizeStat();
     }
 
     /**
@@ -245,8 +245,8 @@ public class PresentationController {
      * @return time in miliseconds
      * @throws Exception if the file does not exist
      */
-    public static long getFileTimeStat(String path) throws Exception {
-        return DomainController.getFileTimeStat(path);
+    public long getFileTimeStat(String path) throws Exception {
+        return DomainController.getInstance().getFileTimeStat(path);
     }
 
     /**
@@ -255,8 +255,8 @@ public class PresentationController {
      * @return size in bytes
      * @throws Exception if the file does not exist
      */
-    public static long getFileInputSizeStat(String path) throws Exception {
-        return DomainController.getFileInputSizeStat(path);
+    public long getFileInputSizeStat(String path) throws Exception {
+        return DomainController.getInstance().getFileInputSizeStat(path);
     }
 
     /**
@@ -265,8 +265,8 @@ public class PresentationController {
      * @return size in bytes
      * @throws Exception if the file does not exist
      */
-    public static long getFileOutputSizeStat(String path) throws Exception {
-        return DomainController.getFileOutputSizeStat(path);
+    public long getFileOutputSizeStat(String path) throws Exception {
+        return DomainController.getInstance().getFileOutputSizeStat(path);
     }
 
 
