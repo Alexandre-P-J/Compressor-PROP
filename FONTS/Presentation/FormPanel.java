@@ -101,7 +101,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         parameterSelection.setPreferredSize(new Dimension(105,25));
 
         // Visualization Button
-        displayButton = new JButton("Dispaly");
+        displayButton = new JButton("Display");
         compareButton = new JButton("Lossy");
 
         // Listeners
@@ -116,7 +116,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
     }
 
     /**
-     * Invoked when the button or selector action occurs.
+     * Invoked when the button or selector action occurs
      * @param e action event
      */
     @Override
@@ -199,9 +199,9 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         if (PresentationController.isCompressed()) {
             // Decompression mode
             algorithmSelection.setEnabled(false);
-            parameterSelection.setEnabled(false);
+            parameterSelection.setVisible(false);
             titleAlgorithm.setEnabled(false);
-            titleParameters.setEnabled(false);
+            titleParameters.setVisible(false);
             compareButton.setVisible(false);
             // Statistics decompression
             stats(path, true);
@@ -209,9 +209,11 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
         else {
             // Compression mode
             algorithmSelection.setEnabled(true);
-            parameterSelection.setEnabled(true);
             titleAlgorithm.setEnabled(true);
             titleParameters.setEnabled(true);
+            titleParameters.setVisible(true);
+            parameterSelection.setEnabled(true);
+            parameterSelection.setVisible(true);
             try {
                 if (PresentationController.isFileImage(path)) {
                     compareButton.setVisible(true);
@@ -237,7 +239,7 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
     @Override
     public void SingleClick_Folder(String path) {
         setVisible(false);
-        displayButton.setText("Dispaly");
+        displayButton.setText("Display");
     }
 
     /**
@@ -339,8 +341,8 @@ public class FormPanel extends JPanel implements ActionListener, NavigationClick
                     ratio.setText(String.format("%.2f", (double)auxIn/(double)auxOut));
                 }
                 else {
-                    bps.setText(bytesToHumanLegible((long)((double)(auxOut-auxIn)/((double)(auxTime)/1000.0)), true));
-                    ratio.setText(String.format("%.2f", (double)auxOut/(double)auxIn));
+                        bps.setText(bytesToHumanLegible((long)((double)(auxOut-auxIn)/((double)(auxTime)/1000.0)), true));
+                        ratio.setText(String.format("%.2f", (double)auxOut/(double)auxIn));
                 }
             }
         }
