@@ -183,26 +183,29 @@ public class PresentationController {
     }
 
     /**
-     * 
-     * @param path
-     * @return
-     * @throws Exception
+     * Returns a byte array representing the image from the path
+     * @param path relative path to a ppm image
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the image does not exist or is malformed
      */
     public static byte[] getImage(String path) throws Exception {
         return DomainController.getImage(path);
     }
 
     /**
-     * 
-     * @param path
-     * @return
-     * @throws Exception
+     * Returns a byte array representing the image from the path after being compressed with the current algorithm and argument
+     * @param Path relative path to a ppm image
+     * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
+     * @throws Exception if the image does not exist or is malformed
      */
     public static byte[] getImageAfterLossyCompression(String path) throws Exception {
         return DomainController.getImageAfterLossyCompression(path);
     }
 
-    // Ojo! si no esta comprimiendo/descomprimiendo por que no se ha seleccionado archivo, retorna null!
+    /**
+     * Indicates the mode
+     * @return if is compressed
+     */
     public static Boolean isCompressed() {
         return isCompressed;
     }
@@ -268,11 +271,4 @@ public class PresentationController {
     public static long getFileOutputSizeStat(String path) throws Exception {
         return DomainController.getFileOutputSizeStat(path);
     }
-
-
-
-
-
-
-
 }
