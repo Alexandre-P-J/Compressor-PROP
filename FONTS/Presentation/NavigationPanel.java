@@ -14,11 +14,11 @@ public class NavigationPanel extends JPanel {
      */
     private String currentPath;
     /**
-     * File name
+     * File names
      */
     private String[] FileNames = new String[0];
     /**
-     * Folder name
+     * Folders name
      */
     private String[] FolderNames = new String[0];
     /**
@@ -34,11 +34,11 @@ public class NavigationPanel extends JPanel {
      */
     private DefaultListModel<String> model = new DefaultListModel<>();
     /**
-     * 
+     * Navegation file subscribers
      */
     private Vector<NavigationClickObserver> singleClickFileSubscribers = new Vector<NavigationClickObserver>();
     /**
-     * 
+     * Navegation folder subscribers
      */
     private Vector<NavigationClickObserver> singleClickFolderSubscribers = new Vector<NavigationClickObserver>();
 
@@ -55,6 +55,10 @@ public class NavigationPanel extends JPanel {
         add(new JScrollPane(jlist), BorderLayout.CENTER);
 
         MouseListener mouseListener = new MouseAdapter() {
+            /**
+             * Invoked when a mouse click occurs
+             * @param mouseEvent mouse event
+             */
             public void mouseClicked(MouseEvent mouseEvent) {
                 JList<String> theList = (JList) mouseEvent.getSource();
                 if (mouseEvent.getClickCount() % 2 == 0) { // double click
@@ -76,7 +80,8 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
+     * Double click action, if the target is a folder, go to the following directoriy,
+     * if the target is a return symbol, go back to the previous directory
      * @param target double click objective received
      */
     private void onDoubleClick(Object target) {
@@ -92,7 +97,7 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
+     * One click action, target selection
      * @param target single click objective received
      */
     private void onSingleClick(Object target) {
@@ -108,7 +113,7 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
+     * Basic refreshment function of the navigation panel
      * @param Path relative path to a file
      * @throws Exception if the path file does not exist
      */
@@ -143,9 +148,9 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
+     * From an absoulte path, gets the path from the open directory
      * @param Path relative path to a file
-     * @return
+     * @return return the path from the open directory
      */
     private String pathReturn(String Path) {
         String pattern = Pattern.quote(System.getProperty("file.separator"));
@@ -161,9 +166,9 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
-     * @param Folder
-     * @return
+     * Returns the path beyond the following folder
+     * @param Folder a folder
+     * @return the traverse path from the folder
      */
     private String pathTraverse(String Folder) {
         if (currentPath.length() == 0)
@@ -194,9 +199,9 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
-     * @param f
-     * @return
+     * Check and obtain the compatible return symnbol
+     * @param f the type of font
+     * @return the return symbol
      */
     private String getCompatibleReturnSymbol(Font f) {
         int[] symbols = { 0x2B9C };
@@ -209,16 +214,16 @@ public class NavigationPanel extends JPanel {
     }
 
     /**
-     * 
-     * @param si
+     * Function of design pattern observer of the file
+     * @param si a navigation click observer
      */
     public void subscribeClickFile(NavigationClickObserver si) {
         singleClickFileSubscribers.add(si);
     }
 
     /**
-     * 
-     * @param si
+     * Function of design pattern observer of the folder 
+     * @param si a navigation click observer
      */
     public void subscribeClickFolder(NavigationClickObserver si) {
         singleClickFolderSubscribers.add(si);
