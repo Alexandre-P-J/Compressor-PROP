@@ -17,8 +17,10 @@
 - [ ] Diagrama Presentacion
 - [ ] Actualizar Casos de Uso
 - [ ] Actualizar Archivos index.txt
-- [ ] Acabar Documentacion
-- [ ] Verificar que no hace falta entregar todos los drivers otra vez
+- [x] Acabar Documentacion
+- [ ] Index.txt
+- [ ] Descripcion Algoritmos
+- [ ] Descripcion breve clases
 
 ## Extra Features!
 - [x] Algorithm parameters (Dictionary size, JPEG quality...) Available in UI

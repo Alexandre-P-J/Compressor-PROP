@@ -1,18 +1,10 @@
 Directori EXE:
 
-\ExtraTest: 
-    Conte una petita descripcio d'aquest directori
-
-- El_Quijote.txt:
-    El nostre primer arxiu de testeig
-- Image.ppm:
-    La nostra primera imatge de testeig
-
 -- Havent executat ./gradlew PackProject ---
 
+\ExtraTest: 
+    Conte una petita descripcio d'aquest directori
 \MainDriver:
     Conte l'executable Compressor-PROP.jar
 \UnitTestJPEG:
     Conte l'executable UnitTestJPEG.jar
-
-	
