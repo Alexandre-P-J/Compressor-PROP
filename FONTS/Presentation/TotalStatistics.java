@@ -16,6 +16,7 @@ public class TotalStatistics {
 
     /**
      * Indicates read, written, elapsed time, compression ratio, compression per second from the total statistics files
+     * @return the total statistics from compression
      */
     private static String compressionStats() {
         long in = PresentationController.getInstance().getTotalInputSizeStat();
@@ -36,6 +37,7 @@ public class TotalStatistics {
 
     /**
      * Indicates read, written, elapsed time, decompression ratio, decompression per second from the total statistics files
+     * @return the total statistics from decompression
      */
     private static String decompressionStats() {
         long in = PresentationController.getInstance().getTotalInputSizeStat();
@@ -56,7 +58,6 @@ public class TotalStatistics {
     /**
      * Byte converter to facilitate vision
      * @param bytes bytes to deal with
-     * @param decimals parameter to decide whether to use decimals, true to use it, false otherwise
      * @return the respective bytes conversion to GB, MB, KB, B  
      */
     public static String bytesToHumanLegible(long bytes) {

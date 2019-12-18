@@ -61,7 +61,7 @@ public class PresentationController {
 
     /**
      * Return filenames from the given relative path
-     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
+     * @param path either "." or "foo/bar.." (replacing ".." with the rest of the path)
      * @return an array of filenames contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
@@ -71,7 +71,7 @@ public class PresentationController {
 
     /**
      * Return folder names from the given relative path
-     * @param pathToParentFolder either "." or "foo/bar.." (replacing ".." with the rest of the path)
+     * @param path either "." or "foo/bar.." (replacing ".." with the rest of the path)
      * @return an array of folder names contained in the folder with path equal to path argument
      * @throws Exception if path is invalid or filetree not initialized
      */
@@ -93,7 +93,7 @@ public class PresentationController {
      * Returns an array of all implemented parameters for the given algorithm
      * @param compressionType the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
      * @return a string array containing valid parameters types for the file in the path
-     * @throws Exceptionif the path does not point a file
+     * @throws Exception the path does not point a file
      */
     public String[] getValidCompressionParameters(String compressionType) throws Exception {
         return DomainController.getInstance().getValidCompressionParameters(compressionType);
@@ -141,9 +141,9 @@ public class PresentationController {
     }
 
     /**
-     * Returns the current compression type for the file in the given path
+     * Set the current compression type for the file in the given path
      * @param path relative path to a file
-     * @return the compression type, either "LZW", "LZ78", "LZSS" or "JPEG"
+     * @param arg the algorithm 
      * @throws Exception if the file does not exist
      */
     public void setCompressionParameter(String path, String arg) throws Exception {
@@ -174,7 +174,7 @@ public class PresentationController {
 
     /**
      * Returns a decompressed document from the compressed or not compressed filetree
-     * @param Path relative path to the file
+     * @param path relative path to the file
      * @return String that contains the entire document in UTF-8
      * @throws Exception if i/o error, or the decompression fails
      */
@@ -194,7 +194,7 @@ public class PresentationController {
 
     /**
      * Returns a byte array representing the image from the path after being compressed with the current algorithm and argument
-     * @param Path relative path to a ppm image
+     * @param path relative path to a ppm image
      * @return byte[] where the first 4 bytes represent width, 4 next the height and then 3 bytes per color (on byte per RGB component)
      * @throws Exception if the image does not exist or is malformed
      */

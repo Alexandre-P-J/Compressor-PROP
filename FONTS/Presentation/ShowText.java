@@ -26,7 +26,7 @@ public class ShowText extends JPanel {
     /**
      * Panel display text constructor using textPane
      * @param text file text
-     * @param textType
+     * @param textType type of the text
      */
     public ShowText(String text, String textType) {
         JTextPane textPane = new JTextPane();
