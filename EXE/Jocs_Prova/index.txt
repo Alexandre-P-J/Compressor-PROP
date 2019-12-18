@@ -1,0 +1,8 @@
+Directori Joc de prova:
+
+/Subdir: 
+    Subdirectori de prova.
+
+- Arxius de prova ...
+
+Seré comprimit :(
