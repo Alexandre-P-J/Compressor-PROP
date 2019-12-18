@@ -1,10 +1,10 @@
 Directori EXE:
 
--- Havent executat ./gradlew PackProject ---
-
 \ExtraTest: 
     Conte una petita descripcio d'aquest directori
 \MainDriver:
     Conte l'executable Compressor-PROP.jar
 \UnitTestJPEG:
     Conte l'executable UnitTestJPEG.jar
+\Jocs_Prova:
+    Conte el joc de prova.

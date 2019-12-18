@@ -11,7 +11,10 @@ Hi trobem la documentacio del projecte.
 - RubricaEntrega.pdf:
     Conte els criteris d'avaluacio de les dues entregues del projecte.
 
--- Havent executat ./gradlew PackProject ---
+- EntregaFinal.pdf:
+    Conte tota la documentacio del projecte: casos d'us, diagrames, estructura de dades ...
+
+- UML de les capes de Persistencia, Domini i Presentation, a tamany complert.
 
 \Documentation:
     Documentacio complert amb javadoc.
