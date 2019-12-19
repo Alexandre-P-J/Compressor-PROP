@@ -14,7 +14,14 @@ Hi trobem la documentacio del projecte.
 - EntregaFinal.pdf:
     Conte tota la documentacio del projecte: casos d'us, diagrames, estructura de dades ...
 
-- UML de les capes de Persistencia, Domini i Presentation, a tamany complert.
+- Diagrama_Domain.png
+    Imatge del diagrama
+
+- Diagrama_Persistence.png
+    Imatge del diagrama
+
+- Diagrama_Presentation.png
+    Imatge del diagrama
 
 \Documentation:
     Documentacio complert amb javadoc.

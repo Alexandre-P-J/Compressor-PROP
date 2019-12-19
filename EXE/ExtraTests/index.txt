@@ -2,3 +2,6 @@ Directori ExtraTests:
 
 - Description.txt:
 	Fitxer de text que descriu els tests que hem realitzat
+
+- ExtraTestsDriver.jar
+	Executable dels tests extra. Explicat a Description.txt
