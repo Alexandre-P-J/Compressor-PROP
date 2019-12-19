@@ -195,7 +195,7 @@ public class NavigationPanel extends JPanel {
                 return String.valueOf(Character.toChars(sym));
             }
         }
-        return "[FOLDER]";
+        return "[DIR]";
     }
 
     /**
@@ -210,7 +210,7 @@ public class NavigationPanel extends JPanel {
                 return String.valueOf(Character.toChars(sym));
             }
         }
-        return "[BACK]";
+        return "<";
     }
 
     /**
