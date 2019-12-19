@@ -110,6 +110,9 @@ public class Toolbar extends JPanel implements ActionListener {
                 if (decompressedSaveChooser.showOpenDialog(Toolbar.this) == JFileChooser.APPROVE_OPTION) {
                     File f = decompressedSaveChooser.getSelectedFile();
                     try {
+                        if (!f.exists()) {
+                            f.mkdir();
+                        }
                         PresentationController.getInstance().decompressTo(f.getCanonicalPath());
                         StatsButton.setVisible(true);
                     } catch (Exception exc) {
