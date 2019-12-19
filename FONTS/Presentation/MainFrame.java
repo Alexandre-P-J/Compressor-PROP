@@ -24,11 +24,6 @@ public class MainFrame extends JFrame {
      */
     public MainFrame() {
 
-        // make Java look like current operating system
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {}
-       
         setTitle("El Compressor");
 
         setLayout(new BorderLayout());
