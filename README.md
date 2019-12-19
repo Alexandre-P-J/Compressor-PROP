@@ -9,19 +9,6 @@
 ##### daniel.clemente.marin@est.fib.upc.edu
 ##### alexandre.perez.josende@est.fib.upc.edu
 
-## Road to second assignment
-- [ ] Manual Documento
-- [ ] Manual Interno FONTS/Presentation/Help.java
-- [ ] Diagrama Persistencia
-- [ ] Diagrama Dominio
-- [ ] Diagrama Presentacion
-- [ ] Actualizar Casos de Uso
-- [ ] Actualizar Archivos index.txt
-- [x] Acabar Documentacion
-- [ ] Index.txt
-- [ ] Descripcion Algoritmos
-- [ ] Descripcion breve clases
-
 ## Extra Features!
 - [x] Algorithm parameters (Dictionary size, JPEG quality...) Available in UI
 - [x] Custom Gradle system. Pack project, run program, tests and more in only one simple comand on any supported platform
