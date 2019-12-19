@@ -17,6 +17,7 @@ public class ShowText extends JPanel {
         textArea.setFocusable(false);
         textArea.setLineWrap(false);
         textArea.setText(text);
+        textArea.setCaretPosition(0);
         
         setLayout(new BorderLayout());
         JScrollPane sp = new JScrollPane(textArea);
@@ -35,6 +36,7 @@ public class ShowText extends JPanel {
         textPane.setFocusable(false);
         textPane.setContentType(textType);
         textPane.setText(text);
+        textPane.setCaretPosition(0);
         
         setLayout(new BorderLayout());
         JScrollPane sp = new JScrollPane(textPane);
