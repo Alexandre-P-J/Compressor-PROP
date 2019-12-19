@@ -1,4 +1,0 @@
-Directori JPEG
-
-- JPEGDriver.jar
-	Executable del JPEG.

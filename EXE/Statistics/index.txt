@@ -1,5 +1,0 @@
-Directori Statistics
-
-- StatsDriver.jar
-	Executable que genera les estadístiques de la execució de cada algoritme.
-

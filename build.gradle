@@ -5,6 +5,7 @@ apply plugin: 'eclipse'
 
 // Disable default test task
 project.gradle.startParameter.excludedTaskNames.add('test')
+project.gradle.startParameter.excludedTaskNames.add('run')
 
 // Set java compatibility version
 java {
@@ -29,7 +30,7 @@ sourceSets{
 
 // Main driver class (default gradle build task)
 ext {
-   javaMainClass = "StatsDriver"
+   javaMainClass = "MainDriver"
 }
 
 application {
@@ -38,87 +39,29 @@ application {
 
 // Generates and places jar files and documentation
 task PackProject(type: GradleBuild) {
-     tasks = ['clean', 'fatJPEGJar', 'fatLZ78Jar', 'fatLZSSJar', 'fatLZWJar', 'fatStatsJar', 'fatUnitTestJar', 'fatExtraTestsJar', 'javadoc']
+     tasks = ['clean', 'fatMainJar', 'fatUnitTestJar', 'fatExtraTestsJar', 'javadoc']
 }
 
-// Generates and places JPEGDriver.jar
-task fatJPEGJar(type: Jar) {
+// Generates and places Compressor-PROP.jar
+task fatMainJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': "JPEGDriver"
+        attributes 'Main-Class': javaMainClass
     }
-    baseName = 'JPEGDriver'
+    baseName = 'Compressor-PROP'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
     doLast {
         copy {
-            from fileTree('build/libs/JPEGDriver.jar')
-            into 'EXE/JPEG'
+            from fileTree('build/libs/Compressor-PROP.jar')
+            into 'EXE/MainDriver'
         }
     }
 }
 
-// Generates and places LZ78Driver.jar
-task fatLZ78Jar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': "LZ78Driver"
-    }
-    baseName = 'LZ78Driver'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-    doLast {
-        copy {
-            from fileTree('build/libs/LZ78Driver.jar')
-            into 'EXE/LZ78'
-        }
-    }
-}
-
-// Generates and places LZSSDriver.jar
-task fatLZSSJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': "LZSSDriver"
-    }
-    baseName = 'LZSSDriver'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-    doLast {
-        copy {
-            from fileTree('build/libs/LZSSDriver.jar')
-            into 'EXE/LZSS'
-        }
-    }
-}
-
-// Generates and places LZWDriver.jar
-task fatLZWJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': "LZWDriver"
-    }
-    baseName = 'LZWDriver'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-    doLast {
-        copy {
-            from fileTree('build/libs/LZWDriver.jar')
-            into 'EXE/LZW'
-        }
-    }
-}
-
-// Generates and places StatsDriver.jar
-task fatStatsJar(type: Jar) {
-    manifest {
-        attributes 'Main-Class': "StatsDriver"
-    }
-    baseName = 'StatsDriver'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-    doLast {
-        copy {
-            from fileTree('build/libs/StatsDriver.jar')
-            into 'EXE/Statistics'
-        }
-    }
+// Generate and run Compressor-PROP.jar
+task Main(type: JavaExec) {
+  dependsOn fatMainJar
+  classpath = files("build/libs/Compressor-PROP.jar")
 }
 
 // Generates and places UnitTest_JPEG.jar

@@ -2,7 +2,7 @@ package UnitTest_JPEG;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import Compressor.Huffman;
+import Domain.Huffman;
 
 public class HuffmanStub extends Huffman {
 
@@ -72,7 +72,13 @@ public class HuffmanStub extends Huffman {
     }
 
     @Override
-    public void compress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
+    public void setMaxSizeHint(int maxSizeInBytes) {
+        System.out.println("Calls setMaxSizeHint from Huffman STUB");
+        // maxSizeInBytes equals 128 always.
+    }
+
+    @Override
+    public void compress(InputStream is, OutputStream os) throws IOException {
         System.out.println("Calls compress from Huffman STUB");
         if (count == 0) 
             for (int i = 0; i < Compressed1.length; ++i) 
@@ -86,7 +92,7 @@ public class HuffmanStub extends Huffman {
     }
 
     @Override
-    public void decompress(InputStream is, OutputStream os, int maxSizeInBytes) throws IOException {
+    public void decompress(InputStream is, OutputStream os) throws IOException {
         System.out.println("Calls decompress from Huffman STUB");
         if (count == 0) 
             for (int i = 0; i < Decompressed1.length; ++i) 
