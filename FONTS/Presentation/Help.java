@@ -7,59 +7,59 @@ public class Help {
     private static String Help =
         "<html>"+
         "<body>"+
-        "<h1>¡Bienvenido al manual de usuario!</h1>"+
-        "<p>En este manual le ofreceremos una explicación detallada del funcionamiento del programa para que pueda utilizar sin ningún tipo de problema todas las funcionalidades de nuestro producto.</p>"+
+        "<h1>Welcome to the user manual!</h1>"+
+        "<p>In this manual we will offer you a detailed explanation of the program opearation so that you can use all the functionalities of our product without any problem.</p>"+
         "<p></p>"+
-        "<h2>1.ENTORNO DE TRABAJO</h2>"+
-        "<p>Antes de empezar con la descripción de las funcionalidades vamos a especificar los principales componentes del entorno de trabajo.</p>"+
-        "<p>El entorno sobre el que trabajaremos se divide en tres​ partes principales:</p>"+
+        "<h2>1.WORK ENVIRONMENT</h2>"+
+        "<p>Before starting with the description of the functionalities we will specify the main components of the work environment.</p>"+
+        "<p>The environment we work on is divided into three main parts:</p>"+
         "<p></p>"+
-        "<b>1.1.Barra de herramientas</b>"+
-        "<p>Donde aparecerán los botones que se usarán para llevar a cabo las principales funcionalidades.</p>"+
+        "<b>1.1.Toolbar</b>"+
+        "<p>Where the buttons that will be used to carry out the main functionalities will appear.</p>"+
         "<p></p>"+
-        "<b>1.2.Ventana de propiedades</b>"+
-        "<p>Donde aparecerán ciertas propiedades relativas al archivo seleccionado. Esta ventana aparecerá únicamente cuando se haya seleccionado un archivo individual (no carpeta) en la ventana de navegación.</p>"+
+        "<b>1.2.Properties panel</b>"+
+        "<p>Where certain properties relative to the selected file will appear. This panel will appear only when an individual file (not a folder) has been selected in the navigation panel.</p>"+
         "<p></p>"+
-        "<b>1.3.Ventana de navegación</b>"+
-        "<p>Donde se elegirá cuál será el archivo del que aparecerán las propiedades en la ventana de propiedades.</p>"+
+        "<b>1.3.Navigation panel</b>"+
+        "<p>Where the file from which the properties will appear in the properties panel will be chosen.</p>"+
         "<p></p>"+
-        "<p>A parte de estas ventanas principales, a medida que se vayan explorando las distintas funcionalidades del programa el entorno también presenta distintas ventanas emergentes​. Estas son:</p>"+
+        "<p>Apart from these main panels, as the different functionalities of the program are explored, the environment also presents different pop-up windows. These are:</p>"+
         "<p></p>"+
-        "<b>1.4.Ventana de abrir archivo/carpeta</b>"+
-        "<p>Donde se podrá explorar la jerarquía de archivos del sistema y seleccionar el archivo/carpeta que se quiera comprimir/descomprimir. Esta ventana aparecerá al pulsar el botón 'Open'.</p>"+
+        "<b>1.4.Open file / folder window</b>"+
+        "<p>Where you can explore the hierarchy of system files and select the file / folder to be compressed / decompressed. This window will appear when you press the 'Open' button.</p>"+
         "<p></p>"+
-        "<b>1.5.Ventana de guardado</b>"+
-        "<p>Donde se podrá elegir la ubicación en la que se guardará el archivo comprimido/descomprimido. Esta ventana aparecerá al pulsar el botón 'Comprimir' si el archivo seleccionado es un archivo no-comprimido y al pulsar el botón 'Descomprimir' si el archivo seleccionado es un archivo previamente comprimido.</p>"+
+        "<b>1.5.Save window</b>"+
+        "<p>Where you can choose the location where the compressed / decompressed file will be saved. This window will appear when you press the 'Compress' button if the selected file is a non-compressed file and when you press the 'Decompress' button if the selected file is a previously compressed file.</p>"+
         "<p></p>"+
-        "<b>1.6.Ventana de ayuda</b>"+
-        "<p>Donde se podrá consultar un breve manual de ayuda. Esta ventana aparecerá al pulsar el botón 'Help'.</p>"+
+        "<b>1.6.Help window</b>"+
+        "<p>Where you can consult a brief help manual. This window will appear when you press the 'Help' button.</p>"+
         "<p></p>"+
-        "<b>1.7.Ventana de visualización</b>"+
-        "<p>Donde podremos previsualizar los archivos individuales (no carpetas) seleccionados en la ventana de navegación. Esta ventana aparecerá al pulsar el botón 'Display' o si el archivo seleccionado es una imagen .ppm al pulsar el botón 'Lossy'.</p>"+
+        "<b>1.7.Visualisation window</b>"+
+        "<p>Where we can preview the individual files (not folders) selected in the navigation window. This window will appear when you press the 'Display' button or if the selected file is a .ppm image when you press the 'Lossy' button.</p>"+
         "<p></p>"+
         "<p></p>"+
-        "<h2>2.FUNCIONALIDADES PRINCIPALES</h2>"+
-        "<b>2.1.Comprimir archivo/carpeta</b>"+
-        "<p>Para realizar la compresión de un archivo determinado deberemos seguir los siguientes pasos:</p>"+
-        "<ul><li>Pulsar el botón 'Open' de la barra de herramientas.</li><li>Seleccionar el archivo/carpeta de la ventana emergente de abrir archivo que queremos comprimir (que no sea un archivo previamente comprimido).</li><li>(¡Paso a seguir solo si queremos elegir el algoritmo de compresión y el tamaño del diccionario para un archivo determinado!) Seleccionar el archivo objetivo en la ventana de navegación. Si el archivo no es una imagen, seleccionar el algoritmo con el que se realizará la compresión pulsando en el desplegable 'Algorithm'. Si el algoritmo seleccionado no es el LZSS seleccionar el tamaño del diccionario pulsando en el desplegable 'Parameter'.</li><li>Pulsar el botón 'Compress' de la barra de herramientas.</li><li>Elegir el lugar en el conjunto de archivos del sistema donde se guardará el archivo/carpeta comprimido y con qué nombre lo hará. Una vez pulsado el botón 'Save' del explorador empezará la compresión.</li></ul>"+
+        "<h2>2.MAIN FUNCTIONALITIES</h2>"+
+        "<b>2.1.Compress file / folder</b>"+
+        "<p>To perform the compression of a particular file we must follow the following steps:</p>"+
+        "<ul><li>Press the 'Open' button on the toolbar.</li><li>Select the file / folder from the pop-up window that we want to compress (other than a previously compressed file).</li><li>(Follow the next step only if we want to choose the compression algorithm and dictionary size for a given file!) Select the target file in the navigation window. If the file is not an image, select the algorithm with which the compression will be performed by clicking on the drop-down 'Algorithm'. If the selected algorithm is not the LZSS, select the size of the dictionary by clicking on the 'Parameter' drop-down.</li><li>Press the 'Compress' button on the toolbar.</li><li>Choose the place in the set of system files where the compressed file / folder will be stored and with what name it will. Once the browser's 'Save' button has been pressed, compression will begin.</li></ul>"+
         "<p></p>"+
-        "<b>2.2.Descomprimir archivo</b>"+
-        "<p>Para realizar la descompresión de un archivo determinado deberemos seguir los siguientes pasos:</p>"+
-        "<ul><li>Pulsar el botón 'Open' de la barra de herramientas.</li><li>Seleccionar el archivo/carpeta de la ventana emergente de abrir archivo/carpeta que queremos descomprimir (tiene que ser un archivo/carpeta previamente comprimido).</li><li>Pulsar el botón 'Decompress' de la barra de herramientas.</li><li>Elegir el lugar en el conjunto de archivos del sistema donde se guardará el archivo/carpeta descomprimido. Una vez pulsado el botón 'Save' del explorador empezará la descompresión.</li></ul>"+
-        "<p>¡Atención! El archivo/carpeta comprimido seleccionado en la ventana emergente de abrir archivo/carpeta aparecerá en la ventana de selección de archivo/carpeta con el nombre original y no con el nombre que le hemos otorgado cuando hemos hecho la compresión.</p>"+
+        "<b>2.2.Decompress file / folder</b>"+
+        "<p>To decompress a particular file we must follow the following steps:</p>"+
+        "<ul><li>Press the 'Open' button on the toolbar.</li><li>Select the file / folder from the pop-up window to open the file / folder you want to decompress (it has to be a previously compressed file / folder).</li><li>Press the 'Decompress' button on the toolbar.</li><li>Choose the place in the set of system files where the decompressed file / folder will be saved. Once the browser's 'Save' button has been pressed, decompression will begin.</li></ul>"+
+        "<p>Attention! If a compressed file / folder is opened, it will appear in the navigation panel with the original name and not with the name we have given it when we have saved it when doing the compression.</p>"+
         "<p></p>"+
-        "<b>2.3.Visualización de estadísticas</b>"+
-        "<p>Para visualizar el rendimiento de la compresión de un archivo/carpeta mediante estadísticas deberemos seguir los siguientes pasos:</p>"+
-        "<ul><li>Comprimir/descomprimir el archivo/carpeta de la manera explicada en los puntos 2.1 y 2.2.</li><li>Pulsar el botón 'Statistics' para visualizar las estadísticas totales.</li><li>Si el hemos comprimido/descomprimido una carpeta seleccionar cada archivo para visualizar las estadísticas a nivel individual en la ventana de propiedades. (si hemos comprimido/descomprimido un archivo individual y lo seleccionamos, nos aparecerá en la ventana de propiedades las mismas estadísticas que pulsando el botón 'Statistics'.</li></ul>"+
-        "<p>Las estadísticas mostradas contendrán la siguiente información:</p>"+
-        "<ul><li>'Compression/decompression ratio': Resulta de la división del tamaño del archivo/carpeta original entre el tamaño del archivo/carpeta comprimido/descomprimido.</li><li>'Space savings'​: Se define como la reducción de tamaño en relación con el tamaño sin comprimir.</li><li>'Read': Hace referencia al tamaño de datos leídos al realizar la compresión/descompresión</li><li>'Written': Hace referencia al tamaño de datos escritos al realizar la compresión/descompresión.</li><li>'Elapsed time': Hace referencia al tiempo transcurrido mientras se realiza la compresión/descompresión.</li><li>'Compression/decompression per second'/'Speed': Resulta de la división del tamaño del archivo/carpeta comprimido/descomprimido entre el 'elapsed time'.</li></ul>"+
+        "<b>2.3.Statistics display</b>"+
+        "<p>To visualize the compression performance of a file / folder through statistics, we must follow these steps:</p>"+
+        "<ul><li>Compress / decompress the file / folder as explained in points 2.1 and 2.2.</li><li>Press the 'Statistics' button to display the total statistics.</li><li>If we have compressed / decompressed a folder select each file to display the statistics at the individual level in the properties window. (If we have compressed / decompressed an individual file and selected it, the same statistics will appear in the properties window as by pressing the 'Statistics' button.</li></ul>"+
+        "<p>The statistics shown will contain the following information:</p>"+
+        "<ul><li>Compression/decompression ratio: It results from the division of the size of the original file / folder by the size of the compressed / decompressed file / folder.</li><li>Space savings: It is defined as the size reduction in relation to the uncompressed size.</li><li>Read: Refers to the size of data read when performing compression / decompression.</li><li>Written: Refers to the size of written data when performing compression / decompression.</li><li>Elapsed time: Refers to the elapsed time while compressing / decompressing.</li><li>Compression/decompression per second/Speed: It results from the division of the size of the compressed / decompressed file / folder by the elapsed time.</li></ul>"+
         "<p></p>"+
-        "<b>2.4.Previsualización de archivos</b>"+
-        "<p>Para poder visualizar un archivo individual (no carpeta) en la ventana de visualización sin salir del programa deberemos seguir los siguientes pasos:</p>"+
-        "<ul><li>Abrir el archivo a visualizar de manera que aparezca en la ventana de navegación.</li><li>Seleccionar en la ventana de navegación el archivo a visualizar.</li><li>Pulsar el botón 'Display' para visualizar el archivo en la ventana de visualización. Si el archivo seleccionado es una imagen sin comprimir, aparecerá también el botón 'Lossy' que, al pulsarlo, nos enseñará la imagen resultante después de la compresión y descompresión con el parámetro seleccionado en el desplegable 'Parameter'.</li></ul>"+
+        "<b>2.4.File preview</b>"+
+        "<p>To be able to view an individual file (not a folder) in the viewing window without leaving the program we must follow the following steps:</p>"+
+        "<ul><li>Open the file to be displayed so that it appears in the navigation window.</li><li>Select the file to be displayed in the navigation window.</li><li>Press the 'Display' button to display the file in the viewing window. If the selected file is an uncompressed image, the 'Lossy' button will also appear, which, when pressed, will show us the resulting image after compression and decompression with the parameter selected in the 'Parameter' drop-down.</li></ul>"+
         "<p></p>"+
-        "<b>2.5.Ayuda</b>"+
-        "<p>En caso de tener cualquier duda respecto al uso del programa, se puede consultar en la ventana de ayuda un manual integrado en la propia interfaz al pulsar el botón 'Help' de la barra de herramientas.</p>"+
+        "<b>2.5.Help</b>"+
+        "<p>If you have any questions regarding the use of the program, you can consult a help manual integrated in the interface itself by clicking on the 'Help' button on the toolbar.</p>"+
         "<p></p>"+
         "<p></p>"+
         "<p></p>"+
