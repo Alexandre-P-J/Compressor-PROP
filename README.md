@@ -1,21 +1,19 @@
-# Group Description
-##### Ibars Cubel, Albert
-##### Muñoz Busto, Isaac
-##### Clemente Marín, Daniel
-##### Pérez Josende, Alexandre
-
-##### albert.ibars.cubel@est.fib.upc.edu
-##### isaac.munoz.busto@est.fib.upc.edu
-##### daniel.clemente.marin@est.fib.upc.edu
-##### alexandre.perez.josende@est.fib.upc.edu
-
-## Extra Features!
-- [x] Algorithm parameters (Dictionary size, JPEG quality...) Available in UI
-- [x] Custom Gradle system. Pack project, run program, tests and more in only one simple comand on any supported platform
-- [x] Manual in app supporting HTML
-- [x] Statistics per file instead of only total statistics
-- [x] Random access to both compressed and decompressed data and fast Display functionality for ppm images and other files
-- [x] Simple but powerful UI design, following all design rules learnt in IDI
+# File archiver with compression
+Simple yet powerful file archiver with simple and modern UI.
+## Features
+- [x] File and folder smart compression/decompression
+- [x] JPEG compression algorithm
+- [x] LZ78 compression algorithm
+- [x] LZSS compression algorithm
+- [x] LZW compression algorithm
+- [x] Random compressed file access and decompression
+- [x] Fully parametrized compression (Dictionary size, JPEG quality...)
+- [x] Compressed image visualization
+- [x] Unit Testing
+- [x] Custom Gradle system
+- [x] In-app manual supporting HTML
+- [x] Total and per file statistics
+- [x] Simple and powerful UI design
 
 ## How-to's:
 This will assume you dont have gradle, if you have gradle 6.0 installed you can run the following commands replacing the executable part of the commands with the executable name installed in your system.
